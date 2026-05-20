@@ -305,7 +305,7 @@
   }
   .meta-info .meta-val { color: var(--amber); font-weight: 700; }
 
-  .ranking { display: flex; flex-direction: column; gap: 10px; }
+  .ranking { display: flex; flex-direction: column; gap: 10px; padding-top: 18px; }
 
   .row {
     background: var(--panel);
@@ -334,8 +334,163 @@
     width: 28px;
     text-align: center;
     align-self: center;
+    position: relative;
   }
   .row-rank.top { color: var(--amber); }
+
+  /* "Quase lá" — top 3 que ainda não bateram 100% */
+  .row-rank.almost {
+    color: var(--text-dim);
+    position: relative;
+  }
+  .row-rank.almost::before {
+    content: "↗";
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    font-family: var(--font-mono);
+    color: var(--amber);
+    font-weight: 700;
+    animation: almost-rise 1.6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+    filter: drop-shadow(0 0 4px rgba(255, 176, 32, 0.5));
+  }
+  @keyframes almost-rise {
+    0% { transform: translateX(-50%) translateY(2px); opacity: 0.3; }
+    50% { transform: translateX(-50%) translateY(-3px); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(-8px); opacity: 0; }
+  }
+
+  /* Crown floating over rank #1 */
+  .row-rank.crown::before {
+    content: "👑";
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    animation: crown-float 2.4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(255, 176, 32, 0.6));
+    pointer-events: none;
+    z-index: 2;
+  }
+  @keyframes crown-float {
+    0%, 100% { transform: translateX(-50%) translateY(0) rotate(-4deg); }
+    50% { transform: translateX(-50%) translateY(-4px) rotate(4deg); }
+  }
+  /* Glow behind the #1 number */
+  .row-rank.crown {
+    color: var(--amber);
+    text-shadow: 0 0 12px rgba(255, 176, 32, 0.4);
+  }
+
+  /* Silver medal — rank #2 */
+  .row-rank.silver::before {
+    content: "🥈";
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    animation: medal-swing-silver 2.8s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(200, 200, 220, 0.4));
+    pointer-events: none;
+    z-index: 2;
+    transform-origin: 50% 10%;
+  }
+  @keyframes medal-swing-silver {
+    0%, 100% { transform: translateX(-50%) rotate(-10deg); }
+    50% { transform: translateX(-50%) rotate(10deg); }
+  }
+  .row-rank.silver {
+    color: #c8c8dc;
+    text-shadow: 0 0 10px rgba(200, 200, 220, 0.3);
+  }
+
+  /* Bronze medal — rank #3 */
+  .row-rank.bronze::before {
+    content: "🥉";
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    animation: medal-swing-bronze 3.2s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(205, 127, 50, 0.4));
+    pointer-events: none;
+    z-index: 2;
+    transform-origin: 50% 10%;
+  }
+  @keyframes medal-swing-bronze {
+    0%, 100% { transform: translateX(-50%) rotate(8deg); }
+    50% { transform: translateX(-50%) rotate(-8deg); }
+  }
+  .row-rank.bronze {
+    color: #cd9a6b;
+    text-shadow: 0 0 10px rgba(205, 127, 50, 0.3);
+  }
+
+  /* 🔥 ON FIRE — performance acima de 120% */
+  .row.on-fire {
+    border-color: rgba(255, 110, 50, 0.5);
+    box-shadow: 0 0 20px rgba(255, 110, 50, 0.08), inset 0 0 30px rgba(255, 110, 50, 0.04);
+  }
+  .row-pct.on-fire-pct {
+    position: relative;
+  }
+  .row-pct.on-fire-pct::after {
+    content: "🔥";
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 16px;
+    animation: fire-flicker 0.9s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(255, 140, 50, 0.7));
+    vertical-align: middle;
+  }
+  @keyframes fire-flicker {
+    0%, 100% { transform: scale(1) translateY(0); opacity: 1; }
+    25% { transform: scale(1.12) translateY(-1px); opacity: 0.9; }
+    50% { transform: scale(0.95) translateY(1px); opacity: 1; }
+    75% { transform: scale(1.08) translateY(-2px); opacity: 0.85; }
+  }
+  /* Heat shimmer over the fire bar */
+  .row-bar-fill.on-fire-bar {
+    background: linear-gradient(90deg, #ff6e32, #ffb020, #34d399, #34d399);
+    background-size: 200% 100%;
+    animation: heat-shimmer 3s linear infinite;
+  }
+  @keyframes heat-shimmer {
+    0% { background-position: 0% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ⚠️ DANGER PULSE — performance abaixo de 50% */
+  .row.danger {
+    animation: danger-pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes danger-pulse {
+    0%, 100% {
+      border-color: rgba(255, 82, 82, 0.25);
+      box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+    }
+    50% {
+      border-color: rgba(255, 82, 82, 0.55);
+      box-shadow: 0 0 16px 0 rgba(255, 82, 82, 0.12), inset 0 0 20px rgba(255, 82, 82, 0.05);
+    }
+  }
+  .row-pct.danger-pct::before {
+    content: "⚠️ ";
+    font-size: 13px;
+    margin-right: 2px;
+    animation: danger-blink 1.4s steps(2) infinite;
+  }
+  @keyframes danger-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.35; }
+  }
   .row-name {
     grid-column: 2 / 3;
     grid-row: 1 / 2;
@@ -625,6 +780,8 @@
     <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Meta batida (≥100%)</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>Quase lá (90–99%)</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Precisa melhorar (&lt;90%)</div>
+    <div class="legend-item">🔥 Em chamas (≥120%)</div>
+    <div class="legend-item">⚠️ Atenção urgente (&lt;50%)</div>
     <div class="legend-item" style="margin-left:auto"><span class="badge dupla" style="font-size:9px">DUPLA FUNÇÃO</span> Conferiu E separou no mesmo turno</div>
   </div>
 
@@ -672,6 +829,35 @@ function fmtDate(iso) {
   const [, m, d] = iso.split("-");
   return `${d}/${m}`;
 }
+
+// Animate a number from "start" to "end" on a DOM element.
+// formatFn(n) -> string. duration in ms. Cancels prior animation on same el.
+const TWEEN_MAP = new WeakMap();
+function tweenNumber(el, end, formatFn, duration = 700) {
+  if (!el) return;
+  // Cancel any previous tween for this element
+  const prev = TWEEN_MAP.get(el);
+  if (prev) cancelAnimationFrame(prev.raf);
+  const startVal = parseFloat(el.dataset.tweenVal || "0") || 0;
+  const startTime = performance.now();
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const tick = (now) => {
+    const t = Math.min(1, (now - startTime) / duration);
+    const v = startVal + (end - startVal) * easeOut(t);
+    el.textContent = formatFn(v);
+    if (t < 1) {
+      const raf = requestAnimationFrame(tick);
+      TWEEN_MAP.set(el, { raf });
+    } else {
+      el.dataset.tweenVal = String(end);
+      TWEEN_MAP.delete(el);
+    }
+  };
+  const raf = requestAnimationFrame(tick);
+  TWEEN_MAP.set(el, { raf });
+}
+const fmtInt = n => Math.round(n).toLocaleString("pt-BR");
+const fmtPct = n => Math.round(n) + "%";
 function weekday(iso) {
   const [y, m, d] = iso.split("-").map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d));
@@ -781,7 +967,6 @@ function renderSummary(rows) {
   const totalPeople = rows.length;
   const duplaCount = rows.filter(r => r.dupla).length;
 
-  // For % avg, use daily average per person
   let totalDailyPct = 0;
   let dailyCount = 0;
   for (const r of rows) {
@@ -799,42 +984,51 @@ function renderSummary(rows) {
 
   const cls = STATE.shift === "tarde" ? "tarde" : "noite";
 
-  // Show/hide dupla banner
   document.getElementById("dupla-banner").style.display = duplaCount > 0 ? "flex" : "none";
 
   summary.innerHTML = `
     <div class="stat ${cls}">
       <div class="stat-label">Pessoas no turno</div>
-      <div class="stat-value">${totalPeople}</div>
+      <div class="stat-value" data-tween="people">0</div>
       <div class="stat-sub">${STATE.role === "conferente" ? "conferentes" : "separadores"}</div>
     </div>
     <div class="stat ${cls}">
       <div class="stat-label">Pedidos</div>
-      <div class="stat-value">${totalPedidos.toLocaleString("pt-BR")}</div>
+      <div class="stat-value" data-tween="pedidos">0</div>
       <div class="stat-sub">conferidos</div>
     </div>
     <div class="stat ${cls}">
       <div class="stat-label">Itens</div>
-      <div class="stat-value">${totalItens.toLocaleString("pt-BR")}</div>
+      <div class="stat-value" data-tween="itens">0</div>
       <div class="stat-sub">processados</div>
     </div>
     <div class="stat ${avgPct >= 100 ? "green" : avgPct >= 90 ? "tarde" : "red"}">
       <div class="stat-label">Média do turno</div>
-      <div class="stat-value">${avgPct}%</div>
+      <div class="stat-value" data-tween="avg">0%</div>
       <div class="stat-sub">da meta diária</div>
     </div>
     <div class="stat green">
       <div class="stat-label">Bateu meta</div>
-      <div class="stat-value">${hit}<span style="color:var(--text-faint);font-size:14px;"> / ${totalPeople}</span></div>
+      <div class="stat-value"><span data-tween="hit">0</span><span style="color:var(--text-faint);font-size:14px;"> / ${totalPeople}</span></div>
       <div class="stat-sub">≥100%</div>
     </div>
     ${duplaCount > 0 ? `
     <div class="stat" style="border-color:rgba(255,176,32,0.3)">
       <div class="stat-label" style="color:var(--amber)">⚡ Dupla função</div>
-      <div class="stat-value">${duplaCount}</div>
+      <div class="stat-value" data-tween="dupla">0</div>
       <div class="stat-sub">conferiu + separou</div>
     </div>` : ""}
   `;
+
+  // Animate counters
+  tweenNumber(summary.querySelector('[data-tween="people"]'), totalPeople, fmtInt);
+  tweenNumber(summary.querySelector('[data-tween="pedidos"]'), totalPedidos, fmtInt);
+  tweenNumber(summary.querySelector('[data-tween="itens"]'), totalItens, fmtInt);
+  tweenNumber(summary.querySelector('[data-tween="avg"]'), avgPct, fmtPct);
+  tweenNumber(summary.querySelector('[data-tween="hit"]'), hit, fmtInt);
+  if (duplaCount > 0) {
+    tweenNumber(summary.querySelector('[data-tween="dupla"]'), duplaCount, fmtInt);
+  }
 }
 
 function renderRanking(rows) {
@@ -902,18 +1096,35 @@ function renderRanking(rows) {
       `;
     }
 
+    // Top 3 só ganha coroa/medalha se bateu meta (100%+).
+    // Quem está no top mas abaixo de 100% recebe a animação "quase lá" (seta subindo).
+    let rankClass = "";
+    if (r.p >= 100) {
+      if (i === 0) rankClass = "crown";
+      else if (i === 1) rankClass = "silver";
+      else if (i === 2) rankClass = "bronze";
+    } else if (i < 3) {
+      rankClass = "almost";
+    }
+
     const row = document.createElement("div");
-    row.className = "row" + (r.p >= 100 ? " status-100" : "") + (r.dupla ? " dupla" : "");
+    const isFire = r.p >= 120;
+    const isDanger = r.p < 50;
+    row.className = "row"
+      + (r.p >= 100 ? " status-100" : "")
+      + (r.dupla ? " dupla" : "")
+      + (isFire ? " on-fire" : "")
+      + (isDanger ? " danger" : "");
     row.innerHTML = `
-      <div class="row-rank ${i < 3 ? "top" : ""}">${String(i+1).padStart(2,"0")}</div>
+      <div class="row-rank ${rankClass}">${String(i+1).padStart(2,"0")}</div>
       <div class="row-name">${r.name}${shiftBadge}${duplaBadge}</div>
       <div class="row-status">
-        <div class="row-pct ${st}">${r.p}%</div>
+        <div class="row-pct ${st}${isFire ? " on-fire-pct" : ""}${isDanger ? " danger-pct" : ""}" data-pct="${r.p}">0%</div>
         <div class="row-status-label ${st}">${statusLabel(r.p)}</div>
       </div>
       <div class="row-bar-wrap">
         <div class="row-bar">
-          <div class="row-bar-fill ${st}" style="width:${widthPct}%"></div>
+          <div class="row-bar-fill ${st}${isFire ? " on-fire-bar" : ""}" style="width:0%"></div>
           <div class="row-bar-mark" style="left:${goalMarkPct}%"></div>
         </div>
         <div class="row-bar-meta">
@@ -926,6 +1137,16 @@ function renderRanking(rows) {
       ${breakdownHtml}
     `;
     c.appendChild(row);
+
+    // Animate the % and the bar fill (staggered by index)
+    const pctEl = row.querySelector(".row-pct");
+    const barEl = row.querySelector(".row-bar-fill");
+    const delay = Math.min(i * 50, 400);
+    setTimeout(() => {
+      tweenNumber(pctEl, r.p, fmtPct, 700);
+      barEl.style.transition = "width 0.8s cubic-bezier(.16,1,.3,1)";
+      barEl.style.width = widthPct + "%";
+    }, delay);
   }
 }
 
