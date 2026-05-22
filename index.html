@@ -2466,7 +2466,7 @@ function fmtHours(totalSec) {
 function computeHorasByPersonDay() {
   // Para cada (pessoa, dia), soma o tempo efetivo de cada pedido (et - it)
   // dia = data de "et" (fim do pedido)
-  const map = {}; // (name, day) → { totalSec, pedidos, primeiroIni, ultimoFim }
+  const map = {}; // (name, day) → { totalSec, pedidos, itens, primeiroIni, ultimoFim }
 
   for (const r of D.records) {
     const et = new Date(r.et);
@@ -2482,6 +2482,7 @@ function computeHorasByPersonDay() {
         day,
         totalSec: 0,
         pedidos: 0,
+        itens: 0,
         primeiroIni: it,
         ultimoFim: et,
       };
@@ -2489,6 +2490,7 @@ function computeHorasByPersonDay() {
     const m = map[key];
     m.totalSec += sec;
     m.pedidos += 1;
+    m.itens += (r.i || 0);
     if (it < m.primeiroIni) m.primeiroIni = it;
     if (et > m.ultimoFim) m.ultimoFim = et;
   }
@@ -2532,6 +2534,7 @@ function renderHoras() {
         <tr>
           <th>Colaborador</th>
           <th class="right">Pedidos</th>
+          <th class="right">Itens</th>
           <th class="right">1º Início</th>
           <th class="right">Último Fim</th>
           <th class="right">Tempo Efetivo</th>
@@ -2541,10 +2544,10 @@ function renderHoras() {
   `;
 
   if (daysSorted.length === 0) {
-    html += `<tr><td colspan="5" class="horas-empty">Sem dados disponíveis</td></tr>`;
+    html += `<tr><td colspan="6" class="horas-empty">Sem dados disponíveis</td></tr>`;
   } else {
     for (const d of daysSorted) {
-      html += `<tr><td colspan="5" class="horas-day-header">${fmtDate(d)}</td></tr>`;
+      html += `<tr><td colspan="6" class="horas-day-header">${fmtDate(d)}</td></tr>`;
       for (const h of byDay[d]) {
         const cls = h.totalSec >= 9 * 3600 ? "long" : (h.totalSec < 3 * 3600 ? "short" : "");
         const ini = h.primeiroIni.toTimeString().slice(0, 5);
@@ -2553,6 +2556,7 @@ function renderHoras() {
           <tr>
             <td>${escapeHtml(h.name)}</td>
             <td class="right dim">${h.pedidos}</td>
+            <td class="right dim">${h.itens.toLocaleString("pt-BR")}</td>
             <td class="right dim">${ini}</td>
             <td class="right dim">${fim}</td>
             <td class="hours-val ${cls}">${fmtHours(h.totalSec)}</td>
