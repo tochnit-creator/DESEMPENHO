@@ -189,6 +189,15 @@
   .shift-tab[data-shift="tarde"].active::after { background: var(--tarde); }
   .shift-tab[data-shift="noite"].active::after { background: var(--noite-2); }
   .shift-tab[data-shift="suporte"].active::after { background: var(--blue); }
+  .shift-tab[data-shift="horas"].active::after { background: var(--amber); }
+  .shift-tab-locked {
+    opacity: 0.6;
+    font-style: italic;
+  }
+  .shift-tab-locked.unlocked {
+    opacity: 1;
+    font-style: normal;
+  }
   .shift-tab .count {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -1212,6 +1221,190 @@
     }
   }
 
+  /* === Modal de Senha === */
+  .pwd-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 20px;
+  }
+  .pwd-modal.show { display: flex; }
+  .pwd-box {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px 28px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+  .pwd-icon { font-size: 48px; margin-bottom: 12px; }
+  .pwd-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .pwd-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    line-height: 1.45;
+  }
+  .pwd-input {
+    width: 100%;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 15px;
+    color: var(--text);
+    font-family: var(--font-sans);
+    margin-bottom: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+    text-align: center;
+    letter-spacing: 4px;
+  }
+  .pwd-input:focus { border-color: var(--amber); }
+  .pwd-input.shake { animation: pwd-shake 0.4s; }
+  @keyframes pwd-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .pwd-error {
+    font-size: 12px;
+    color: #e57373;
+    margin-bottom: 16px;
+    min-height: 16px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .pwd-error.show { opacity: 1; }
+  .pwd-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .pwd-btn {
+    flex: 1;
+    padding: 11px 16px;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+  .pwd-btn-cancel { background: var(--bg-3); color: var(--text-dim); }
+  .pwd-btn-cancel:hover { color: var(--text); }
+  .pwd-btn-ok { background: var(--amber); color: #1a1410; border-color: var(--amber); font-weight: 600; }
+  .pwd-btn-ok:hover { background: #ffbf3d; }
+
+  /* === View Horas === */
+  .horas-view {
+    margin-top: 8px;
+  }
+  .horas-header {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .horas-header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .horas-header-info .lock { font-size: 22px; }
+  .horas-header-info .txt {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+  .horas-header-info .txt strong { color: var(--text); }
+  .horas-logout {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .horas-logout:hover { color: var(--text); border-color: var(--text-dim); }
+  .horas-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--font-sans);
+  }
+  .horas-table thead th {
+    background: var(--bg-3);
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .horas-table thead th.right { text-align: right; }
+  .horas-table tbody td {
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .horas-table tbody tr:last-child td { border-bottom: none; }
+  .horas-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .horas-table td.right { text-align: right; font-family: var(--font-mono); }
+  .horas-table td.dim { color: var(--text-dim); font-family: var(--font-mono); font-size: 12px; }
+  .horas-table td.hours-val {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--amber);
+  }
+  .horas-table td.hours-val.long { color: #fb8c00; }
+  .horas-table td.hours-val.short { color: var(--text-dim); }
+  .horas-day-header {
+    background: var(--bg-3) !important;
+    font-weight: 600 !important;
+    color: var(--amber) !important;
+    font-size: 12px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 14px !important;
+  }
+  .horas-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
   /* === Celebration Modal === */
   .celebration {
     position: fixed;
@@ -1547,55 +1740,75 @@
     <button class="shift-tab active" data-shift="tarde">Tarde<span class="count" id="count-tarde"></span></button>
     <button class="shift-tab" data-shift="noite">Noite<span class="count" id="count-noite"></span></button>
     <button class="shift-tab" data-shift="suporte">Suporte<span class="count" id="count-suporte"></span></button>
+    <button class="shift-tab shift-tab-locked" data-shift="horas" id="tab-horas">🔒 Horas</button>
   </div>
 
   <div class="day-bar" id="day-bar">
     <span class="day-bar-label">Dia:</span>
   </div>
 
-  <div class="controls-row">
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" class="search-input" id="search-input" placeholder="Buscar por nome..." autocomplete="off" />
-      <button class="search-clear" id="search-clear" title="Limpar">✕</button>
+  <div id="normal-view">
+    <div class="controls-row">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" class="search-input" id="search-input" placeholder="Buscar por nome..." autocomplete="off" />
+        <button class="search-clear" id="search-clear" title="Limpar">✕</button>
+      </div>
+      <button class="tv-btn" id="tv-btn" title="Modo TV / Apresentação (tecla T)">
+        <span>📺</span> Modo TV
+      </button>
     </div>
-    <button class="tv-btn" id="tv-btn" title="Modo TV / Apresentação (tecla T)">
-      <span>📺</span> Modo TV
-    </button>
-  </div>
 
-  <div class="summary" id="summary"></div>
+    <div class="summary" id="summary"></div>
 
-  <div class="meta-bar">
-    <h2 id="ranking-title">Ranking — Tarde</h2>
-    <div class="meta-info">
-      Meta diária: <span class="meta-val" id="meta-label">450</span> · Soma de <span class="meta-val">pedidos + itens</span>
+    <div class="meta-bar">
+      <h2 id="ranking-title">Ranking — Tarde</h2>
+      <div class="meta-info">
+        Meta diária: <span class="meta-val" id="meta-label">450</span> · Soma de <span class="meta-val">pedidos + itens</span>
+      </div>
     </div>
-  </div>
 
-  <div class="legend">
-    <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Meta batida (≥100%)</div>
-    <div class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>Quase lá (90–99%)</div>
-    <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Precisa melhorar (&lt;90%)</div>
-    <div class="legend-item">🔥 Em chamas (≥120%)</div>
-    <div class="legend-item">⚠️ Atenção urgente (&lt;50%)</div>
-    <div class="legend-item" style="margin-left:auto"><span class="badge dupla" style="font-size:9px">DUPLA FUNÇÃO</span> Conferiu E separou no mesmo turno</div>
-  </div>
-
-  <div id="dupla-banner" class="dupla-banner" style="display:none">
-    <div class="db-icon">⚡</div>
-    <div class="db-text">
-      <strong>Regra ativa:</strong> quando uma pessoa conferiu E separou no mesmo turno/dia, a pontuação do papel <em>menor</em> é somada ao papel <em>maior</em>. A pessoa aparece apenas no ranking onde fez mais pontos, com a tag <span class="badge dupla" style="font-size:8px;vertical-align:middle">DUPLA FUNÇÃO</span> e o detalhamento abaixo da barra.
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Meta batida (≥100%)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>Quase lá (90–99%)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Precisa melhorar (&lt;90%)</div>
+      <div class="legend-item">🔥 Em chamas (≥120%)</div>
+      <div class="legend-item">⚠️ Atenção urgente (&lt;50%)</div>
+      <div class="legend-item" style="margin-left:auto"><span class="badge dupla" style="font-size:9px">DUPLA FUNÇÃO</span> Conferiu E separou no mesmo turno</div>
     </div>
+
+    <div id="dupla-banner" class="dupla-banner" style="display:none">
+      <div class="db-icon">⚡</div>
+      <div class="db-text">
+        <strong>Regra ativa:</strong> quando uma pessoa conferiu E separou no mesmo turno/dia, a pontuação do papel <em>menor</em> é somada ao papel <em>maior</em>. A pessoa aparece apenas no ranking onde fez mais pontos, com a tag <span class="badge dupla" style="font-size:8px;vertical-align:middle">DUPLA FUNÇÃO</span> e o detalhamento abaixo da barra.
+      </div>
+    </div>
+
+    <div class="ranking" id="ranking"></div>
   </div>
 
-  <div class="ranking" id="ranking"></div>
+  <div id="horas-view" class="horas-view" style="display:none"></div>
 
   <footer class="footer">
     <div>Fonte: relatório de conferência · KDT-Informática</div>
     <div id="footer-meta"></div>
   </footer>
 
+</div>
+
+<!-- MODAL DE SENHA HORAS -->
+<div class="pwd-modal" id="pwd-modal">
+  <div class="pwd-box">
+    <div class="pwd-icon">🔒</div>
+    <div class="pwd-title">Acesso restrito</div>
+    <div class="pwd-sub">Digite a senha para ver as horas trabalhadas</div>
+    <input type="password" class="pwd-input" id="pwd-input" placeholder="senha" autocomplete="off">
+    <div class="pwd-error" id="pwd-error">Senha incorreta</div>
+    <div class="pwd-actions">
+      <button class="pwd-btn pwd-btn-cancel" id="pwd-cancel">Cancelar</button>
+      <button class="pwd-btn pwd-btn-ok" id="pwd-ok">Entrar</button>
+    </div>
+  </div>
 </div>
 
 <div class="celebration" id="celebration">
@@ -2191,6 +2404,25 @@ function render() {
   });
 
   renderShiftCounts();
+
+  // Modo HORAS: view diferente
+  if (STATE.shift === "horas") {
+    document.getElementById("normal-view").style.display = "none";
+    document.getElementById("horas-view").style.display = "block";
+    document.getElementById("day-bar").style.display = "none";
+    renderHoras();
+    const days = D.days;
+    document.getElementById("period-label").textContent =
+      `Período: ${fmtDate(days[0])} a ${fmtDate(days[days.length-1])} · ${D.records.length} registros`;
+    document.getElementById("footer-meta").textContent = "Horas trabalhadas · acesso restrito";
+    return;
+  }
+
+  // Modo normal
+  document.getElementById("normal-view").style.display = "";
+  document.getElementById("horas-view").style.display = "none";
+  document.getElementById("day-bar").style.display = "";
+
   renderDayBar();
 
   const entries = getEntries();
@@ -2219,6 +2451,132 @@ function render() {
     renderSummary(grouped);
     renderRanking(grouped);
   }
+}
+
+// === RENDER DA VIEW DE HORAS ===
+function fmtHours(totalSec) {
+  if (totalSec <= 0) return "0min";
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  if (h === 0) return `${m}min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${String(m).padStart(2, "0")}min`;
+}
+
+function computeHorasByPersonDay() {
+  // Para cada (pessoa, dia), soma o tempo efetivo de cada pedido (et - it)
+  // dia = data de "et" (fim do pedido)
+  const map = {}; // (name, day) → { totalSec, pedidos, primeiroIni, ultimoFim }
+
+  for (const r of D.records) {
+    const et = new Date(r.et);
+    const it = new Date(r.it);
+    const sec = (et - it) / 1000;
+    if (sec < 0 || sec > 8 * 3600) continue; // ignora pedidos com tempo absurdo (> 8h)
+
+    const day = r.et.slice(0, 10);
+    const key = `${r.c}|${day}`;
+    if (!map[key]) {
+      map[key] = {
+        name: r.c,
+        day,
+        totalSec: 0,
+        pedidos: 0,
+        primeiroIni: it,
+        ultimoFim: et,
+      };
+    }
+    const m = map[key];
+    m.totalSec += sec;
+    m.pedidos += 1;
+    if (it < m.primeiroIni) m.primeiroIni = it;
+    if (et > m.ultimoFim) m.ultimoFim = et;
+  }
+
+  return Object.values(map);
+}
+
+function renderHoras() {
+  const view = document.getElementById("horas-view");
+  const all = computeHorasByPersonDay();
+
+  // Agrupa por dia (desc)
+  const byDay = {};
+  for (const h of all) {
+    if (!byDay[h.day]) byDay[h.day] = [];
+    byDay[h.day].push(h);
+  }
+  const daysSorted = Object.keys(byDay).sort().reverse();
+
+  // Para cada dia, ordena por horas desc
+  for (const d of daysSorted) {
+    byDay[d].sort((a, b) => b.totalSec - a.totalSec);
+  }
+
+  let totalPessoasDias = all.length;
+  let totalHoras = all.reduce((s, h) => s + h.totalSec, 0);
+
+  let html = `
+    <div class="horas-header">
+      <div class="horas-header-info">
+        <span class="lock">🔓</span>
+        <div class="txt">
+          <strong>Horas trabalhadas</strong><br>
+          Soma do tempo efetivo de cada pedido (do início ao fim) por pessoa/dia · ${totalPessoasDias} registros · ${fmtHours(totalHoras)} totais
+        </div>
+      </div>
+      <button class="horas-logout" id="horas-logout-btn">Sair</button>
+    </div>
+    <table class="horas-table">
+      <thead>
+        <tr>
+          <th>Colaborador</th>
+          <th class="right">Pedidos</th>
+          <th class="right">1º Início</th>
+          <th class="right">Último Fim</th>
+          <th class="right">Tempo Efetivo</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  if (daysSorted.length === 0) {
+    html += `<tr><td colspan="5" class="horas-empty">Sem dados disponíveis</td></tr>`;
+  } else {
+    for (const d of daysSorted) {
+      html += `<tr><td colspan="5" class="horas-day-header">${fmtDate(d)}</td></tr>`;
+      for (const h of byDay[d]) {
+        const cls = h.totalSec >= 9 * 3600 ? "long" : (h.totalSec < 3 * 3600 ? "short" : "");
+        const ini = h.primeiroIni.toTimeString().slice(0, 5);
+        const fim = h.ultimoFim.toTimeString().slice(0, 5);
+        html += `
+          <tr>
+            <td>${escapeHtml(h.name)}</td>
+            <td class="right dim">${h.pedidos}</td>
+            <td class="right dim">${ini}</td>
+            <td class="right dim">${fim}</td>
+            <td class="hours-val ${cls}">${fmtHours(h.totalSec)}</td>
+          </tr>
+        `;
+      }
+    }
+  }
+
+  html += `</tbody></table>`;
+  view.innerHTML = html;
+
+  // Botão de sair
+  document.getElementById("horas-logout-btn").onclick = () => {
+    sessionStorage.removeItem("horas-auth");
+    document.getElementById("tab-horas").classList.remove("unlocked");
+    STATE.shift = "tarde";
+    ensureValidDay();
+    render();
+  };
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
 // Ensure STATE.day is valid for current role+shift; otherwise pick latest available day.
@@ -2417,11 +2775,66 @@ document.querySelectorAll("#role-switch button").forEach(b => {
 });
 document.querySelectorAll(".shift-tab").forEach(t => {
   t.onclick = () => {
-    STATE.shift = t.dataset.shift;
+    const shift = t.dataset.shift;
+    if (shift === "horas") {
+      // Aba protegida: verifica auth da sessão
+      if (sessionStorage.getItem("horas-auth") === "ok") {
+        STATE.shift = "horas";
+        render();
+      } else {
+        openPwdModal();
+      }
+      return;
+    }
+    STATE.shift = shift;
     ensureValidDay();
     render();
   };
 });
+
+// === Modal de senha pra aba Horas ===
+const PWD_CORRETA = "horas";
+function openPwdModal() {
+  const m = document.getElementById("pwd-modal");
+  const inp = document.getElementById("pwd-input");
+  const err = document.getElementById("pwd-error");
+  m.classList.add("show");
+  inp.value = "";
+  err.classList.remove("show");
+  setTimeout(() => inp.focus(), 50);
+}
+function closePwdModal() {
+  document.getElementById("pwd-modal").classList.remove("show");
+}
+function tryPwd() {
+  const inp = document.getElementById("pwd-input");
+  const err = document.getElementById("pwd-error");
+  if (inp.value.trim().toLowerCase() === PWD_CORRETA) {
+    sessionStorage.setItem("horas-auth", "ok");
+    document.getElementById("tab-horas").classList.add("unlocked");
+    closePwdModal();
+    STATE.shift = "horas";
+    render();
+  } else {
+    err.classList.add("show");
+    inp.classList.add("shake");
+    setTimeout(() => inp.classList.remove("shake"), 400);
+    inp.select();
+  }
+}
+document.getElementById("pwd-ok").onclick = tryPwd;
+document.getElementById("pwd-cancel").onclick = closePwdModal;
+document.getElementById("pwd-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") tryPwd();
+  if (e.key === "Escape") closePwdModal();
+});
+document.getElementById("pwd-modal").addEventListener("click", (e) => {
+  if (e.target.id === "pwd-modal") closePwdModal();
+});
+// Se já autenticou nesta sessão, marca a aba como destravada
+if (sessionStorage.getItem("horas-auth") === "ok") {
+  document.getElementById("tab-horas").classList.add("unlocked");
+}
 
 // Search
 const searchInput = document.getElementById("search-input");
