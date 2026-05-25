@@ -2821,11 +2821,15 @@ function generateFeedback(r, ctx) {
 
   // Seed pra alternar mensagens por dia (mesmo nome + mesmo dia → mesma mensagem;
   // dia diferente → mensagem diferente).
-  const dayStr = STATE.day || (window.D.days[window.D.days.length-1]);
+  let dayStr = STATE.day;
+  if (!dayStr && D && D.days && D.days.length) {
+    dayStr = D.days[D.days.length - 1];
+  }
+  if (!dayStr) dayStr = "2026-01-01"; // fallback seguro
   const nameHash = r.name.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  const dayParts = dayStr.split("-").map(Number);  // [2026, 5, 22]
-  const daySeed = dayParts[1] * 31 + dayParts[2];
-  const seed = (nameHash + daySeed) % 1000;
+  const dayParts = dayStr.split("-").map(Number);
+  const daySeed = (dayParts[1] || 1) * 31 + (dayParts[2] || 1);
+  const seed = Math.abs(nameHash + daySeed) % 1000;
   const pick = (arr) => arr[seed % arr.length];
 
   // Tem streak forte?
@@ -2997,32 +3001,45 @@ function generateFeedback(r, ctx) {
 }
 
 function openPostit(idx) {
-  const ctx = window._currentRanking;
-  if (!ctx || !ctx.rows[idx]) return;
-  const r = ctx.rows[idx];
-  const fb = generateFeedback(r, ctx);
+  try {
+    const ctx = window._currentRanking;
+    if (!ctx || !ctx.rows[idx]) {
+      console.warn("[postit] sem contexto ou idx inválido", idx, ctx);
+      return;
+    }
+    const r = ctx.rows[idx];
+    const fb = generateFeedback(r, ctx);
 
-  const overlay = document.getElementById("postit-overlay");
-  const paper = document.getElementById("postit-paper");
+    const overlay = document.getElementById("postit-overlay");
+    const paper = document.getElementById("postit-paper");
 
-  // Reset animation: remove and re-add
-  paper.style.animation = "none";
-  paper.offsetHeight; // trigger reflow
-  paper.style.animation = "";
+    if (!overlay || !paper) {
+      console.error("[postit] overlay/paper não encontrado");
+      return;
+    }
 
-  paper.className = "postit-paper " + (fb.cls || "neutral");
-  document.getElementById("postit-name").textContent = r.name;
-  document.getElementById("postit-status").textContent = fb.status;
-  document.getElementById("postit-message").textContent = fb.message;
-  document.getElementById("postit-tip").textContent = fb.tip;
+    // Reset animation: remove and re-add
+    paper.style.animation = "none";
+    void paper.offsetHeight; // trigger reflow
+    paper.style.animation = "";
 
-  overlay.classList.add("show");
+    paper.className = "postit-paper " + (fb.cls || "neutral");
+    document.getElementById("postit-name").textContent = r.name || "";
+    document.getElementById("postit-status").textContent = fb.status || "";
+    document.getElementById("postit-message").textContent = fb.message || "";
+    document.getElementById("postit-tip").textContent = fb.tip || "";
 
-  // Marca botão ativo
-  document.querySelectorAll(".postit-trigger.has-postit-open")
-    .forEach(b => b.classList.remove("has-postit-open"));
-  const btn = document.querySelector(`.postit-trigger[data-postit-idx="${idx}"]`);
-  if (btn) btn.classList.add("has-postit-open");
+    overlay.classList.add("show");
+
+    // Marca botão ativo
+    document.querySelectorAll(".postit-trigger.has-postit-open")
+      .forEach(b => b.classList.remove("has-postit-open"));
+    const btn = document.querySelector(`.postit-trigger[data-postit-idx="${idx}"]`);
+    if (btn) btn.classList.add("has-postit-open");
+  } catch (err) {
+    console.error("[postit] erro ao abrir:", err);
+    alert("Erro ao abrir post-it: " + err.message);
+  }
 }
 
 function closePostit() {
