@@ -1221,6 +1221,510 @@
     }
   }
 
+  /* === Card do Colaborador === */
+  .profile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 998;
+    padding: 20px;
+    animation: postit-fade-in 0.2s ease-out;
+    overflow-y: auto;
+  }
+  .profile-overlay.show { display: flex; }
+  .profile-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    animation: profile-slide-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  @keyframes profile-slide-in {
+    0% { transform: scale(0.85) translateY(20px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .profile-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.15s;
+  }
+  .profile-close:hover { color: var(--text); background: rgba(255,255,255,0.1); }
+  .profile-header {
+    padding: 24px 24px 20px;
+    background: linear-gradient(135deg, rgba(255,176,32,0.08), rgba(255,176,32,0.02));
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 3px solid rgba(255, 176, 32, 0.4);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(255, 176, 32, 0.2);
+  }
+  .profile-avatar .ini {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .profile-info { flex: 1; min-width: 0; }
+  .profile-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.15;
+  }
+  .profile-role {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .profile-shift-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .profile-shift-badge.tarde { background: rgba(245, 124, 0, 0.18); color: var(--tarde); }
+  .profile-shift-badge.noite { background: rgba(63, 81, 181, 0.18); color: var(--noite-2); }
+  .profile-shift-badge.suporte { background: rgba(33, 150, 243, 0.15); color: var(--blue); }
+  .profile-shift-badge.nao_classificado { background: rgba(255,255,255,0.08); color: var(--text-dim); }
+
+  .profile-body { padding: 18px 24px; }
+  .profile-section-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 16px 0 10px;
+  }
+  .profile-section-title:first-child { margin-top: 0; }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .profile-stat {
+    background: var(--bg-3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .profile-stat .v {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .profile-stat .k {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+  .profile-stat.good .v { color: var(--green); }
+  .profile-stat.fire .v { color: var(--amber); }
+
+  /* Mini gráfico de evolução */
+  .profile-chart {
+    background: var(--bg-3);
+    border-radius: 6px;
+    padding: 14px 12px 8px;
+    margin-bottom: 6px;
+  }
+  .profile-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 80px;
+    margin-bottom: 6px;
+  }
+  .profile-chart-bar {
+    flex: 1;
+    background: var(--border);
+    border-radius: 2px 2px 0 0;
+    position: relative;
+    transition: background 0.3s;
+    min-height: 2px;
+    cursor: help;
+  }
+  .profile-chart-bar.met { background: var(--green); }
+  .profile-chart-bar.almost { background: var(--amber); }
+  .profile-chart-bar.low { background: var(--red); }
+  .profile-chart-bar.fire {
+    background: linear-gradient(180deg, #ff7043 0%, var(--amber) 100%);
+  }
+  .profile-chart-bar.empty { background: rgba(255,255,255,0.04); }
+  .profile-chart-bar:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-2);
+    color: var(--text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+    pointer-events: none;
+    border: 1px solid var(--border);
+    z-index: 10;
+  }
+  .profile-chart-meta-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed rgba(255, 176, 32, 0.5);
+    pointer-events: none;
+  }
+  .profile-chart-labels {
+    display: flex;
+    gap: 6px;
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .profile-chart-labels span {
+    flex: 1;
+    text-align: center;
+  }
+  .profile-chart-legend {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Badges */
+  .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 8px;
+  }
+  .badge-item {
+    background: var(--bg-3);
+    border-radius: 6px;
+    padding: 10px 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    position: relative;
+    cursor: help;
+  }
+  .badge-item.locked { opacity: 0.25; filter: grayscale(0.8); }
+  .badge-item:not(.locked) {
+    border-color: rgba(255, 176, 32, 0.3);
+    background: linear-gradient(135deg, rgba(255,176,32,0.06), var(--bg-3));
+  }
+  .badge-item:hover:not(.locked) {
+    transform: translateY(-2px);
+    border-color: var(--amber);
+    box-shadow: 0 4px 12px rgba(255, 176, 32, 0.15);
+  }
+  .badge-icon { font-size: 26px; line-height: 1; margin-bottom: 4px; }
+  .badge-title {
+    font-size: 9px;
+    color: var(--text-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+  .badge-item:not(.locked) .badge-title { color: var(--text); }
+  .badge-item:hover::after {
+    content: attr(data-desc);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: normal;
+    width: 180px;
+    margin-bottom: 6px;
+    border: 1px solid var(--border);
+    z-index: 10;
+    line-height: 1.35;
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: 0;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    pointer-events: none;
+  }
+  .badges-empty {
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12px;
+    padding: 20px 10px;
+    font-style: italic;
+  }
+
+  /* Botões de ação no card */
+  .profile-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .profile-btn {
+    flex: 1;
+    padding: 10px 12px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .profile-btn:hover {
+    background: rgba(255, 176, 32, 0.12);
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .profile-btn.primary {
+    background: var(--amber);
+    color: #1a1410;
+    border-color: var(--amber);
+    font-weight: 600;
+  }
+  .profile-btn.primary:hover {
+    background: #ffbf3d;
+    color: #1a1410;
+  }
+
+  /* Linkable name/avatar */
+  .row-rank.clickable, .row-name.clickable { cursor: pointer; }
+  .row-rank.clickable:hover { transform: scale(1.04); transition: transform 0.15s; }
+
+  /* === Modo comparação entre pessoas === */
+  .compare-banner {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--amber);
+    color: #1a1410;
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 997;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(255, 176, 32, 0.4);
+    animation: compare-banner-bounce 0.4s;
+  }
+  .compare-banner.show { display: flex; }
+  @keyframes compare-banner-bounce {
+    0% { transform: translateX(-50%) translateY(-50px); opacity: 0; }
+    100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  }
+  .compare-banner-cancel {
+    background: rgba(0,0,0,0.15);
+    border: none;
+    color: #1a1410;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .compare-banner-cancel:hover { background: rgba(0,0,0,0.25); }
+  body.compare-mode .row-rank.clickable {
+    box-shadow: 0 0 0 2px rgba(255, 176, 32, 0.3);
+    border-radius: 8px;
+  }
+  body.compare-mode .row-rank.clickable:hover {
+    background: rgba(255, 176, 32, 0.1);
+    box-shadow: 0 0 0 2px var(--amber);
+  }
+
+  /* Modal VS */
+  .vs-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 998;
+    padding: 20px;
+    animation: postit-fade-in 0.2s;
+    overflow-y: auto;
+  }
+  .vs-overlay.show { display: flex; }
+  .vs-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 760px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 24px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    position: relative;
+    animation: profile-slide-in 0.4s;
+  }
+  .vs-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-dim);
+    z-index: 2;
+  }
+  .vs-close:hover { color: var(--text); }
+  .vs-title {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--amber);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .vs-subtitle {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .vs-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 8px;
+  }
+  .vs-side { text-align: center; }
+  .vs-side .vs-avatar {
+    width: 96px; height: 96px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid rgba(255, 176, 32, 0.4);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vs-side .vs-avatar.winner {
+    border-color: var(--amber);
+    box-shadow: 0 0 32px rgba(255, 176, 32, 0.5);
+  }
+  .vs-side .vs-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .vs-side .vs-name.winner { color: var(--amber); }
+  .vs-versus {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-faint);
+    align-self: center;
+    margin-top: 32px;
+  }
+  .vs-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px;
+  }
+  .vs-row .vs-label {
+    color: var(--text-faint);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    min-width: 110px;
+  }
+  .vs-row .vs-value {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .vs-row .vs-value.win { color: var(--green); }
+  .vs-row .vs-value.lose { color: var(--text-dim); }
+  .vs-row .vs-value.tie { color: var(--amber); }
+  .vs-row .left { text-align: right; }
+  .vs-row .right { text-align: left; }
+
   /* === Post-it de feedback (clip animado) === */
   .postit-trigger {
     display: inline-flex;
@@ -1984,6 +2488,38 @@
 
 </div>
 
+<!-- BANNER DE MODO COMPARAÇÃO -->
+<div class="compare-banner" id="compare-banner">
+  <span id="compare-banner-text">⚖️ Clique em outra pessoa para comparar</span>
+  <button class="compare-banner-cancel" id="compare-banner-cancel" title="Cancelar">✕</button>
+</div>
+
+<!-- MODAL VS -->
+<div class="vs-overlay" id="vs-overlay">
+  <div class="vs-card" id="vs-card">
+    <button class="vs-close" id="vs-close-btn" title="Fechar">✕</button>
+    <div class="vs-title">⚖️ Comparação</div>
+    <div class="vs-subtitle" id="vs-subtitle"></div>
+    <div id="vs-content"></div>
+  </div>
+</div>
+
+<!-- CARD DO COLABORADOR -->
+<div class="profile-overlay" id="profile-overlay">
+  <div class="profile-card" id="profile-card">
+    <button class="profile-close" id="profile-close-btn" title="Fechar">✕</button>
+    <div class="profile-header">
+      <div class="profile-avatar" id="profile-avatar"></div>
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name"></div>
+        <div class="profile-role" id="profile-role"></div>
+        <span class="profile-shift-badge" id="profile-shift-badge"></span>
+      </div>
+    </div>
+    <div class="profile-body" id="profile-body"></div>
+  </div>
+</div>
+
 <!-- POST-IT DE FEEDBACK -->
 <div class="postit-overlay" id="postit-overlay">
   <div class="postit-paper" id="postit-paper">
@@ -2065,6 +2601,88 @@ const META = {
 };
 
 const D = window.DATA;
+
+// ============================================================
+// SISTEMA ANTI-BUG: captura erros globais e protege funções
+// ============================================================
+const BugGuard = {
+  toastTimer: null,
+  errorCount: 0,
+  
+  // Mostra um aviso discreto sem quebrar a tela
+  toast(msg, kind = 'error') {
+    try {
+      let t = document.getElementById('bug-toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'bug-toast';
+        t.style.cssText = `
+          position: fixed; bottom: 20px; right: 20px;
+          background: ${kind === 'error' ? 'rgba(244,67,54,0.95)' : 'rgba(255,176,32,0.95)'};
+          color: white; padding: 10px 16px; border-radius: 8px;
+          font-family: -apple-system, sans-serif; font-size: 13px;
+          z-index: 99999; max-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+          opacity: 0; transition: opacity 0.25s;
+          cursor: pointer;
+        `;
+        t.onclick = () => t.style.opacity = '0';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.background = kind === 'error' ? 'rgba(244,67,54,0.95)' : 'rgba(255,176,32,0.95)';
+      requestAnimationFrame(() => t.style.opacity = '1');
+      clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 4000);
+    } catch (e) {
+      // se nem o toast funcionar, fallback silencioso
+    }
+  },
+  
+  // Envolve qualquer função em try/catch
+  safe(fn, label = 'função') {
+    return function(...args) {
+      try {
+        return fn.apply(this, args);
+      } catch (err) {
+        BugGuard.errorCount++;
+        console.error(`[bug-guard:${label}]`, err);
+        if (BugGuard.errorCount <= 3) {
+          BugGuard.toast(`Erro em ${label}. Tente recarregar a página (Ctrl+F5).`);
+        }
+        return null;
+      }
+    };
+  },
+};
+
+// Handler global pra erros não capturados
+window.addEventListener('error', (e) => {
+  BugGuard.errorCount++;
+  console.error('[global-error]', e.error || e.message);
+  if (BugGuard.errorCount <= 2) {
+    BugGuard.toast('Algo deu errado, mas o painel continua funcionando.');
+  }
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('[promise-rejection]', e.reason);
+});
+
+// Garante que D existe — fallback pra evitar tela em branco
+if (!D || typeof D !== 'object') {
+  document.body.innerHTML = `
+    <div style="padding:40px;text-align:center;color:#fff;font-family:sans-serif">
+      <h2>⚠️ Painel não carregou</h2>
+      <p>Os dados não estão disponíveis. Tente recarregar a página (Ctrl+F5).</p>
+    </div>`;
+  throw new Error('window.DATA ausente ou inválido');
+}
+if (!D.conferente_daily) D.conferente_daily = [];
+if (!D.separador_daily) D.separador_daily = [];
+if (!D.records) D.records = [];
+if (!D.days) D.days = [];
+if (!D.shift_map) D.shift_map = {};
+
+// ============================================================
 
 // ---------- helpers ----------
 function fmtDate(iso) {
@@ -2430,7 +3048,7 @@ function renderRanking(rows) {
       + (isFire ? " on-fire" : "")
       + (isDanger ? " danger" : "");
     row.innerHTML = `
-      <div class="row-rank ${rankClass}">${avatar}<span class="rank-num">${String(i+1).padStart(2,"0")}</span></div>
+      <div class="row-rank ${rankClass} clickable" data-person-name="${r.name}" title="Clique pra ver o perfil">${avatar}<span class="rank-num">${String(i+1).padStart(2,"0")}</span></div>
       <div class="row-name">${r.name}<span class="postit-trigger ${postitClass(r.p)}" data-postit-idx="${i}" title="Ver dica/feedback">📌</span>${shiftBadge}${duplaBadge}${streakBadge}</div>
       <div class="row-status">
         <div class="row-pct ${st}${isFire ? " on-fire-pct" : ""}${isDanger ? " danger-pct" : ""}" data-pct="${r.p}">0%</div>
@@ -3069,6 +3687,413 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// === SISTEMA DE PERFIL / BADGES ===
+
+function getPersonHistory(name) {
+  // Retorna histórico ordenado por dia: [{day, score, pct, meta, role, shift, dupla, ...}]
+  const hist = [];
+  for (const e of D.conferente_daily) {
+    if (e.name === name) {
+      hist.push({ ...e, role: 'conferente', meta: 450, pct: Math.round(100*e.score/450) });
+    }
+  }
+  for (const e of D.separador_daily) {
+    if (e.name === name) {
+      hist.push({ ...e, role: 'separador', meta: 440, pct: Math.round(100*e.score/440) });
+    }
+  }
+  // Quando a pessoa tem dupla, fica em uma só lista (role principal). 
+  // Se aparece em ambas no mesmo dia, é porque era role secundário sem dupla. Filtra duplicação:
+  const byDay = {};
+  for (const h of hist) {
+    const k = h.day;
+    if (!byDay[k]) byDay[k] = h;
+    else if (h.score > byDay[k].score) byDay[k] = h;
+  }
+  return Object.values(byDay).sort((a, b) => a.day.localeCompare(b.day));
+}
+
+function getPersonStats(name) {
+  const hist = getPersonHistory(name);
+  const total = hist.length;
+  if (!total) return null;
+  
+  let metaHits = 0, fireHits = 0, bestPct = 0, bestDay = null;
+  let totalPct = 0, totalScore = 0, firstPlaceDays = 0;
+  let currentStreak = 0, maxStreak = 0;
+  
+  // Para calcular 1º lugar e top3, precisa pegar ranking de cada dia
+  for (const h of hist) {
+    totalPct += h.pct;
+    totalScore += h.score;
+    if (h.pct >= 100) metaHits++;
+    if (h.pct >= 120) fireHits++;
+    if (h.pct > bestPct) {
+      bestPct = h.pct;
+      bestDay = h.day;
+    }
+  }
+  
+  // Calcula 1º lugar — ver quantos dias essa pessoa foi #1 em algum ranking
+  const days = [...new Set(hist.map(h => h.day))];
+  for (const d of days) {
+    // Verifica conferente do mesmo turno
+    for (const shift of ['tarde', 'noite']) {
+      const ranking = D.conferente_daily
+        .filter(e => e.day === d && e.record_shift === shift)
+        .sort((a,b) => b.score - a.score);
+      if (ranking.length && ranking[0].name === name && ranking[0].score >= 450) {
+        firstPlaceDays++;
+        break;
+      }
+      const rankingS = D.separador_daily
+        .filter(e => e.day === d && e.record_shift === shift)
+        .sort((a,b) => b.score - a.score);
+      if (rankingS.length && rankingS[0].name === name && rankingS[0].score >= 440) {
+        firstPlaceDays++;
+        break;
+      }
+    }
+  }
+  
+  // Streak máxima
+  let curr = 0;
+  for (const h of hist) {
+    if (h.pct >= 100) { curr++; if (curr > maxStreak) maxStreak = curr; }
+    else curr = 0;
+  }
+  currentStreak = curr;
+  
+  return {
+    name,
+    daysWorked: total,
+    metaHits,
+    fireHits,
+    bestPct,
+    bestDay,
+    avgPct: Math.round(totalPct / total),
+    totalScore,
+    firstPlaceDays,
+    currentStreak,
+    maxStreak,
+    consistencyPct: Math.round(100 * metaHits / total),
+    history: hist,
+  };
+}
+
+// Catálogo de badges disponíveis
+const BADGES = [
+  { id: 'first_meta', icon: '🎯', title: 'Primeira Meta', desc: 'Bateu meta pela primeira vez', check: s => s.metaHits >= 1 },
+  { id: 'streak_3', icon: '🔥', title: 'Hot Streak', desc: '3 dias seguidos batendo meta', check: s => s.maxStreak >= 3 },
+  { id: 'streak_5', icon: '⚡', title: 'Imparável', desc: '5 dias seguidos batendo meta', check: s => s.maxStreak >= 5 },
+  { id: 'fire', icon: '💥', title: 'Em Chamas', desc: 'Bateu 120%+ da meta num dia', check: s => s.fireHits >= 1 },
+  { id: 'super_fire', icon: '🌋', title: 'Vulcão', desc: '3+ dias batendo 120%+ da meta', check: s => s.fireHits >= 3 },
+  { id: 'first_place', icon: '👑', title: 'Coroado', desc: 'Foi #1 no ranking num dia', check: s => s.firstPlaceDays >= 1 },
+  { id: 'first_place_3', icon: '🏆', title: 'Tricampeão', desc: 'Foi #1 em 3+ dias', check: s => s.firstPlaceDays >= 3 },
+  { id: 'first_place_5', icon: '👸', title: 'Realeza', desc: 'Foi #1 em 5+ dias', check: s => s.firstPlaceDays >= 5 },
+  { id: 'consistent_70', icon: '🛡️', title: 'Consistente', desc: 'Bateu meta em 70%+ dos dias', check: s => s.consistencyPct >= 70 && s.daysWorked >= 4 },
+  { id: 'best_150', icon: '🚀', title: 'Foguete', desc: 'Melhor dia com 150%+ da meta', check: s => s.bestPct >= 150 },
+  { id: 'worker', icon: '💪', title: 'Trabalhador', desc: 'Trabalhou 5+ dias na semana', check: s => s.daysWorked >= 5 },
+  { id: 'veteran', icon: '🎖️', title: 'Veterano', desc: 'Trabalhou 7+ dias', check: s => s.daysWorked >= 7 },
+];
+
+function computeBadges(stats) {
+  return BADGES.map(b => ({ ...b, earned: b.check(stats) }));
+}
+
+function profileAvatarHtml(name) {
+  // Retorna HTML do avatar da pessoa (foto ou iniciais coloridas)
+  const photo = window.AVATARS && window.AVATARS[name];
+  if (photo) {
+    return `<div class="profile-avatar" style="background-image:url('${photo}');background-color:var(--bg-3)"></div>`;
+  }
+  const ini = initialOf(name);
+  const color = colorFromName(name);
+  return `<div class="profile-avatar" style="background:${color}"><span class="ini">${ini}</span></div>`;
+}
+
+function openProfile(name) {
+  const stats = getPersonStats(name);
+  if (!stats) return;
+  
+  const overlay = document.getElementById('profile-overlay');
+  const avatarEl = document.getElementById('profile-avatar');
+  const photo = window.AVATARS && window.AVATARS[name];
+  if (photo) {
+    avatarEl.style.backgroundImage = `url('${photo}')`;
+    avatarEl.style.background = `url('${photo}') center/cover, var(--bg-3)`;
+    avatarEl.innerHTML = '';
+  } else {
+    avatarEl.style.backgroundImage = '';
+    avatarEl.style.background = colorFromName(name);
+    avatarEl.innerHTML = `<span class="ini">${initialOf(name)}</span>`;
+  }
+  
+  document.getElementById('profile-name').textContent = name;
+  
+  // Determina role principal
+  const lastEntry = stats.history[stats.history.length - 1];
+  const role = lastEntry.role === 'conferente' ? 'Conferente' : 'Separador';
+  document.getElementById('profile-role').textContent = role;
+  
+  const shift = D.shift_map[name] || 'nao_classificado';
+  const shiftBadge = document.getElementById('profile-shift-badge');
+  shiftBadge.className = 'profile-shift-badge ' + shift;
+  shiftBadge.textContent = shift === 'nao_classificado' ? 'não classificado' : shift;
+  
+  // Body
+  const body = document.getElementById('profile-body');
+  const badges = computeBadges(stats);
+  const earnedCount = badges.filter(b => b.earned).length;
+  
+  // Histórico semanal (últimos 7 dias do histórico geral)
+  const allDays = D.days.slice(-7);
+  const chartBars = allDays.map(d => {
+    const h = stats.history.find(x => x.day === d);
+    if (!h) {
+      return { day: d, pct: 0, score: 0, empty: true };
+    }
+    return { day: d, pct: h.pct, score: h.score, meta: h.meta, empty: false };
+  });
+  const maxPct = Math.max(150, ...chartBars.map(b => b.pct));
+  
+  let chartHtml = `<div class="profile-chart"><div class="profile-chart-bars">`;
+  chartBars.forEach(b => {
+    let cls = '';
+    let h = 0;
+    if (b.empty) {
+      cls = 'empty';
+      h = 4;
+    } else {
+      h = Math.max(4, (b.pct / maxPct) * 100);
+      if (b.pct >= 120) cls = 'fire';
+      else if (b.pct >= 100) cls = 'met';
+      else if (b.pct >= 90) cls = 'almost';
+      else cls = 'low';
+    }
+    const tip = b.empty ? `${fmtDateShort(b.day)}: sem dados` : `${fmtDateShort(b.day)}: ${b.pct}% (${b.score} pts)`;
+    chartHtml += `<div class="profile-chart-bar ${cls}" style="height:${h}%" data-tip="${tip}"></div>`;
+  });
+  chartHtml += `</div><div class="profile-chart-labels">`;
+  chartBars.forEach(b => { chartHtml += `<span>${fmtDayShort(b.day)}</span>`; });
+  chartHtml += `</div><div class="profile-chart-legend">passe o mouse pra ver o resultado de cada dia</div></div>`;
+  
+  body.innerHTML = `
+    <div class="profile-section-title">Estatísticas (últimos ${stats.daysWorked} dias)</div>
+    <div class="profile-stats">
+      <div class="profile-stat good">
+        <div class="v">${stats.metaHits}</div>
+        <div class="k">Metas batidas</div>
+      </div>
+      <div class="profile-stat fire">
+        <div class="v">${stats.fireHits}</div>
+        <div class="k">🔥 Em chamas</div>
+      </div>
+      <div class="profile-stat">
+        <div class="v">${stats.firstPlaceDays}</div>
+        <div class="k">👑 1º lugar</div>
+      </div>
+      <div class="profile-stat">
+        <div class="v">${stats.bestPct}%</div>
+        <div class="k">Melhor dia</div>
+      </div>
+      <div class="profile-stat">
+        <div class="v">${stats.avgPct}%</div>
+        <div class="k">Média</div>
+      </div>
+      <div class="profile-stat">
+        <div class="v">${stats.maxStreak}</div>
+        <div class="k">Maior streak</div>
+      </div>
+    </div>
+    
+    <div class="profile-section-title">Histórico semanal</div>
+    ${chartHtml}
+    
+    <div class="profile-section-title">Conquistas (${earnedCount}/${badges.length})</div>
+    ${earnedCount === 0 ? '<div class="badges-empty">Ainda não conquistou nenhuma medalha. Bater meta uma vez já desbloqueia a primeira! 🎯</div>' : `
+    <div class="badges-grid">
+      ${badges.map(b => `
+        <div class="badge-item ${b.earned ? '' : 'locked'}" data-desc="${b.title}: ${b.desc}">
+          <div class="badge-icon">${b.icon}</div>
+          <div class="badge-title">${b.title}</div>
+        </div>
+      `).join('')}
+    </div>`}
+    
+    <div class="profile-actions">
+      <button class="profile-btn primary" id="profile-compare-btn">
+        ⚖️ Comparar
+      </button>
+      <button class="profile-btn" id="profile-close-btn-2">Fechar</button>
+    </div>
+  `;
+  
+  overlay.classList.add('show');
+  
+  // Bind buttons
+  document.getElementById('profile-compare-btn').onclick = () => {
+    closeProfile();
+    enableCompareMode(name);
+  };
+  document.getElementById('profile-close-btn-2').onclick = closeProfile;
+}
+
+function closeProfile() {
+  document.getElementById('profile-overlay').classList.remove('show');
+}
+
+// === COMPARAÇÃO ENTRE PESSOAS ===
+const COMPARE = { active: false, firstName: null };
+
+function enableCompareMode(firstName) {
+  COMPARE.active = true;
+  COMPARE.firstName = firstName;
+  document.body.classList.add('compare-mode');
+  document.getElementById('compare-banner-text').textContent =
+    `⚖️ ${firstName} vs ? — clique em outra pessoa pra comparar`;
+  document.getElementById('compare-banner').classList.add('show');
+}
+
+function disableCompareMode() {
+  COMPARE.active = false;
+  COMPARE.firstName = null;
+  document.body.classList.remove('compare-mode');
+  document.getElementById('compare-banner').classList.remove('show');
+}
+
+function showVS(nameA, nameB) {
+  const sA = getPersonStats(nameA);
+  const sB = getPersonStats(nameB);
+  if (!sA || !sB) return;
+  
+  function cmpHtml(label, vA, vB, higherWins = true) {
+    let clsA = 'tie', clsB = 'tie';
+    const nA = typeof vA === 'string' ? parseFloat(vA.replace(/[^\d.-]/g, '')) : vA;
+    const nB = typeof vB === 'string' ? parseFloat(vB.replace(/[^\d.-]/g, '')) : vB;
+    if (nA !== nB && !isNaN(nA) && !isNaN(nB)) {
+      if (higherWins) {
+        if (nA > nB) { clsA = 'win'; clsB = 'lose'; }
+        else { clsA = 'lose'; clsB = 'win'; }
+      } else {
+        if (nA < nB) { clsA = 'win'; clsB = 'lose'; }
+        else { clsA = 'lose'; clsB = 'win'; }
+      }
+    }
+    return `
+      <div class="vs-row">
+        <div class="vs-value ${clsA} left">${vA}</div>
+        <div class="vs-label">${label}</div>
+        <div class="vs-value ${clsB} right">${vB}</div>
+      </div>
+    `;
+  }
+  
+  const winnerA = sA.avgPct >= sB.avgPct;
+  
+  function avatarHtml(name, isWinner) {
+    const photo = window.AVATARS && window.AVATARS[name];
+    if (photo) {
+      return `<div class="vs-avatar ${isWinner ? 'winner' : ''}" style="background-image:url('${photo}')"></div>`;
+    }
+    return `<div class="vs-avatar ${isWinner ? 'winner' : ''}" style="background:${colorFromName(name)}"><span style="font-family:var(--font-display);font-size:36px;color:#fff;font-weight:700">${initialOf(name)}</span></div>`;
+  }
+  
+  document.getElementById('vs-subtitle').textContent =
+    `${nameA} vs ${nameB} — comparativo geral`;
+  
+  document.getElementById('vs-content').innerHTML = `
+    <div class="vs-grid">
+      <div class="vs-side">
+        ${avatarHtml(nameA, winnerA)}
+        <div class="vs-name ${winnerA ? 'winner' : ''}">${nameA}</div>
+      </div>
+      <div class="vs-versus">VS</div>
+      <div class="vs-side">
+        ${avatarHtml(nameB, !winnerA)}
+        <div class="vs-name ${!winnerA ? 'winner' : ''}">${nameB}</div>
+      </div>
+    </div>
+    
+    ${cmpHtml('Média (%)', sA.avgPct + '%', sB.avgPct + '%')}
+    ${cmpHtml('Melhor dia', sA.bestPct + '%', sB.bestPct + '%')}
+    ${cmpHtml('Metas batidas', sA.metaHits, sB.metaHits)}
+    ${cmpHtml('🔥 Em chamas', sA.fireHits, sB.fireHits)}
+    ${cmpHtml('👑 1º lugares', sA.firstPlaceDays, sB.firstPlaceDays)}
+    ${cmpHtml('Streak máx.', sA.maxStreak + ' dias', sB.maxStreak + ' dias')}
+    ${cmpHtml('Dias trabalhados', sA.daysWorked, sB.daysWorked)}
+    ${cmpHtml('Consistência', sA.consistencyPct + '%', sB.consistencyPct + '%')}
+    ${cmpHtml('Total pontos', sA.totalScore.toLocaleString('pt-BR'), sB.totalScore.toLocaleString('pt-BR'))}
+  `;
+  
+  document.getElementById('vs-overlay').classList.add('show');
+}
+
+function closeVS() {
+  document.getElementById('vs-overlay').classList.remove('show');
+}
+
+function fmtDateShort(iso) {
+  if (!iso) return '';
+  const parts = iso.split('-');
+  return `${parts[2]}/${parts[1]}`;
+}
+
+function fmtDayShort(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T12:00:00');
+  const dias = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+  return dias[d.getDay()] + ' ' + iso.split('-')[2];
+}
+
+// Listeners do profile / comparação
+document.getElementById('profile-close-btn').onclick = closeProfile;
+document.getElementById('profile-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'profile-overlay') closeProfile();
+});
+
+document.getElementById('vs-close-btn').onclick = closeVS;
+document.getElementById('vs-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'vs-overlay') closeVS();
+});
+
+document.getElementById('compare-banner-cancel').onclick = disableCompareMode;
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('vs-overlay').classList.contains('show')) closeVS();
+    else if (document.getElementById('profile-overlay').classList.contains('show')) closeProfile();
+    else if (COMPARE.active) disableCompareMode();
+  }
+});
+
+// Click no avatar/rank pra abrir profile OU continuar comparação
+document.addEventListener('click', (e) => {
+  try {
+    const rankEl = e.target.closest('.row-rank.clickable');
+    if (rankEl) {
+      const name = rankEl.dataset.personName;
+      if (!name) return;
+      e.stopPropagation();
+      if (COMPARE.active) {
+        if (COMPARE.firstName === name) {
+          // Mesma pessoa: só abre o profile dela
+          disableCompareMode();
+          openProfile(name);
+        } else {
+          const firstName = COMPARE.firstName;
+          disableCompareMode();
+          showVS(firstName, name);
+        }
+      } else {
+        openProfile(name);
+      }
+    }
+  } catch (err) {
+    console.error('[click row-rank]', err);
+  }
+});
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
@@ -3376,10 +4401,33 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// ============================================================
+// PROTEÇÃO ANTI-BUG: envolve funções críticas em try/catch
+// ============================================================
+const _render = render;
+render = BugGuard.safe(_render, 'render');
+
+const _openProfile = openProfile;
+openProfile = BugGuard.safe(_openProfile, 'openProfile');
+
+const _openPostit = openPostit;
+openPostit = BugGuard.safe(_openPostit, 'openPostit');
+
+const _triggerCelebration = triggerCelebration;
+triggerCelebration = BugGuard.safe(_triggerCelebration, 'triggerCelebration');
+
+const _renderHoras = renderHoras;
+renderHoras = BugGuard.safe(_renderHoras, 'renderHoras');
+
 // init
 STATE.day = D.days[D.days.length - 1];
-ensureValidDay();
-render();
+try {
+  ensureValidDay();
+  render();
+} catch (err) {
+  console.error('[init]', err);
+  BugGuard.toast('Erro ao carregar o painel. Recarregue a página.');
+}
 </script>
 </body>
 </html>
