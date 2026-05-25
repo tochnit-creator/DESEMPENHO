@@ -1221,6 +1221,194 @@
     }
   }
 
+  /* === Post-it de feedback (clip animado) === */
+  .postit-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 176, 32, 0.12);
+    border: 1px solid rgba(255, 176, 32, 0.3);
+    color: var(--amber);
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 6px;
+    vertical-align: middle;
+    transition: all 0.2s;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .postit-trigger:hover {
+    background: rgba(255, 176, 32, 0.25);
+    border-color: var(--amber);
+    transform: scale(1.15) rotate(-8deg);
+  }
+  .postit-trigger.has-postit-open {
+    background: var(--amber);
+    color: #1a1410;
+    transform: rotate(-12deg);
+  }
+  /* Cores por tipo */
+  .postit-trigger.good {
+    background: rgba(76, 175, 80, 0.12);
+    border-color: rgba(76, 175, 80, 0.35);
+    color: var(--green);
+  }
+  .postit-trigger.good:hover {
+    background: rgba(76, 175, 80, 0.25);
+  }
+  .postit-trigger.warn {
+    background: rgba(255, 87, 87, 0.12);
+    border-color: rgba(255, 87, 87, 0.35);
+    color: var(--red);
+  }
+  .postit-trigger.warn:hover {
+    background: rgba(255, 87, 87, 0.25);
+  }
+
+  .postit-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 998;
+    padding: 20px;
+    animation: postit-fade-in 0.2s ease-out;
+  }
+  .postit-overlay.show { display: flex; }
+  @keyframes postit-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .postit-paper {
+    position: relative;
+    max-width: 380px;
+    width: 100%;
+    background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+    color: #2c2418;
+    padding: 28px 24px 24px;
+    border-radius: 2px;
+    font-family: 'Caveat', 'Marker Felt', 'Comic Sans MS', cursive;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(0, 0, 0, 0.1);
+    transform: rotate(-3deg);
+    animation: postit-jump 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .postit-paper.good {
+    background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+  }
+  .postit-paper.warn {
+    background: linear-gradient(135deg, #ffccbc 0%, #ffab91 100%);
+  }
+  .postit-paper.neutral {
+    background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+  }
+
+  @keyframes postit-jump {
+    0% {
+      transform: rotate(-15deg) scale(0.3) translateY(-50px);
+      opacity: 0;
+    }
+    50% {
+      transform: rotate(2deg) scale(1.08);
+      opacity: 1;
+    }
+    75% {
+      transform: rotate(-4deg) scale(0.97);
+    }
+    100% {
+      transform: rotate(-3deg) scale(1);
+    }
+  }
+
+  .postit-clip {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 32px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    animation: postit-clip-sway 1.6s ease-in-out infinite;
+  }
+  @keyframes postit-clip-sway {
+    0%, 100% { transform: translateX(-50%) rotate(-3deg); }
+    50% { transform: translateX(-50%) rotate(3deg); }
+  }
+
+  .postit-name {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    color: #1a1410;
+    line-height: 1.1;
+  }
+  .postit-status {
+    font-size: 14px;
+    color: #5a4a2a;
+    margin-bottom: 14px;
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .postit-message {
+    font-size: 19px;
+    line-height: 1.35;
+    color: #2c2418;
+    margin-bottom: 14px;
+  }
+  .postit-tip {
+    font-size: 16px;
+    line-height: 1.4;
+    color: #5a4a2a;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(0,0,0,0.2);
+    font-style: italic;
+  }
+  .postit-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    color: #5a4a2a;
+    font-family: var(--font-sans);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .postit-close:hover {
+    background: rgba(0,0,0,0.1);
+    color: #1a1410;
+  }
+  .postit-paper .postit-close-hint {
+    font-size: 12px;
+    color: #5a4a2a;
+    text-align: center;
+    margin-top: 12px;
+    opacity: 0.7;
+    font-family: var(--font-sans);
+  }
+
+  @media (max-width: 640px) {
+    .postit-paper { max-width: 320px; padding: 24px 18px 18px; }
+    .postit-name { font-size: 20px; }
+    .postit-message { font-size: 17px; }
+    .postit-tip { font-size: 14px; }
+  }
+
   /* === Modal de Senha === */
   .pwd-modal {
     position: fixed;
@@ -1796,6 +1984,19 @@
 
 </div>
 
+<!-- POST-IT DE FEEDBACK -->
+<div class="postit-overlay" id="postit-overlay">
+  <div class="postit-paper" id="postit-paper">
+    <div class="postit-clip">📎</div>
+    <button class="postit-close" id="postit-close-btn" title="Fechar">✕</button>
+    <div class="postit-name" id="postit-name"></div>
+    <div class="postit-status" id="postit-status"></div>
+    <div class="postit-message" id="postit-message"></div>
+    <div class="postit-tip" id="postit-tip"></div>
+    <div class="postit-close-hint">clique fora ou pressione esc</div>
+  </div>
+</div>
+
 <!-- MODAL DE SENHA HORAS -->
 <div class="pwd-modal" id="pwd-modal">
   <div class="pwd-box">
@@ -2119,6 +2320,24 @@ function renderRanking(rows) {
 
   enriched.sort((a, b) => b.p - a.p);
 
+  // Média do grupo (usado nos feedbacks dos post-its)
+  const avgEffective = enriched.length
+    ? enriched.reduce((s, r) => s + r.effective, 0) / enriched.length
+    : 0;
+  const avgPct = enriched.length
+    ? enriched.reduce((s, r) => s + r.p, 0) / enriched.length
+    : 0;
+
+  // Expõe pra usar no post-it
+  window._currentRanking = {
+    rows: enriched,
+    role: STATE.role,
+    shift: STATE.shift,
+    avgEffective,
+    avgPct,
+    meta,
+  };
+
   const maxScore = Math.max(meta * 1.5, ...enriched.map(r => r.effective));
 
   for (let i = 0; i < enriched.length; i++) {
@@ -2212,7 +2431,7 @@ function renderRanking(rows) {
       + (isDanger ? " danger" : "");
     row.innerHTML = `
       <div class="row-rank ${rankClass}">${avatar}<span class="rank-num">${String(i+1).padStart(2,"0")}</span></div>
-      <div class="row-name">${r.name}${shiftBadge}${duplaBadge}${streakBadge}</div>
+      <div class="row-name">${r.name}<span class="postit-trigger ${postitClass(r.p)}" data-postit-idx="${i}" title="Ver dica/feedback">📌</span>${shiftBadge}${duplaBadge}${streakBadge}</div>
       <div class="row-status">
         <div class="row-pct ${st}${isFire ? " on-fire-pct" : ""}${isDanger ? " danger-pct" : ""}" data-pct="${r.p}">0%</div>
         <div class="row-status-label ${st}">${statusLabel(r.p)}</div>
@@ -2578,6 +2797,260 @@ function renderHoras() {
     render();
   };
 }
+
+// === POST-IT DE FEEDBACK ===
+function postitClass(pct) {
+  if (pct >= 110) return "good";
+  if (pct >= 90) return "";  // neutro
+  return "warn";
+}
+
+function generateFeedback(r, ctx) {
+  // ctx = { rows, role, shift, avgEffective, avgPct, meta }
+  const pct = r.p;
+  const role = ctx.role;
+  const roleLabel = role === "conferente" ? "conferência" : "separação";
+  const turno = ctx.shift === "tarde" ? "tarde" : (ctx.shift === "noite" ? "noite" : "");
+  const diffVsAvg = r.effective - ctx.avgEffective;
+  const pctVsAvg = ctx.avgEffective > 0 ? (diffVsAvg / ctx.avgEffective) * 100 : 0;
+
+  // Encontra posição no ranking
+  const sorted = ctx.rows;
+  const idx = sorted.findIndex(x => x.name === r.name);
+  const total = sorted.length;
+
+  // Seed pra alternar mensagens por dia (mesmo nome + mesmo dia → mesma mensagem;
+  // dia diferente → mensagem diferente).
+  const dayStr = STATE.day || (window.D.days[window.D.days.length-1]);
+  const nameHash = r.name.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const dayParts = dayStr.split("-").map(Number);  // [2026, 5, 22]
+  const daySeed = dayParts[1] * 31 + dayParts[2];
+  const seed = (nameHash + daySeed) % 1000;
+  const pick = (arr) => arr[seed % arr.length];
+
+  // Tem streak forte?
+  const streak = r.streak || 0;
+
+  // Variação vs dia anterior
+  const prevDiff = r.prev_score != null ? r.effective - r.prev_score : null;
+  const prevPctDiff = (prevDiff != null && r.prev_score > 0)
+    ? (prevDiff / r.prev_score) * 100
+    : null;
+
+  let status, message, tip, cls;
+
+  // === EM CHAMAS (≥120%) ===
+  if (pct >= 120) {
+    cls = "good";
+    status = "🔥 Em chamas!";
+    message = pick([
+      `Você está voando hoje! Bateu ${pct}% da meta — muito acima do que a equipe está fazendo no mesmo período.`,
+      `Performance excepcional na ${roleLabel}. Está rendendo ${Math.round(Math.abs(pctVsAvg))}% acima da média do turno.`,
+      `Que dia! ${pct}% da meta é coisa de fera. Continue assim!`,
+      `Você está pegando fogo. ${pct}% é um número que poucos batem — orgulho da equipe.`,
+      `Resultado de outro nível: ${pct}% da meta. Tá fazendo bonito, parabéns!`,
+      `Cara, ${pct}%? Tá voando! O setor todo tá olhando pra você como referência.`,
+      `Mais um dia mostrando que veio pra trabalhar. ${pct}% é coisa de profissional sério.`,
+    ]);
+    if (streak >= 3) {
+      tip = pick([
+        `${streak} dias seguidos batendo meta! Você virou referência pra galera. Mantém esse ritmo.`,
+        `${streak} dias em sequência batendo meta — isso não é sorte, é consistência. Tá fazendo certo.`,
+        `${streak}º dia consecutivo no verde! Vai virar lenda nesse setor.`,
+      ]);
+    } else if (idx === 0) {
+      tip = pick([
+        "Está liderando o ranking. Foco e consistência — você tem capacidade de fazer isso virar rotina.",
+        "Primeiro lugar! Agora o desafio é manter — disciplina vale mais que pico.",
+        "Lidera o dia com folga. Amanhã alguém vai querer tirar essa posição de você, prepara o coração.",
+      ]);
+    } else {
+      tip = pick([
+        "Bora bater o líder amanhã? Você tem fôlego pra isso.",
+        "Mantendo esse ritmo, é só questão de tempo até virar referência do turno.",
+        "Tá pertinho do topo. Mais um dia desses e você assume o trono.",
+      ]);
+    }
+  }
+  // === BATEU META (100-119%) ===
+  else if (pct >= 100) {
+    cls = "good";
+    status = "✅ Meta batida";
+    const above = pctVsAvg > 10
+      ? ` E ainda está ${Math.round(pctVsAvg)}% acima da média do pessoal.`
+      : " Bom resultado consistente.";
+    message = pick([
+      `Parabéns! Você bateu ${pct}% da meta hoje.${above}`,
+      `Meta no bolso! ${pct}% é resultado de trabalho sério.${above}`,
+      `${pct}% e seguindo firme. Tá no caminho certo.`,
+      `Bateu a meta com folga (${pct}%). É assim que se faz!`,
+      `Mais um dia no verde. ${pct}% da meta mostra disciplina.`,
+      `${pct}%, mandou bem hoje. Parabéns pelo empenho!`,
+    ]);
+    if (streak >= 2) {
+      tip = pick([
+        `🔥 ${streak} dias seguidos batendo meta! Você está numa sequência boa, continue assim.`,
+        `${streak} dias no verde em sequência — é exatamente isso que faz a diferença no fim do mês.`,
+        `Sequência de ${streak} dias mostra que não foi sorte. É consistência.`,
+      ]);
+    } else if (prevPctDiff != null && prevPctDiff > 10) {
+      tip = pick([
+        `Subiu ${Math.round(prevPctDiff)}% em relação ao dia anterior. Está em evolução!`,
+        `Que evolução! ${Math.round(prevPctDiff)}% melhor que ontem. Mantém esse ritmo.`,
+      ]);
+    } else {
+      tip = pick([
+        "Mantenha esse ritmo todos os dias e você vai virar referência no setor.",
+        "Agora o desafio é fazer isso virar rotina. Disciplina diária > pico isolado.",
+        "Resultado bom não é evento, é hábito. Continue!",
+        "Pra fechar a semana com chave de ouro, mantém esse padrão amanhã.",
+      ]);
+    }
+  }
+  // === QUASE LÁ (90-99%) ===
+  else if (pct >= 90) {
+    cls = "";
+    status = "⚡ Quase lá";
+    const above = pctVsAvg > 0
+      ? " Está acima da média da equipe, só precisa fechar com um gás final."
+      : " Está próximo da média, mas ainda dá pra apertar.";
+    message = pick([
+      `Você está em ${pct}% da meta — faltou pouco!${above}`,
+      `${pct}%... quase! Tá no encalço, só falta dar o gás final.`,
+      `Por pouco! ${pct}% mostra que tá no ritmo certo, mas precisa fechar a conta.`,
+      `Faltou só um empurrãozinho. ${pct}% e a meta na sua frente.`,
+      `${pct}% — tá bem perto. Não desanima, amanhã fecha 100%.`,
+    ]);
+    const ped_falta = Math.ceil((ctx.meta - r.effective));
+    tip = pick([
+      `Faltaram só ${ped_falta} pontos pra fechar 100%. Amanhã é dia de virar essa chave.`,
+      `${ped_falta} pontinhos a menos da meta. Tá na cara que dá pra recuperar.`,
+      `Pensa: ${ped_falta} pontos é praticamente nada. Amanhã você fecha.`,
+      `Quase fechou! ${ped_falta} pontos faltando — questão de minutos a mais de foco.`,
+    ]);
+  }
+  // === MÉDIO (70-89%) ===
+  else if (pct >= 70) {
+    cls = "";
+    status = "📊 Performance média";
+    if (pctVsAvg < -10) {
+      message = pick([
+        `Você está em ${pct}% da meta. A maioria do pessoal do turno da ${turno || ctx.shift} está rendendo mais que você no mesmo período. Precisa aumentar o ritmo.`,
+        `${pct}% da meta. Olha, o pessoal do mesmo turno tá produzindo mais — tá faltando ritmo.`,
+        `Em ${pct}%. Os colegas estão fechando números melhores no mesmo horário. Bora apertar?`,
+        `${pct}%. Não tá ruim, mas tá atrás da média do turno. Precisa acelerar.`,
+      ]);
+      tip = pick([
+        "Dica: olhe pros colegas que estão batendo meta e veja se tem algo no processo deles que pode te ajudar.",
+        "Sugestão: conversa com quem tá no topo, pega umas dicas de processo. Sempre tem o que aprender.",
+        "Talvez seja questão de organização: pequenos ajustes no fluxo podem render muito.",
+      ]);
+    } else {
+      message = pick([
+        `Você está em ${pct}% da meta hoje. Não está ruim, mas a meta é 100% — precisa subir o ritmo.`,
+        `${pct}% é razoável, mas você consegue mais. A meta é 100% por um motivo.`,
+        `Tá em ${pct}%, dentro da média mas longe da meta. Bora ir pro 100%?`,
+        `${pct}%. Tá ok, mas você tem potencial pra mais. Não fica na zona de conforto.`,
+      ]);
+      tip = pick([
+        "Reveja seu processo: pequenos ajustes podem te tirar do 80% e te levar pros 100%+.",
+        "Foco extra nos últimos 30 minutos do turno costuma fazer diferença.",
+        "Tenta organizar a sequência de pedidos pra evitar retrabalho — costuma render bem.",
+      ]);
+    }
+  }
+  // === BAIXO (50-69%) ===
+  else if (pct >= 50) {
+    cls = "warn";
+    status = "⚠️ Atenção";
+    const above = pctVsAvg < -20
+      ? ` O pessoal da ${turno || ctx.shift} está produzindo ${Math.abs(Math.round(pctVsAvg))}% acima de você no mesmo período.`
+      : " Está bem abaixo da meta esperada.";
+    message = pick([
+      `Você está em ${pct}% da meta.${above} Precisamos conversar?`,
+      `${pct}% é um número que merece atenção.${above}`,
+      `Em ${pct}%. Algo tá segurando — vale entender o quê.${above}`,
+    ]);
+    tip = pick([
+      "Se está com alguma dificuldade (processo, equipamento, sistema), avise a liderança pra ajustar.",
+      "Não fica calado se tem algo travando. A liderança tá aí pra resolver gargalo.",
+      "Vale uma conversa com o líder pra ver o que pode ser ajustado no fluxo.",
+    ]);
+  }
+  // === MUITO BAIXO (<50%) ===
+  else {
+    cls = "warn";
+    status = "🚨 Urgente";
+    message = pick([
+      `Apenas ${pct}% da meta. Isso é bem abaixo do esperado e do que o restante da equipe está fazendo no mesmo turno. Precisamos entender o que aconteceu.`,
+      `${pct}% é um sinal de que algo precisa ser revisto urgentemente — fluxo, sistema, processo ou estado físico.`,
+      `Em ${pct}%. Esse número precisa de atenção rápida — bora alinhar com a liderança.`,
+    ]);
+    tip = pick([
+      "Procure a liderança hoje mesmo. Talvez tenha algo no processo, no sistema ou no estado físico que precisa de ajuste.",
+      "Conversa com a liderança hoje. Quanto antes destravar, antes os números voltam.",
+      "Não deixa pra depois. Fala com o líder e bota tudo aberto na mesa.",
+    ]);
+  }
+
+  return { status, message, tip, cls };
+}
+
+function openPostit(idx) {
+  const ctx = window._currentRanking;
+  if (!ctx || !ctx.rows[idx]) return;
+  const r = ctx.rows[idx];
+  const fb = generateFeedback(r, ctx);
+
+  const overlay = document.getElementById("postit-overlay");
+  const paper = document.getElementById("postit-paper");
+
+  // Reset animation: remove and re-add
+  paper.style.animation = "none";
+  paper.offsetHeight; // trigger reflow
+  paper.style.animation = "";
+
+  paper.className = "postit-paper " + (fb.cls || "neutral");
+  document.getElementById("postit-name").textContent = r.name;
+  document.getElementById("postit-status").textContent = fb.status;
+  document.getElementById("postit-message").textContent = fb.message;
+  document.getElementById("postit-tip").textContent = fb.tip;
+
+  overlay.classList.add("show");
+
+  // Marca botão ativo
+  document.querySelectorAll(".postit-trigger.has-postit-open")
+    .forEach(b => b.classList.remove("has-postit-open"));
+  const btn = document.querySelector(`.postit-trigger[data-postit-idx="${idx}"]`);
+  if (btn) btn.classList.add("has-postit-open");
+}
+
+function closePostit() {
+  document.getElementById("postit-overlay").classList.remove("show");
+  document.querySelectorAll(".postit-trigger.has-postit-open")
+    .forEach(b => b.classList.remove("has-postit-open"));
+}
+
+// Listeners (event delegation no document, captura cliques nos botões dinâmicos)
+document.addEventListener("click", (e) => {
+  const trigger = e.target.closest(".postit-trigger");
+  if (trigger) {
+    e.stopPropagation();
+    const idx = parseInt(trigger.dataset.postitIdx, 10);
+    if (!isNaN(idx)) openPostit(idx);
+    return;
+  }
+});
+
+document.getElementById("postit-close-btn").onclick = closePostit;
+document.getElementById("postit-overlay").addEventListener("click", (e) => {
+  if (e.target.id === "postit-overlay") closePostit();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.getElementById("postit-overlay").classList.contains("show")) {
+    closePostit();
+  }
+});
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
