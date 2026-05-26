@@ -2152,6 +2152,150 @@
     font-style: italic;
   }
 
+  /* === CARDS DE TÉCNICO === */
+  .coach-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .coach-cards.single {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .coach-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .coach-card.tarde { border-left: 3px solid var(--tarde); }
+  .coach-card.noite { border-left: 3px solid var(--noite-2); }
+  .coach-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at top right, rgba(255,176,32,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .coach-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,176,32,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .coach-avatar:hover { transform: scale(1.08); }
+  .coach-avatar span {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .coach-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .coach-shift-label {
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .coach-card.tarde .coach-shift-label { color: var(--tarde); }
+  .coach-card.noite .coach-shift-label { color: var(--noite-2); }
+  .coach-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .coach-team-stat {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 3px;
+    font-family: var(--font-sans);
+  }
+  .coach-team-stat strong { color: var(--text); }
+  .coach-badge {
+    background: rgba(255,176,32,0.15);
+    color: var(--amber);
+    border-radius: 100px;
+    padding: 2px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* No ranking normal (versão compacta) */
+  .coach-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, rgba(255,176,32,0.05), transparent);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .coach-strip.tarde { border-left: 3px solid var(--tarde); }
+  .coach-strip.noite { border-left: 3px solid var(--noite-2); }
+  .coach-strip .coach-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  .coach-strip-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .coach-strip-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: var(--font-display);
+  }
+  .coach-strip-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  
+  @media (max-width: 640px) {
+    .coach-cards { grid-template-columns: 1fr; }
+  }
+
   /* === PÓDIO === */
   .champ-podium {
     display: grid;
@@ -3587,6 +3731,12 @@ const META = {
 
 const D = window.DATA;
 
+// === TÉCNICOS DAS EQUIPES ===
+const COACHES = {
+  tarde: "CLAUDIO BARCELOS JR",
+  noite: "JEFFERSON VIRISSIMO DE LIMA",
+};
+
 // ============================================================
 // SISTEMA ANTI-BUG: captura erros globais e protege funções
 // ============================================================
@@ -3907,9 +4057,14 @@ function renderRanking(rows) {
   const meta = STATE.role === "conferente" ? META.conferente : META.separador;
   const c = document.getElementById("ranking");
   c.innerHTML = "";
+  
+  // Card de técnico do turno (tarde ou noite) — não aparece em suporte
+  if (STATE.shift === 'tarde' || STATE.shift === 'noite') {
+    c.innerHTML = renderCoachStrip(STATE.shift);
+  }
 
   if (!rows.length) {
-    c.innerHTML = '<div class="empty">Nenhum dado encontrado para esse filtro.</div>';
+    c.innerHTML += '<div class="empty">Nenhum dado encontrado para esse filtro.</div>';
     return;
   }
 
@@ -5676,6 +5831,8 @@ function renderCampeonato() {
       </div>
     </div>
     
+    ${renderCoachesChamp()}
+    
     ${renderPodium(div1)}
     
     <div class="champ-divisions">
@@ -5719,6 +5876,88 @@ function renderCampeonato() {
   document.getElementById('champ-vacation-btn').onclick = openVacationModal;
   document.getElementById('champ-history-btn').onclick = openHistoryModal;
   document.getElementById('champ-rules-btn').onclick = openRulesModal;
+}
+
+// === TÉCNICOS ===
+function coachAvatarHtml(name, extraClass = '') {
+  const photo = window.AVATARS && window.AVATARS[name];
+  if (photo) {
+    return `<div class="coach-avatar ${extraClass}" data-person-name="${name}" style="background-image:url('${photo}')"></div>`;
+  }
+  return `<div class="coach-avatar ${extraClass}" data-person-name="${name}" style="background:${colorFromName(name)}"><span>${initialOf(name)}</span></div>`;
+}
+
+// Calcula stats agregadas da equipe de um turno no período do campeonato
+function getTeamStats(shift) {
+  const list = CHAMP.role === 'conferente' ? D.conferente_daily : D.separador_daily;
+  const meta = CHAMP.role === 'conferente' ? 450 : 440;
+  
+  const entries = list.filter(e =>
+    e.record_shift === shift &&
+    e.day >= CHAMP.startDate &&
+    e.day <= CHAMP.endDate &&
+    e.name !== COACHES.tarde && e.name !== COACHES.noite && // exclui o próprio técnico
+    !isOnVacation(e.name, e.day)
+  );
+  
+  if (!entries.length) return { avgPct: 0, count: 0, people: 0 };
+  
+  const totalPct = entries.reduce((s, e) => s + (e.score / meta * 100), 0);
+  const people = new Set(entries.map(e => e.name)).size;
+  
+  return {
+    avgPct: Math.round(totalPct / entries.length),
+    count: entries.length,
+    people,
+  };
+}
+
+// Card de técnico pro campeonato (com média da equipe)
+function renderCoachCardChamp(shift) {
+  const name = COACHES[shift];
+  if (!name) return '';
+  const shiftLabel = shift === 'tarde' ? '🌅 Técnico Tarde' : '🌙 Técnico Noite';
+  const teamStats = getTeamStats(shift);
+  
+  const statHtml = teamStats.people > 0
+    ? `<div class="coach-team-stat">Equipe: <strong>${teamStats.avgPct}%</strong> · ${teamStats.people} pessoas</div>`
+    : `<div class="coach-team-stat">Sem dados no período</div>`;
+  
+  return `
+    <div class="coach-card ${shift}">
+      ${coachAvatarHtml(name)}
+      <div class="coach-info">
+        <div class="coach-shift-label">${shiftLabel} <span class="coach-badge">🥼 Técnico</span></div>
+        <div class="coach-name">${name}</div>
+        ${statHtml}
+      </div>
+    </div>
+  `;
+}
+
+function renderCoachesChamp() {
+  return `
+    <div class="coach-cards">
+      ${renderCoachCardChamp('tarde')}
+      ${renderCoachCardChamp('noite')}
+    </div>
+  `;
+}
+
+// Card de técnico pro ranking normal (versão strip menor)
+function renderCoachStrip(shift) {
+  const name = COACHES[shift];
+  if (!name) return '';
+  const shiftLabel = shift === 'tarde' ? '🌅 Comando Tarde' : '🌙 Comando Noite';
+  return `
+    <div class="coach-strip ${shift}">
+      ${coachAvatarHtml(name)}
+      <div class="coach-strip-text">
+        <div class="coach-strip-label">${shiftLabel} · <span class="coach-badge">🥼 Técnico</span></div>
+        <div class="coach-strip-name">${name}</div>
+      </div>
+    </div>
+  `;
 }
 
 // === PÓDIO ===
