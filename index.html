@@ -3131,8 +3131,8 @@
 <div class="pwd-modal" id="pwd-modal">
   <div class="pwd-box">
     <div class="pwd-icon">🔒</div>
-    <div class="pwd-title">Acesso restrito</div>
-    <div class="pwd-sub">Digite a senha para ver as horas trabalhadas</div>
+    <div class="pwd-title" id="pwd-title">Acesso restrito</div>
+    <div class="pwd-sub" id="pwd-sub">Digite a senha para continuar</div>
     <input type="password" class="pwd-input" id="pwd-input" placeholder="senha" autocomplete="off">
     <div class="pwd-error" id="pwd-error">Senha incorreta</div>
     <div class="pwd-actions">
@@ -5475,13 +5475,17 @@ document.querySelectorAll(".shift-tab").forEach(t => {
         STATE.shift = "horas";
         render();
       } else {
-        openPwdModal();
+        openPwdModal("horas");
       }
       return;
     }
     if (shift === "campeonato") {
-      STATE.shift = "campeonato";
-      render();
+      if (sessionStorage.getItem("champ-auth") === "ok") {
+        STATE.shift = "campeonato";
+        render();
+      } else {
+        openPwdModal("campeonato");
+      }
       return;
     }
     STATE.shift = shift;
