@@ -2194,111 +2194,247 @@
     font-style: italic;
   }
 
-  /* === Countdown do Campeonato === */
-  .champ-countdown {
-    background: linear-gradient(135deg, #1a1410 0%, #2a1a08 100%);
+  /* === COUNTDOWN FLUTUANTE PREMIUM === */
+  .float-countdown {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 990;
+    background: linear-gradient(135deg, rgba(15,12,8,0.96) 0%, rgba(30,20,8,0.96) 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255,176,32,0.35);
-    border-radius: 12px;
-    padding: 18px 24px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    position: relative;
+    border-radius: 18px;
+    padding: 0;
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,176,32,0.1),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    animation: fc-float-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    min-width: 320px;
     overflow: hidden;
   }
-  .champ-countdown::before {
+  @keyframes fc-float-in {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .float-countdown-inner {
+    padding: 18px 22px;
+    position: relative;
+    z-index: 2;
+  }
+  .float-countdown-glow {
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle, rgba(255,176,32,0.18) 0%, transparent 50%);
+    animation: fc-glow-rotate 8s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes fc-glow-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .float-countdown::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at right, rgba(255,176,32,0.12) 0%, transparent 60%);
-    pointer-events: none;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: linear-gradient(135deg, transparent, rgba(255,215,0,0.3), transparent);
+    border-radius: 20px;
+    z-index: -1;
+    animation: fc-border-shine 3s linear infinite;
+    background-size: 200% 100%;
   }
-  .champ-countdown-label {
-    position: relative;
-    z-index: 1;
+  @keyframes fc-border-shine {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
   }
-  .champ-countdown-title {
-    font-family: var(--font-display);
-    font-size: 11px;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-  }
-  .champ-countdown-date {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--amber);
-    line-height: 1.1;
-  }
-  .champ-countdown-values {
-    display: flex;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-  }
-  .champ-countdown-unit {
-    text-align: center;
-    min-width: 70px;
-    background: rgba(255,176,32,0.08);
-    border: 1px solid rgba(255,176,32,0.18);
-    border-radius: 10px;
-    padding: 10px 12px;
-  }
-  .champ-countdown-num {
-    font-family: var(--font-display);
-    font-size: 32px;
-    font-weight: 900;
-    color: #fff;
+  .float-countdown-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
     line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .champ-countdown-text {
-    font-size: 10px;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-top: 4px;
-  }
-  .champ-countdown.started {
-    background: linear-gradient(135deg, #1a3a1a 0%, #0a2a0a 100%);
-    border-color: rgba(76,175,80,0.4);
+    display: flex;
+    align-items: center;
     justify-content: center;
+    z-index: 3;
+    transition: all 0.15s;
+    padding: 0;
+  }
+  .float-countdown-close:hover {
+    background: rgba(255,255,255,0.16);
+    color: #fff;
+  }
+  .float-countdown-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .float-countdown-trophy {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 0 12px rgba(255,215,0,0.6));
+    animation: fc-trophy-tilt 3s ease-in-out infinite;
+  }
+  @keyframes fc-trophy-tilt {
+    0%, 100% { transform: rotate(-3deg) scale(1); }
+    50% { transform: rotate(3deg) scale(1.06); }
+  }
+  .float-countdown-title-block { line-height: 1.15; }
+  .float-countdown-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .float-countdown-subtitle {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 1px;
+  }
+  .float-countdown-grid {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .float-countdown-cell {
     text-align: center;
+    background: linear-gradient(180deg, rgba(255,176,32,0.14), rgba(255,176,32,0.04));
+    border: 1px solid rgba(255,176,32,0.22);
+    border-radius: 10px;
+    padding: 8px 6px;
+    min-width: 52px;
+    position: relative;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.06),
+      0 2px 8px rgba(0,0,0,0.2);
   }
-  .champ-countdown.started::before {
-    background: radial-gradient(ellipse at center, rgba(76,175,80,0.15) 0%, transparent 60%);
-    animation: started-pulse 2.5s ease-in-out infinite;
+  .float-countdown-num {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 900;
+    color: #ffd76b;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-shadow: 0 0 16px rgba(255,176,32,0.5);
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.15s;
   }
-  @keyframes started-pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+  .float-countdown-num.pulse {
+    animation: fc-tick 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
-  .champ-countdown-started-msg {
+  @keyframes fc-tick {
+    0%, 100% { transform: scale(1); color: #ffd76b; }
+    50% { transform: scale(1.08); color: #fff; text-shadow: 0 0 22px rgba(255,176,32,0.8); }
+  }
+  .float-countdown-lbl {
+    font-size: 9px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .float-countdown-sep {
     font-family: var(--font-display);
     font-size: 22px;
-    font-weight: 800;
-    color: var(--green);
+    color: rgba(255,176,32,0.5);
+    font-weight: 700;
+    margin-bottom: 18px;
+    animation: fc-sep-blink 1s ease-in-out infinite;
+  }
+  @keyframes fc-sep-blink {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  .float-countdown-target {
     text-align: center;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    animation: started-bounce 2s ease-in-out infinite;
+    font-family: var(--font-display);
+    font-size: 12px;
+    color: rgba(255,215,0,0.9);
+    font-weight: 700;
+    letter-spacing: 0.04em;
   }
-  @keyframes started-bounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.04); }
+
+  /* Estado "Começou" */
+  .float-countdown.started {
+    background: linear-gradient(135deg, rgba(8,28,12,0.96) 0%, rgba(8,40,18,0.96) 100%);
+    border-color: rgba(76,175,80,0.4);
   }
+  .float-countdown.started .float-countdown-glow {
+    background: radial-gradient(circle, rgba(76,175,80,0.25) 0%, transparent 50%);
+  }
+  .float-countdown.started::before {
+    background: linear-gradient(135deg, transparent, rgba(76,175,80,0.4), transparent);
+    background-size: 200% 100%;
+  }
+  .started-inner {
+    text-align: center;
+    padding: 22px 24px;
+  }
+  .float-countdown-confetti {
+    font-size: 40px;
+    line-height: 1;
+    margin-bottom: 8px;
+    animation: fc-confetti-bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes fc-confetti-bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-6px) rotate(-10deg); }
+    75% { transform: translateY(-6px) rotate(10deg); }
+  }
+  .float-countdown-started {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 800;
+    color: #5fe775;
+    letter-spacing: -0.01em;
+    text-shadow: 0 0 18px rgba(76,175,80,0.5);
+    margin-bottom: 6px;
+  }
+  .float-countdown-started-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Mobile */
   @media (max-width: 640px) {
-    .champ-countdown { padding: 14px 16px; }
-    .champ-countdown-date { font-size: 16px; }
-    .champ-countdown-num { font-size: 24px; }
-    .champ-countdown-unit { min-width: 56px; padding: 8px 8px; }
-    .champ-countdown-started-msg { font-size: 18px; }
+    .float-countdown {
+      bottom: 16px;
+      right: 16px;
+      left: 16px;
+      min-width: auto;
+    }
+    .float-countdown-inner { padding: 14px 16px; }
+    .float-countdown-num { font-size: 22px; }
+    .float-countdown-cell { min-width: 44px; padding: 6px 4px; }
+    .float-countdown-trophy { font-size: 24px; }
+    .float-countdown-title { font-size: 15px; }
+    .float-countdown-sep { font-size: 18px; }
+    .float-countdown-started { font-size: 17px; }
+    .float-countdown-confetti { font-size: 32px; }
+  }
+
+  /* Modo TV: countdown maior */
+  body.tv-mode .float-countdown {
+    transform: scale(1.15);
+    transform-origin: bottom right;
   }
 
   /* === CARDS DE TÉCNICO === */
@@ -4678,9 +4814,6 @@ function render() {
     document.getElementById("footer-meta").textContent = "Campeonato · 4 divisões";
     return;
   }
-  
-  // Se está saindo do campeonato, para o countdown
-  if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
 
   // Modo normal
   document.getElementById("normal-view").style.display = "";
@@ -6168,78 +6301,132 @@ function showChampToasts(divChanges) {
   });
 }
 
-// Data oficial de início do campeonato
+// === COUNTDOWN FLUTUANTE GLOBAL DO CAMPEONATO ===
+// Aparece em todas as abas (Tarde, Noite, Suporte, Campeonato), no canto inferior direito
 const CHAMP_START_DATE = new Date('2026-06-01T00:00:00');
-// Janela em dias pra mostrar "Campeonato começou!" depois do início
 const CHAMP_STARTED_DAYS = 7;
-let _countdownInterval = null;
+let _floatCountdownInterval = null;
+let _floatCountdownDismissed = false;
 
-function renderCountdownHtml() {
+function ensureFloatCountdown() {
+  // Verifica se passou da janela "começou" — nesse caso, remove
   const now = new Date();
   const diffMs = CHAMP_START_DATE.getTime() - now.getTime();
+  const daysSinceStart = Math.floor(-diffMs / 86400000);
   
-  if (diffMs > 0) {
-    // Ainda vai começar
-    const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const days = Math.floor(totalHours / 24);
-    const hours = totalHours % 24;
-    return `
-      <div class="champ-countdown" id="champ-countdown">
-        <div class="champ-countdown-label">
-          <div class="champ-countdown-title">⏳ Campeonato começa em</div>
-          <div class="champ-countdown-date">1º de Junho de 2026</div>
-        </div>
-        <div class="champ-countdown-values">
-          <div class="champ-countdown-unit">
-            <div class="champ-countdown-num" id="cd-days">${days}</div>
-            <div class="champ-countdown-text">${days === 1 ? 'dia' : 'dias'}</div>
-          </div>
-          <div class="champ-countdown-unit">
-            <div class="champ-countdown-num" id="cd-hours">${hours}</div>
-            <div class="champ-countdown-text">${hours === 1 ? 'hora' : 'horas'}</div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  // Já começou — mostra mensagem por X dias
-  const daysSinceStart = Math.floor(-diffMs / (1000 * 60 * 60 * 24));
-  if (daysSinceStart < CHAMP_STARTED_DAYS) {
-    return `
-      <div class="champ-countdown started" id="champ-countdown">
-        <div class="champ-countdown-started-msg">🎉 Campeonato começou!</div>
-      </div>
-    `;
-  }
-  
-  // Passou da janela — não mostra nada
-  return '';
-}
-
-function updateCountdown() {
-  const el = document.getElementById('champ-countdown');
-  if (!el) {
-    // Saiu do campeonato — limpa interval
-    if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
+  if (diffMs <= 0 && daysSinceStart >= CHAMP_STARTED_DAYS) {
+    const el = document.getElementById('float-countdown');
+    if (el) el.remove();
+    if (_floatCountdownInterval) clearInterval(_floatCountdownInterval);
     return;
   }
   
-  const now = new Date();
-  const diffMs = CHAMP_START_DATE.getTime() - now.getTime();
+  if (_floatCountdownDismissed) return;
+  
+  // Cria se não existe
+  let el = document.getElementById('float-countdown');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'float-countdown';
+    el.className = 'float-countdown';
+    document.body.appendChild(el);
+  }
   
   if (diffMs > 0) {
-    const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const days = Math.floor(totalHours / 24);
-    const hours = totalHours % 24;
-    const dEl = document.getElementById('cd-days');
-    const hEl = document.getElementById('cd-hours');
-    if (dEl) dEl.textContent = days;
-    if (hEl) hEl.textContent = hours;
+    // Ainda vai começar — mostra contagem completa
+    const days = Math.floor(diffMs / 86400000);
+    const hours = Math.floor((diffMs % 86400000) / 3600000);
+    const mins = Math.floor((diffMs % 3600000) / 60000);
+    const secs = Math.floor((diffMs % 60000) / 1000);
+    
+    // Se só criou o elemento agora, popula HTML inteiro
+    if (!el.dataset.initialized) {
+      el.innerHTML = `
+        <button class="float-countdown-close" title="Minimizar (volta na próxima visita)">−</button>
+        <div class="float-countdown-glow"></div>
+        <div class="float-countdown-inner">
+          <div class="float-countdown-header">
+            <span class="float-countdown-trophy">🏆</span>
+            <div class="float-countdown-title-block">
+              <div class="float-countdown-title">Campeonato</div>
+              <div class="float-countdown-subtitle">começa em</div>
+            </div>
+          </div>
+          <div class="float-countdown-grid">
+            <div class="float-countdown-cell">
+              <div class="float-countdown-num" id="fc-days">${String(days).padStart(2,'0')}</div>
+              <div class="float-countdown-lbl">dias</div>
+            </div>
+            <div class="float-countdown-sep">:</div>
+            <div class="float-countdown-cell">
+              <div class="float-countdown-num" id="fc-hours">${String(hours).padStart(2,'0')}</div>
+              <div class="float-countdown-lbl">horas</div>
+            </div>
+            <div class="float-countdown-sep">:</div>
+            <div class="float-countdown-cell">
+              <div class="float-countdown-num" id="fc-mins">${String(mins).padStart(2,'0')}</div>
+              <div class="float-countdown-lbl">min</div>
+            </div>
+            <div class="float-countdown-sep">:</div>
+            <div class="float-countdown-cell">
+              <div class="float-countdown-num pulse" id="fc-secs">${String(secs).padStart(2,'0')}</div>
+              <div class="float-countdown-lbl">seg</div>
+            </div>
+          </div>
+          <div class="float-countdown-target">1º de Junho · 2026</div>
+        </div>
+      `;
+      el.dataset.initialized = '1';
+      el.classList.remove('started');
+      
+      // Botão minimizar
+      el.querySelector('.float-countdown-close').onclick = (ev) => {
+        ev.stopPropagation();
+        _floatCountdownDismissed = true;
+        el.remove();
+        if (_floatCountdownInterval) clearInterval(_floatCountdownInterval);
+        // Mostra dica de como trazer de volta
+        BugGuard.toast('Contador minimizado. Recarregue a página pra ver de novo.', 'warn');
+      };
+    } else {
+      // Atualiza só os números (mais eficiente, sem repintar tudo)
+      const dEl = document.getElementById('fc-days');
+      const hEl = document.getElementById('fc-hours');
+      const mEl = document.getElementById('fc-mins');
+      const sEl = document.getElementById('fc-secs');
+      if (dEl) dEl.textContent = String(days).padStart(2,'0');
+      if (hEl) hEl.textContent = String(hours).padStart(2,'0');
+      if (mEl) mEl.textContent = String(mins).padStart(2,'0');
+      if (sEl) sEl.textContent = String(secs).padStart(2,'0');
+    }
   } else {
-    // Mudou de "antes" pra "começou" — re-renderiza o campeonato pra atualizar a UI
-    if (STATE.shift === 'campeonato') renderCampeonato();
+    // Já começou — mostra mensagem de comemoração
+    if (!el.classList.contains('started')) {
+      el.innerHTML = `
+        <button class="float-countdown-close" title="Minimizar">−</button>
+        <div class="float-countdown-glow"></div>
+        <div class="float-countdown-inner started-inner">
+          <div class="float-countdown-confetti">🎉</div>
+          <div class="float-countdown-started">Campeonato começou!</div>
+          <div class="float-countdown-started-sub">1º de Junho · 2026</div>
+        </div>
+      `;
+      el.classList.add('started');
+      el.querySelector('.float-countdown-close').onclick = (ev) => {
+        ev.stopPropagation();
+        _floatCountdownDismissed = true;
+        el.remove();
+        if (_floatCountdownInterval) clearInterval(_floatCountdownInterval);
+      };
+    }
   }
+}
+
+function startFloatCountdown() {
+  ensureFloatCountdown();
+  if (_floatCountdownInterval) clearInterval(_floatCountdownInterval);
+  // Atualiza a cada segundo
+  _floatCountdownInterval = setInterval(ensureFloatCountdown, 1000);
 }
 
 function renderCampeonato() {
@@ -6276,7 +6463,6 @@ function renderCampeonato() {
   const tvMode = document.body.classList.contains('tv-mode');
   
   view.innerHTML = `
-    ${renderCountdownHtml()}
     <div class="champ-header">
       <div class="champ-header-top">
         <div class="champ-title">🏆 Campeonato</div>
@@ -6357,12 +6543,6 @@ function renderCampeonato() {
   document.getElementById('champ-rules-btn').onclick = openRulesModal;
   document.getElementById('champ-exit-btn').onclick = exitChampeonato;
   document.getElementById('champ-season-btn').onclick = openSeasonModal;
-  
-  // Inicia ou reinicia interval do countdown (uma vez por minuto basta pra dias/horas)
-  if (_countdownInterval) clearInterval(_countdownInterval);
-  if (document.getElementById('champ-countdown')) {
-    _countdownInterval = setInterval(updateCountdown, 60000);
-  }
 }
 
 // Sai do campeonato: limpa auth, volta pra Tarde
@@ -7370,6 +7550,7 @@ STATE.day = D.days[D.days.length - 1];
 try {
   ensureValidDay();
   render();
+  startFloatCountdown(); // countdown flutuante global do campeonato
 } catch (err) {
   console.error('[init]', err);
   BugGuard.toast('Erro ao carregar o painel. Recarregue a página.');
