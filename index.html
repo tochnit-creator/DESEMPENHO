@@ -2012,6 +2012,7 @@
   .champ-division.div-1 { border-left: 4px solid #ffd700; }
   .champ-division.div-2 { border-left: 4px solid #c0c0c0; }
   .champ-division.div-3 { border-left: 4px solid #cd7f32; }
+  .champ-division.div-4 { border-left: 4px solid var(--red); }
   .champ-div-header {
     padding: 12px 18px;
     background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
@@ -2034,6 +2035,7 @@
   .champ-division.div-1 .champ-div-title { color: #ffd700; }
   .champ-division.div-2 .champ-div-title { color: #c0c0c0; }
   .champ-division.div-3 .champc-div-title, .champ-division.div-3 .champ-div-title { color: #cd7f32; }
+  .champ-division.div-4 .champ-div-title { color: var(--red); }
   .champ-div-count {
     font-family: var(--font-sans);
     font-size: 11px;
@@ -2137,6 +2139,11 @@
     flex-direction: column;
     align-items: flex-end;
   }
+  /* Indicador visual de presença/faltas */
+  .champ-metric-wrap.presence-full .champ-metric { color: var(--green); }
+  .champ-metric-wrap.presence-mid .champ-metric { color: var(--amber); }
+  .champ-metric-wrap.presence-low .champ-metric { color: var(--red); }
+  .champ-metric-wrap[title] { cursor: help; }
   .champ-empty {
     text-align: center;
     color: var(--text-faint);
@@ -4995,27 +5002,38 @@ function getChampCandidates(role) {
   return Array.from(names);
 }
 
-// Decide a divisão de uma pessoa
-// Critério INICIAL (você ajusta depois): proporcional - terço top/meio/baixo
+// Decide a divisão de uma pessoa baseada na % média atingida
+// 1ª: ≥100% | 2ª: 80-99% | 3ª: 70-79% | 4ª: <70%
 function assignDivisions(statsList) {
-  // Ordena por avgDailyScore decrescente — só quem tem dados
-  const withData = statsList.filter(s => s.hasData);
-  const withoutData = statsList.filter(s => !s.hasData);
+  const div1 = []; // ≥100%
+  const div2 = []; // 80-99%
+  const div3 = []; // 70-79%
+  const div4 = []; // <70%
   
-  withData.sort((a, b) => b.avgDailyScore - a.avgDailyScore);
+  for (const s of statsList) {
+    if (!s.hasData) {
+      // Sem dados → 4ª divisão
+      div4.push(s);
+      continue;
+    }
+    const pct = s.avgPct;
+    if (pct >= 100) div1.push(s);
+    else if (pct >= 80) div2.push(s);
+    else if (pct >= 70) div3.push(s);
+    else div4.push(s);
+  }
   
-  const n = withData.length;
-  if (n === 0) return { div1: [], div2: [], div3: withoutData };
+  // Ordena cada divisão por % média decrescente (desempate: total de pontos)
+  const sortFn = (a, b) => {
+    if (b.avgPct !== a.avgPct) return b.avgPct - a.avgPct;
+    return b.totalScore - a.totalScore;
+  };
+  div1.sort(sortFn);
+  div2.sort(sortFn);
+  div3.sort(sortFn);
+  div4.sort(sortFn);
   
-  // Terço pra cada
-  const cutD1 = Math.max(1, Math.ceil(n / 3));
-  const cutD2 = Math.max(cutD1 + 1, Math.ceil((2 * n) / 3));
-  
-  const div1 = withData.slice(0, cutD1);
-  const div2 = withData.slice(cutD1, cutD2);
-  const div3 = withData.slice(cutD2).concat(withoutData);
-  
-  return { div1, div2, div3 };
+  return { div1, div2, div3, div4 };
 }
 
 function renderCampeonato() {
@@ -5025,7 +5043,7 @@ function renderCampeonato() {
   // Calcula stats de todos
   const candidates = getChampCandidates(CHAMP.role);
   const allStats = candidates.map(name => computeChampStats(name, CHAMP.role));
-  const { div1, div2, div3 } = assignDivisions(allStats);
+  const { div1, div2, div3, div4 } = assignDivisions(allStats);
   
   const meta = CHAMP.role === 'conferente' ? 450 : 440;
   const roleLabel = CHAMP.role === 'conferente' ? 'Conferentes' : 'Separadores';
@@ -5067,9 +5085,10 @@ function renderCampeonato() {
     </div>
     
     <div class="champ-divisions">
-      ${renderDivision('div-1', '🥇 1ª Divisão · Elite', 'top do ranking', div1, meta)}
-      ${renderDivision('div-2', '🥈 2ª Divisão · Acesso', 'meio do ranking', div2, meta)}
-      ${renderDivision('div-3', '🥉 3ª Divisão · Base', 'restante do ranking', div3, meta)}
+      ${renderDivision('div-1', '🥇 1ª Divisão · Elite', 'média ≥ 100% da meta', div1, meta)}
+      ${renderDivision('div-2', '🥈 2ª Divisão · Acesso', 'média entre 80% e 99%', div2, meta)}
+      ${renderDivision('div-3', '🥉 3ª Divisão · Base', 'média entre 70% e 79%', div3, meta)}
+      ${renderDivision('div-4', '⚠️ 4ª Divisão · Reforço', 'média abaixo de 70%', div4, meta)}
     </div>
   `;
   
@@ -5139,6 +5158,24 @@ function renderChampRow(stats, pos, meta) {
   const avgDaily = Math.round(stats.avgDailyScore);
   const avgPct = Math.round(stats.avgPct);
   
+  // Calcula presença: dias trabalhados / dias disponíveis no período (descontando férias)
+  let totalAvailableDays = 0;
+  if (CHAMP.startDate && CHAMP.endDate) {
+    const d1 = new Date(CHAMP.startDate + 'T12:00:00');
+    const d2 = new Date(CHAMP.endDate + 'T12:00:00');
+    totalAvailableDays = Math.floor((d2 - d1) / 86400000) + 1 - stats.vacationDays;
+  }
+  const presencePct = totalAvailableDays > 0 ? (stats.daysWorked / totalAvailableDays) * 100 : 0;
+  
+  let presenceClass = '';
+  if (presencePct >= 100) presenceClass = 'full';
+  else if (presencePct >= 70) presenceClass = 'mid';
+  else presenceClass = 'low';
+  
+  const daysTooltip = totalAvailableDays > 0
+    ? `${stats.daysWorked} de ${totalAvailableDays} dias possíveis (${Math.round(presencePct)}%)`
+    : `${stats.daysWorked} dias`;
+  
   return `
     <div class="champ-row ${stats.onVacation ? 'on-vacation' : ''}">
       <div class="champ-pos ${posClass}">${pos}º</div>
@@ -5152,7 +5189,7 @@ function renderChampRow(stats, pos, meta) {
         <div class="champ-metric">${avgPct}%</div>
         <div class="champ-metric-label">% meta</div>
       </div>
-      <div class="champ-metric-wrap">
+      <div class="champ-metric-wrap presence-${presenceClass}" title="${daysTooltip}">
         <div class="champ-metric">${stats.daysWorked}</div>
         <div class="champ-metric-label">dias</div>
       </div>
