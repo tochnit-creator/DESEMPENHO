@@ -2152,6 +2152,327 @@
     font-style: italic;
   }
 
+  /* === PÓDIO === */
+  .champ-podium {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 24px 16px 0;
+    background: linear-gradient(180deg, rgba(255,176,32,0.06), transparent);
+    border-radius: 10px;
+    border: 1px solid rgba(255,176,32,0.18);
+    align-items: end;
+  }
+  .podium-spot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+  .podium-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .podium-avatar:hover { transform: scale(1.08); }
+  .podium-avatar span {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .podium-avatar.place-1 {
+    width: 92px; height: 92px;
+    border-color: #ffd700;
+    box-shadow: 0 0 40px rgba(255,215,0,0.4);
+  }
+  .podium-avatar.place-2 {
+    border-color: #c0c0c0;
+    box-shadow: 0 0 20px rgba(192,192,192,0.3);
+  }
+  .podium-avatar.place-3 {
+    border-color: #cd7f32;
+    box-shadow: 0 0 20px rgba(205,127,50,0.3);
+  }
+  .podium-trophy {
+    font-size: 22px;
+    line-height: 1;
+    margin: 4px 0 4px;
+  }
+  .podium-spot.place-1 .podium-trophy { font-size: 32px; animation: trophy-bounce 2s ease-in-out infinite; }
+  @keyframes trophy-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .podium-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .podium-spot.place-1 .podium-name { font-size: 15px; color: #ffd700; }
+  .podium-stats {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .podium-pct {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .podium-spot.place-1 .podium-pct { font-size: 20px; color: #ffd700; }
+  .podium-meta {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+  .podium-platform {
+    background: var(--bg-3);
+    border-radius: 6px 6px 0 0;
+    padding: 8px 0;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .podium-platform.place-1 {
+    height: 70px;
+    background: linear-gradient(180deg, #ffd700 0%, #f9a825 100%);
+    color: #2a2010;
+    line-height: 54px;
+    font-size: 22px;
+  }
+  .podium-platform.place-2 {
+    height: 50px;
+    background: linear-gradient(180deg, #e0e0e0 0%, #9e9e9e 100%);
+    color: #1a1a1a;
+    line-height: 34px;
+  }
+  .podium-platform.place-3 {
+    height: 40px;
+    background: linear-gradient(180deg, #d6995e 0%, #a06520 100%);
+    color: #2a1a10;
+    line-height: 24px;
+  }
+
+  /* === Movimentos (subiu/desceu) === */
+  .champ-move {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  .champ-move.up { color: var(--green); }
+  .champ-move.down { color: var(--red); }
+  .champ-move.new { color: var(--amber); }
+  .champ-move.same { color: var(--text-faint); }
+
+  /* === Diferença % vs período anterior === */
+  .champ-diff {
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 2px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    line-height: 1.2;
+  }
+  .champ-diff.up { color: var(--green); background: rgba(76,175,80,0.12); }
+  .champ-diff.down { color: var(--red); background: rgba(255,87,87,0.12); }
+
+  /* === Modal de regras === */
+  .rules-section {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rules-section:last-of-type { border-bottom: none; }
+  .rules-section-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .rules-section p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin: 0 0 6px;
+  }
+  .rules-section p strong { color: var(--text); }
+  .rules-formula {
+    background: var(--bg-3);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: var(--font-display);
+    color: var(--text) !important;
+    margin: 8px 0;
+    text-align: center;
+    font-size: 13px;
+  }
+  .rules-list, .rules-list-ordered {
+    margin: 6px 0 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rules-list-ordered {
+    list-style: decimal inside;
+    padding-left: 4px;
+  }
+  .rules-list li, .rules-list-ordered li {
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 4px 0;
+    line-height: 1.4;
+  }
+  .rules-list li strong, .rules-list-ordered li strong { color: var(--text); }
+  .rules-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 6px;
+    background: var(--bg-3);
+  }
+  .rules-badge.gold { background: rgba(255,215,0,0.18); color: #ffd700; }
+  .rules-badge.silver { background: rgba(192,192,192,0.18); color: #c0c0c0; }
+  .rules-badge.bronze { background: rgba(205,127,50,0.18); color: #cd7f32; }
+  .rules-badge.red { background: rgba(244,67,54,0.18); color: var(--red); }
+
+  /* === Modal de histórico === */
+  .history-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .history-item:first-child {
+    background: linear-gradient(135deg, rgba(255,215,0,0.08), var(--bg));
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-trophy { font-size: 28px; }
+  .history-period {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    font-family: var(--font-display);
+  }
+  .history-champion {
+    font-size: 14px;
+    color: var(--text);
+  }
+  .history-champion strong { color: var(--amber); font-family: var(--font-display); font-size: 15px; }
+  .history-pct {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-left: 8px;
+  }
+  .history-podium {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+  .history-remove {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .history-remove:hover { color: var(--red); border-color: var(--red); }
+  .history-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* === Modo TV pro campeonato === */
+  body.tv-mode .campeonato-view .champ-header {
+    padding: 16px 22px;
+  }
+  body.tv-mode .campeonato-view .champ-podium {
+    padding: 40px 30px 0;
+    margin-bottom: 24px;
+  }
+  body.tv-mode .campeonato-view .podium-avatar {
+    width: 110px;
+    height: 110px;
+  }
+  body.tv-mode .campeonato-view .podium-avatar.place-1 {
+    width: 140px;
+    height: 140px;
+  }
+  body.tv-mode .campeonato-view .podium-name {
+    font-size: 18px;
+  }
+  body.tv-mode .campeonato-view .podium-spot.place-1 .podium-name {
+    font-size: 22px;
+  }
+  body.tv-mode .campeonato-view .podium-pct {
+    font-size: 22px;
+  }
+  body.tv-mode .campeonato-view .podium-spot.place-1 .podium-pct {
+    font-size: 28px;
+  }
+  body.tv-mode .campeonato-view .podium-platform.place-1 {
+    height: 100px;
+    font-size: 32px;
+    line-height: 84px;
+  }
+  body.tv-mode .campeonato-view .podium-platform.place-2 {
+    height: 70px;
+    font-size: 24px;
+    line-height: 54px;
+  }
+  body.tv-mode .campeonato-view .podium-platform.place-3 {
+    height: 55px;
+    font-size: 20px;
+    line-height: 39px;
+  }
+  body.tv-mode .campeonato-view .champ-row {
+    padding: 12px 22px;
+  }
+  body.tv-mode .campeonato-view .champ-name { font-size: 17px; }
+  body.tv-mode .campeonato-view .champ-metric { font-size: 17px; }
+  body.tv-mode .campeonato-view .champ-avatar { width: 40px; height: 40px; }
+
   /* Modal de férias */
   .vacation-overlay {
     position: fixed;
@@ -3043,6 +3364,69 @@
     <div id="footer-meta"></div>
   </footer>
 
+</div>
+
+<!-- MODAL DE HISTÓRICO -->
+<div class="vacation-overlay" id="history-overlay">
+  <div class="vacation-card">
+    <button class="profile-close" id="history-close-btn" title="Fechar">✕</button>
+    <div class="vacation-title">📚 Hall da Fama</div>
+    <div class="vacation-subtitle">Campeões das temporadas passadas — <span id="history-role-label"></span>. Sempre que você muda o período, o vencedor da temporada anterior fica salvo aqui.</div>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- MODAL DE REGRAS DO CAMPEONATO -->
+<div class="vacation-overlay" id="rules-overlay">
+  <div class="vacation-card">
+    <button class="profile-close" id="rules-close-btn" title="Fechar">✕</button>
+    <div class="vacation-title">❓ Regras do Campeonato</div>
+    
+    <div class="rules-section">
+      <div class="rules-section-title">📊 Métrica de ranking</div>
+      <p>A métrica principal é a <strong>% média da meta atingida</strong> no período.</p>
+      <p class="rules-formula">Para cada dia: pontos do dia ÷ meta × 100<br>Depois: soma todos os %s ÷ dias trabalhados</p>
+      <p>Pontos do dia = <strong>pedidos + itens</strong>. Meta: <strong>450 (conferente)</strong> ou <strong>440 (separador)</strong>.</p>
+      <p>Quem teve folga ou faltou não é penalizado: dias zerados não entram no cálculo, só os trabalhados. Quem trabalhou 1 dia com 110% tem a mesma média de quem trabalhou 5 dias com 110%.</p>
+    </div>
+    
+    <div class="rules-section">
+      <div class="rules-section-title">🏆 Divisões</div>
+      <ul class="rules-list">
+        <li><span class="rules-badge gold">🥇 1ª</span> média ≥ <strong>100%</strong> da meta — Elite</li>
+        <li><span class="rules-badge silver">🥈 2ª</span> média entre <strong>80% e 99%</strong> — Acesso</li>
+        <li><span class="rules-badge bronze">🥉 3ª</span> média entre <strong>70% e 79%</strong> — Base</li>
+        <li><span class="rules-badge red">⚠️ 4ª</span> média <strong>abaixo de 70%</strong> — Reforço</li>
+      </ul>
+    </div>
+    
+    <div class="rules-section">
+      <div class="rules-section-title">⚖️ Critério de desempate</div>
+      <p>Se 2+ pessoas estão na mesma divisão com % média igual, o desempate segue esta ordem:</p>
+      <ol class="rules-list-ordered">
+        <li>Maior <strong>% média</strong> atingida</li>
+        <li>Maior <strong>total de pontos</strong> acumulados (pedidos + itens)</li>
+        <li>Mais <strong>dias com 100%+</strong> da meta (consistência)</li>
+        <li>Mais <strong>dias trabalhados</strong></li>
+        <li>Ordem <strong>alfabética</strong> (último critério)</li>
+      </ol>
+    </div>
+    
+    <div class="rules-section">
+      <div class="rules-section-title">🏖️ Férias</div>
+      <p>Pessoas marcadas como "em férias" aparecem com badge azul e <strong>não são penalizadas</strong>: dias de férias são descontados do total possível.</p>
+    </div>
+    
+    <div class="rules-section">
+      <div class="rules-section-title">🚀 Movimentos e notificações</div>
+      <p>Setinhas ao lado da posição mostram quem <strong>subiu (▲)</strong> ou <strong>desceu (▼)</strong> de divisão comparado à última visita. Toasts aparecem no canto inferior quando alguém muda de divisão.</p>
+    </div>
+    
+    <div class="rules-section">
+      <div class="rules-section-title">📊 Comparativo com período anterior</div>
+      <p>O <strong>+/-X%</strong> abaixo da % atual mostra a variação da média da pessoa em relação ao mesmo intervalo de dias <strong>anterior ao período selecionado</strong>.</p>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL DE FÉRIAS -->
@@ -4849,7 +5233,9 @@ document.getElementById('help-overlay').addEventListener('click', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (document.getElementById('vacation-overlay').classList.contains('show')) closeVacationModal();
+    if (document.getElementById('rules-overlay').classList.contains('show')) closeRulesModal();
+    else if (document.getElementById('history-overlay').classList.contains('show')) closeHistoryModal();
+    else if (document.getElementById('vacation-overlay').classList.contains('show')) closeVacationModal();
     else if (document.getElementById('help-overlay').classList.contains('show')) closeBadgesHelp();
     else if (document.getElementById('vs-overlay').classList.contains('show')) closeVS();
     else if (document.getElementById('profile-overlay').classList.contains('show')) closeProfile();
@@ -4973,11 +5359,13 @@ function computeChampStats(name, role) {
   const totalItens = entries.reduce((s, e) => s + e.itens, 0);
   const totalScore = entries.reduce((s, e) => s + e.score, 0);
   const totalPct = entries.reduce((s, e) => s + (e.score / meta * 100), 0);
+  const daysAboveMeta = entries.filter(e => e.score >= meta).length;
   
   return {
     name,
     role,
     daysWorked,
+    daysAboveMeta,
     totalPedidos,
     totalItens,
     totalScore,
@@ -5004,6 +5392,13 @@ function getChampCandidates(role) {
 
 // Decide a divisão de uma pessoa baseada na % média atingida
 // 1ª: ≥100% | 2ª: 80-99% | 3ª: 70-79% | 4ª: <70%
+//
+// CRITÉRIO DE DESEMPATE (em ordem):
+// 1. Maior % média atingida
+// 2. Maior total de pontos acumulados (pedidos + itens)
+// 3. Maior número de dias com 100%+ da meta (consistência)
+// 4. Maior número de dias trabalhados
+// 5. Ordem alfabética (último critério)
 function assignDivisions(statsList) {
   const div1 = []; // ≥100%
   const div2 = []; // 80-99%
@@ -5012,7 +5407,6 @@ function assignDivisions(statsList) {
   
   for (const s of statsList) {
     if (!s.hasData) {
-      // Sem dados → 4ª divisão
       div4.push(s);
       continue;
     }
@@ -5023,10 +5417,13 @@ function assignDivisions(statsList) {
     else div4.push(s);
   }
   
-  // Ordena cada divisão por % média decrescente (desempate: total de pontos)
+  // Desempate (em cascata)
   const sortFn = (a, b) => {
-    if (b.avgPct !== a.avgPct) return b.avgPct - a.avgPct;
-    return b.totalScore - a.totalScore;
+    if (Math.round(b.avgPct) !== Math.round(a.avgPct)) return b.avgPct - a.avgPct;
+    if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+    if (b.daysAboveMeta !== a.daysAboveMeta) return b.daysAboveMeta - a.daysAboveMeta;
+    if (b.daysWorked !== a.daysWorked) return b.daysWorked - a.daysWorked;
+    return a.name.localeCompare(b.name);
   };
   div1.sort(sortFn);
   div2.sort(sortFn);
@@ -5036,19 +5433,210 @@ function assignDivisions(statsList) {
   return { div1, div2, div3, div4 };
 }
 
+// === SNAPSHOTS / HISTÓRICO / MOVIMENTOS ===
+// Salva o estado atual de cada divisão pra comparar na próxima abertura
+
+function snapshotKey() {
+  return `champ-snapshot-${CHAMP.role}`;
+}
+
+function loadSnapshot() {
+  try {
+    const raw = localStorage.getItem(snapshotKey());
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function saveSnapshot(divs) {
+  try {
+    const snapshot = {
+      period: { start: CHAMP.startDate, end: CHAMP.endDate },
+      timestamp: new Date().toISOString(),
+      role: CHAMP.role,
+      divisions: {
+        1: divs.div1.map(s => ({ name: s.name, pos: 1, avgPct: s.avgPct })),
+        2: divs.div2.map(s => ({ name: s.name, pos: 2, avgPct: s.avgPct })),
+        3: divs.div3.map(s => ({ name: s.name, pos: 3, avgPct: s.avgPct })),
+        4: divs.div4.map(s => ({ name: s.name, pos: 4, avgPct: s.avgPct })),
+      },
+    };
+    localStorage.setItem(snapshotKey(), JSON.stringify(snapshot));
+  } catch(e) { console.warn('[snapshot]', e); }
+}
+
+// Detecta movimentos comparando snapshot anterior com atual
+function detectMovements(divs) {
+  const prev = loadSnapshot();
+  if (!prev || prev.role !== CHAMP.role) return { movements: {}, divChanges: [] };
+  
+  // Mapa nome -> divisão anterior
+  const prevDiv = {};
+  for (let d = 1; d <= 4; d++) {
+    for (const p of (prev.divisions[d] || [])) {
+      prevDiv[p.name] = d;
+    }
+  }
+  
+  const movements = {};   // nome -> 'up' | 'down' | 'same'
+  const divChanges = [];  // [{name, from, to}]
+  const allCurrent = [
+    ...divs.div1.map(s => ({...s, currentDiv: 1})),
+    ...divs.div2.map(s => ({...s, currentDiv: 2})),
+    ...divs.div3.map(s => ({...s, currentDiv: 3})),
+    ...divs.div4.map(s => ({...s, currentDiv: 4})),
+  ];
+  
+  for (const s of allCurrent) {
+    const prevD = prevDiv[s.name];
+    if (prevD === undefined) {
+      movements[s.name] = 'new';
+      continue;
+    }
+    if (s.currentDiv < prevD) {
+      movements[s.name] = 'up';   // subiu de divisão
+      divChanges.push({ name: s.name, from: prevD, to: s.currentDiv, type: 'up' });
+    } else if (s.currentDiv > prevD) {
+      movements[s.name] = 'down'; // desceu de divisão
+      divChanges.push({ name: s.name, from: prevD, to: s.currentDiv, type: 'down' });
+    } else {
+      movements[s.name] = 'same';
+    }
+  }
+  
+  return { movements, divChanges, prevSnapshot: prev };
+}
+
+// Comparativo com período anterior (mesma duração antes da data inicial)
+function getPreviousPeriodStats() {
+  if (!CHAMP.startDate || !CHAMP.endDate) return null;
+  const d1 = new Date(CHAMP.startDate + 'T12:00:00');
+  const d2 = new Date(CHAMP.endDate + 'T12:00:00');
+  const durationDays = Math.floor((d2 - d1) / 86400000) + 1;
+  
+  // Período anterior: mesma duração, terminando 1 dia antes do início atual
+  const prevEnd = new Date(d1);
+  prevEnd.setDate(prevEnd.getDate() - 1);
+  const prevStart = new Date(prevEnd);
+  prevStart.setDate(prevStart.getDate() - (durationDays - 1));
+  
+  const prevStartIso = prevStart.toISOString().split('T')[0];
+  const prevEndIso = prevEnd.toISOString().split('T')[0];
+  
+  // Calcula stats no período anterior
+  const list = CHAMP.role === 'conferente' ? D.conferente_daily : D.separador_daily;
+  const meta = CHAMP.role === 'conferente' ? 450 : 440;
+  
+  const byName = {};
+  for (const e of list) {
+    if (e.day >= prevStartIso && e.day <= prevEndIso && !isOnVacation(e.name, e.day)) {
+      if (!byName[e.name]) byName[e.name] = { score: 0, days: 0, totalPct: 0 };
+      byName[e.name].score += e.score;
+      byName[e.name].totalPct += (e.score / meta * 100);
+      byName[e.name].days += 1;
+    }
+  }
+  
+  const result = {};
+  for (const [name, s] of Object.entries(byName)) {
+    result[name] = {
+      avgPct: s.days > 0 ? s.totalPct / s.days : 0,
+      daysWorked: s.days,
+    };
+  }
+  
+  return { stats: result, start: prevStartIso, end: prevEndIso };
+}
+
+// === HISTÓRICO DE TEMPORADAS ===
+function historyKey() { return `champ-history-${CHAMP.role}`; }
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(historyKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveHistoryEntry(divs) {
+  if (!CHAMP.startDate || !CHAMP.endDate) return;
+  const champion = divs.div1[0];
+  if (!champion) return;
+  
+  const hist = loadHistory();
+  // Evita duplicar mesma temporada
+  const key = `${CHAMP.startDate}_${CHAMP.endDate}`;
+  if (hist.some(h => h.key === key)) return;
+  
+  hist.unshift({
+    key,
+    start: CHAMP.startDate,
+    end: CHAMP.endDate,
+    closedAt: new Date().toISOString(),
+    champion: {
+      name: champion.name,
+      avgPct: Math.round(champion.avgPct),
+      avgDaily: Math.round(champion.avgDailyScore),
+      daysWorked: champion.daysWorked,
+    },
+    podium: divs.div1.slice(0, 3).map(s => ({
+      name: s.name,
+      avgPct: Math.round(s.avgPct),
+    })),
+  });
+  
+  // Limita a 50 entradas
+  if (hist.length > 50) hist.length = 50;
+  
+  try {
+    localStorage.setItem(historyKey(), JSON.stringify(hist));
+  } catch(e) { console.warn('[history]', e); }
+}
+
+// === NOTIFICAÇÕES DE MUDANÇA ===
+let CHAMP_TOASTS_SHOWN = new Set();
+
+function showChampToasts(divChanges) {
+  // Só mostra mudanças que ainda não foram exibidas nesta sessão
+  const toShow = divChanges.filter(c => {
+    const k = `${c.name}_${c.from}_${c.to}`;
+    if (CHAMP_TOASTS_SHOWN.has(k)) return false;
+    CHAMP_TOASTS_SHOWN.add(k);
+    return true;
+  });
+  
+  if (!toShow.length) return;
+  
+  // Limita a 3 toasts pra não floodar
+  toShow.slice(0, 3).forEach((c, idx) => {
+    setTimeout(() => {
+      const div_names = { 1: '1ª Divisão', 2: '2ª Divisão', 3: '3ª Divisão', 4: '4ª Divisão' };
+      const emoji = c.type === 'up' ? '🚀' : '⬇️';
+      const verb = c.type === 'up' ? 'subiu para' : 'caiu para';
+      const msg = `${emoji} ${c.name} ${verb} ${div_names[c.to]}`;
+      BugGuard.toast(msg, c.type === 'up' ? 'warn' : 'warn');
+    }, idx * 600);
+  });
+}
+
 function renderCampeonato() {
   initChampPeriod();
   const view = document.getElementById('campeonato-view');
   
-  // Calcula stats de todos
+  // Calcula stats
   const candidates = getChampCandidates(CHAMP.role);
   const allStats = candidates.map(name => computeChampStats(name, CHAMP.role));
-  const { div1, div2, div3, div4 } = assignDivisions(allStats);
+  const divs = assignDivisions(allStats);
+  const { div1, div2, div3, div4 } = divs;
+  
+  // Detecta movimentos
+  const { movements, divChanges } = detectMovements(divs);
+  
+  // Comparativo com período anterior
+  const prevPeriod = getPreviousPeriodStats();
   
   const meta = CHAMP.role === 'conferente' ? 450 : 440;
   const roleLabel = CHAMP.role === 'conferente' ? 'Conferentes' : 'Separadores';
   
-  // Conta dias no período
   let totalDays = 0;
   if (CHAMP.startDate && CHAMP.endDate) {
     const d1 = new Date(CHAMP.startDate + 'T12:00:00');
@@ -5056,8 +5644,10 @@ function renderCampeonato() {
     totalDays = Math.floor((d2 - d1) / 86400000) + 1;
   }
   
-  // Conta pessoas em férias
   const onVacationCount = allStats.filter(s => s.onVacation).length;
+  
+  // Modo TV?
+  const tvMode = document.body.classList.contains('tv-mode');
   
   view.innerHTML = `
     <div class="champ-header">
@@ -5073,6 +5663,8 @@ function renderCampeonato() {
         <label>Até: <input type="date" id="champ-end" value="${CHAMP.endDate || ''}"></label>
         <div class="champ-actions">
           <button class="champ-btn" id="champ-vacation-btn">🏖️ Férias</button>
+          <button class="champ-btn" id="champ-history-btn">📚 Histórico</button>
+          <button class="champ-btn" id="champ-rules-btn" title="Critérios e desempate">❓ Regras</button>
         </div>
       </div>
       <div class="champ-period-summary">
@@ -5084,18 +5676,29 @@ function renderCampeonato() {
       </div>
     </div>
     
+    ${renderPodium(div1)}
+    
     <div class="champ-divisions">
-      ${renderDivision('div-1', '🥇 1ª Divisão · Elite', 'média ≥ 100% da meta', div1, meta)}
-      ${renderDivision('div-2', '🥈 2ª Divisão · Acesso', 'média entre 80% e 99%', div2, meta)}
-      ${renderDivision('div-3', '🥉 3ª Divisão · Base', 'média entre 70% e 79%', div3, meta)}
-      ${renderDivision('div-4', '⚠️ 4ª Divisão · Reforço', 'média abaixo de 70%', div4, meta)}
+      ${renderDivision('div-1', '🥇 1ª Divisão · Elite', 'média ≥ 100% da meta', div1, meta, movements, prevPeriod)}
+      ${renderDivision('div-2', '🥈 2ª Divisão · Acesso', 'média entre 80% e 99%', div2, meta, movements, prevPeriod)}
+      ${renderDivision('div-3', '🥉 3ª Divisão · Base', 'média entre 70% e 79%', div3, meta, movements, prevPeriod)}
+      ${renderDivision('div-4', '⚠️ 4ª Divisão · Reforço', 'média abaixo de 70%', div4, meta, movements, prevPeriod)}
     </div>
   `;
+  
+  // Salva snapshot atual pra próxima abertura
+  saveSnapshot(divs);
+  // Salva no histórico (se temporada tem campeão)
+  saveHistoryEntry(divs);
+  
+  // Mostra toasts de mudanças
+  if (divChanges.length > 0) showChampToasts(divChanges);
   
   // Bind eventos
   document.querySelectorAll('.champ-role-btn').forEach(b => {
     b.onclick = () => {
       CHAMP.role = b.dataset.champRole;
+      CHAMP_TOASTS_SHOWN.clear();
       saveChampConfig();
       renderCampeonato();
     };
@@ -5103,18 +5706,61 @@ function renderCampeonato() {
   
   document.getElementById('champ-start').onchange = (e) => {
     CHAMP.startDate = e.target.value;
+    CHAMP_TOASTS_SHOWN.clear();
     saveChampConfig();
     renderCampeonato();
   };
   document.getElementById('champ-end').onchange = (e) => {
     CHAMP.endDate = e.target.value;
+    CHAMP_TOASTS_SHOWN.clear();
     saveChampConfig();
     renderCampeonato();
   };
   document.getElementById('champ-vacation-btn').onclick = openVacationModal;
+  document.getElementById('champ-history-btn').onclick = openHistoryModal;
+  document.getElementById('champ-rules-btn').onclick = openRulesModal;
 }
 
-function renderDivision(cls, title, rule, list, meta) {
+// === PÓDIO ===
+function renderPodium(div1) {
+  if (!div1.length) return '';
+  
+  const top3 = div1.slice(0, 3);
+  if (top3.length === 0) return '';
+  
+  // Ordem visual: 2º à esquerda, 1º no meio (maior), 3º à direita
+  const order = [];
+  if (top3[1]) order.push({ ...top3[1], place: 2 });
+  if (top3[0]) order.push({ ...top3[0], place: 1 });
+  if (top3[2]) order.push({ ...top3[2], place: 3 });
+  
+  return `
+    <div class="champ-podium">
+      ${order.map(s => {
+        const photo = window.AVATARS && window.AVATARS[s.name];
+        const avatar = photo
+          ? `<div class="podium-avatar place-${s.place}" data-person-name="${s.name}" style="background-image:url('${photo}')"></div>`
+          : `<div class="podium-avatar place-${s.place}" data-person-name="${s.name}" style="background:${colorFromName(s.name)}"><span>${initialOf(s.name)}</span></div>`;
+        const trophy = s.place === 1 ? '🥇' : (s.place === 2 ? '🥈' : '🥉');
+        const onVac = s.onVacation ? '<span class="champ-vacation-badge">🏖️</span>' : '';
+        return `
+          <div class="podium-spot place-${s.place}">
+            ${avatar}
+            <div class="podium-trophy">${trophy}</div>
+            <div class="podium-name">${s.name}${onVac}</div>
+            <div class="podium-stats">
+              <div class="podium-pct">${Math.round(s.avgPct)}%</div>
+              <div class="podium-meta">${Math.round(s.avgDailyScore)} pts/dia · ${s.daysWorked} dias</div>
+            </div>
+            <div class="podium-platform place-${s.place}">${s.place}º</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderDivision(cls, title, rule, list, meta, movements, prevPeriod) {
   if (!list.length) {
     return `
       <div class="champ-division ${cls}">
@@ -5134,13 +5780,13 @@ function renderDivision(cls, title, rule, list, meta) {
         <div class="champ-div-rule">${rule}</div>
       </div>
       <div class="champ-div-body">
-        ${list.map((s, i) => renderChampRow(s, i + 1, meta)).join('')}
+        ${list.map((s, i) => renderChampRow(s, i + 1, meta, movements, prevPeriod)).join('')}
       </div>
     </div>
   `;
 }
 
-function renderChampRow(stats, pos, meta) {
+function renderChampRow(stats, pos, meta, movements, prevPeriod) {
   const photo = window.AVATARS && window.AVATARS[stats.name];
   const avatarHtml = photo
     ? `<div class="champ-avatar" data-person-name="${stats.name}" style="background-image:url('${photo}')"></div>`
@@ -5155,10 +5801,32 @@ function renderChampRow(stats, pos, meta) {
     ? `<span class="champ-vacation-badge">🏖️ Em férias</span>`
     : '';
   
+  // Indicador de movimento (subiu/desceu/novo/mesmo)
+  let movHtml = '';
+  if (movements && movements[stats.name]) {
+    const m = movements[stats.name];
+    if (m === 'up') movHtml = '<span class="champ-move up" title="Subiu de divisão desde a última visita">▲</span>';
+    else if (m === 'down') movHtml = '<span class="champ-move down" title="Desceu de divisão desde a última visita">▼</span>';
+    else if (m === 'new') movHtml = '<span class="champ-move new" title="Novo no ranking">●</span>';
+    else movHtml = '<span class="champ-move same" title="Mesma divisão">–</span>';
+  }
+  
   const avgDaily = Math.round(stats.avgDailyScore);
   const avgPct = Math.round(stats.avgPct);
   
-  // Calcula presença: dias trabalhados / dias disponíveis no período (descontando férias)
+  // Comparativo com período anterior
+  let pctDiffHtml = '';
+  if (prevPeriod && prevPeriod.stats[stats.name]) {
+    const prevPct = prevPeriod.stats[stats.name].avgPct;
+    const diff = avgPct - Math.round(prevPct);
+    if (Math.abs(diff) >= 1) {
+      const cls = diff > 0 ? 'up' : 'down';
+      const sign = diff > 0 ? '+' : '';
+      pctDiffHtml = `<div class="champ-diff ${cls}" title="Comparado ao período anterior (${fmtDate(prevPeriod.start)} a ${fmtDate(prevPeriod.end)})">${sign}${diff}%</div>`;
+    }
+  }
+  
+  // Presença (cor da coluna dias)
   let totalAvailableDays = 0;
   if (CHAMP.startDate && CHAMP.endDate) {
     const d1 = new Date(CHAMP.startDate + 'T12:00:00');
@@ -5166,7 +5834,6 @@ function renderChampRow(stats, pos, meta) {
     totalAvailableDays = Math.floor((d2 - d1) / 86400000) + 1 - stats.vacationDays;
   }
   const presencePct = totalAvailableDays > 0 ? (stats.daysWorked / totalAvailableDays) * 100 : 0;
-  
   let presenceClass = '';
   if (presencePct >= 100) presenceClass = 'full';
   else if (presencePct >= 70) presenceClass = 'mid';
@@ -5178,16 +5845,17 @@ function renderChampRow(stats, pos, meta) {
   
   return `
     <div class="champ-row ${stats.onVacation ? 'on-vacation' : ''}">
-      <div class="champ-pos ${posClass}">${pos}º</div>
+      <div class="champ-pos ${posClass}">${pos}º${movHtml}</div>
       ${avatarHtml}
       <div class="champ-name">${stats.name}${vacBadge}</div>
       <div class="champ-metric-wrap">
-        <div class="champ-metric">${avgDaily}</div>
-        <div class="champ-metric-label">média/dia</div>
-      </div>
-      <div class="champ-metric-wrap">
         <div class="champ-metric">${avgPct}%</div>
         <div class="champ-metric-label">% meta</div>
+        ${pctDiffHtml}
+      </div>
+      <div class="champ-metric-wrap">
+        <div class="champ-metric">${avgDaily}</div>
+        <div class="champ-metric-label">pts/dia</div>
       </div>
       <div class="champ-metric-wrap presence-${presenceClass}" title="${daysTooltip}">
         <div class="champ-metric">${stats.daysWorked}</div>
@@ -5197,7 +5865,61 @@ function renderChampRow(stats, pos, meta) {
   `;
 }
 
-// === MODAL DE FÉRIAS ===
+// === MODAL DE HISTÓRICO ===
+function openHistoryModal() {
+  const overlay = document.getElementById('history-overlay');
+  const list = document.getElementById('history-list');
+  const hist = loadHistory();
+  
+  if (!hist.length) {
+    list.innerHTML = '<div class="history-empty">Nenhuma temporada registrada ainda. Mude o período pra criar uma nova temporada — o vencedor anterior é salvo automaticamente.</div>';
+  } else {
+    list.innerHTML = hist.map((h, idx) => `
+      <div class="history-item">
+        <div class="history-trophy">${idx === 0 ? '👑' : '🏆'}</div>
+        <div class="history-info">
+          <div class="history-period">${fmtDate(h.start)} → ${fmtDate(h.end)}</div>
+          <div class="history-champion">
+            <strong>${h.champion.name}</strong>
+            <span class="history-pct">${h.champion.avgPct}% · ${h.champion.avgDaily} pts/dia · ${h.champion.daysWorked} dias</span>
+          </div>
+          ${h.podium.length > 1 ? `
+            <div class="history-podium">
+              ${h.podium.slice(1).map((p, i) => `<span>${i === 0 ? '🥈' : '🥉'} ${p.name} (${p.avgPct}%)</span>`).join(' · ')}
+            </div>
+          ` : ''}
+        </div>
+        <button class="history-remove" data-hist-key="${h.key}" title="Remover">✕</button>
+      </div>
+    `).join('');
+    
+    list.querySelectorAll('.history-remove').forEach(b => {
+      b.onclick = () => {
+        const key = b.dataset.histKey;
+        const newHist = loadHistory().filter(h => h.key !== key);
+        localStorage.setItem(historyKey(), JSON.stringify(newHist));
+        openHistoryModal();
+      };
+    });
+  }
+  
+  document.getElementById('history-role-label').textContent =
+    CHAMP.role === 'conferente' ? 'Conferentes' : 'Separadores';
+  
+  overlay.classList.add('show');
+}
+
+function closeHistoryModal() {
+  document.getElementById('history-overlay').classList.remove('show');
+}
+
+// === MODAL DE REGRAS ===
+function openRulesModal() {
+  document.getElementById('rules-overlay').classList.add('show');
+}
+function closeRulesModal() {
+  document.getElementById('rules-overlay').classList.remove('show');
+}
 function openVacationModal() {
   const overlay = document.getElementById('vacation-overlay');
   const select = document.getElementById('vacation-person');
@@ -5291,6 +6013,16 @@ document.getElementById('vacation-overlay').addEventListener('click', (e) => {
   if (e.target.id === 'vacation-overlay') closeVacationModal();
 });
 document.getElementById('vacation-add-btn').onclick = addVacation;
+
+// Bind dos modais de histórico e regras
+document.getElementById('history-close-btn').onclick = closeHistoryModal;
+document.getElementById('history-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'history-overlay') closeHistoryModal();
+});
+document.getElementById('rules-close-btn').onclick = closeRulesModal;
+document.getElementById('rules-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'rules-overlay') closeRulesModal();
+});
 
 // Carrega config salva
 loadChampConfig();
