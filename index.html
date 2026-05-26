@@ -1200,6 +1200,39 @@
     50% { transform: scale(1.12); }
   }
 
+  /* Selinhos de conquistas no avatar */
+  .avatar-stamps {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    pointer-events: auto;
+    z-index: 3;
+  }
+  .avatar-stamp {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #fff5d8, #ffe19a);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    line-height: 1;
+    border: 1.5px solid #b8860b;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    animation: stamp-shine 3s ease-in-out infinite;
+    cursor: help;
+  }
+  .avatar-stamp:nth-child(2) { animation-delay: -0.6s; }
+  .avatar-stamp:nth-child(3) { animation-delay: -1.2s; }
+  @keyframes stamp-shine {
+    0%, 100% { transform: rotate(-3deg) scale(1); }
+    50% { transform: rotate(3deg) scale(1.08); box-shadow: 0 2px 6px rgba(184, 134, 11, 0.5); }
+  }
+
   @keyframes avatar-float {
     0%, 100% { transform: translateY(0) rotate(-1.5deg); }
     50% { transform: translateY(-3px) rotate(1.5deg); }
@@ -2161,6 +2194,113 @@
     font-style: italic;
   }
 
+  /* === Countdown do Campeonato === */
+  .champ-countdown {
+    background: linear-gradient(135deg, #1a1410 0%, #2a1a08 100%);
+    border: 1px solid rgba(255,176,32,0.35);
+    border-radius: 12px;
+    padding: 18px 24px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+  .champ-countdown::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at right, rgba(255,176,32,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .champ-countdown-label {
+    position: relative;
+    z-index: 1;
+  }
+  .champ-countdown-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .champ-countdown-date {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--amber);
+    line-height: 1.1;
+  }
+  .champ-countdown-values {
+    display: flex;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .champ-countdown-unit {
+    text-align: center;
+    min-width: 70px;
+    background: rgba(255,176,32,0.08);
+    border: 1px solid rgba(255,176,32,0.18);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .champ-countdown-num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .champ-countdown-text {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+  }
+  .champ-countdown.started {
+    background: linear-gradient(135deg, #1a3a1a 0%, #0a2a0a 100%);
+    border-color: rgba(76,175,80,0.4);
+    justify-content: center;
+    text-align: center;
+  }
+  .champ-countdown.started::before {
+    background: radial-gradient(ellipse at center, rgba(76,175,80,0.15) 0%, transparent 60%);
+    animation: started-pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes started-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+  .champ-countdown-started-msg {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--green);
+    text-align: center;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    animation: started-bounce 2s ease-in-out infinite;
+  }
+  @keyframes started-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+  @media (max-width: 640px) {
+    .champ-countdown { padding: 14px 16px; }
+    .champ-countdown-date { font-size: 16px; }
+    .champ-countdown-num { font-size: 24px; }
+    .champ-countdown-unit { min-width: 56px; padding: 8px 8px; }
+    .champ-countdown-started-msg { font-size: 18px; }
+  }
+
   /* === CARDS DE TÉCNICO === */
   .coach-cards {
     display: grid;
@@ -2626,8 +2766,95 @@
   body.tv-mode .campeonato-view .champ-metric { font-size: 17px; }
   body.tv-mode .campeonato-view .champ-avatar { width: 40px; height: 40px; }
 
-  /* Modal de férias */
-  .vacation-overlay {
+  /* Banner de temporada ativa */
+  .champ-season-banner {
+    background: linear-gradient(90deg, rgba(255,215,0,0.12), rgba(255,176,32,0.06));
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .champ-season-banner strong { color: #ffd700; font-family: var(--font-display); }
+
+  /* Items de temporada no modal */
+  .season-form { margin-bottom: 18px; }
+  .vacation-section-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 16px 0 10px;
+  }
+  .season-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: var(--bg);
+    align-items: center;
+  }
+  .season-item.current {
+    border-color: rgba(255,215,0,0.4);
+    background: linear-gradient(135deg, rgba(255,215,0,0.06), var(--bg));
+  }
+  .season-item-tag {
+    display: inline-block;
+    background: rgba(255,215,0,0.18);
+    color: #ffd700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  .season-item-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .season-item-dates {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 2px;
+    font-family: var(--font-display);
+  }
+  .season-item-champ {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .season-item-champ strong { color: var(--amber); }
+  .season-item-action {
+    background: var(--amber);
+    color: #1a1410;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .season-item-action.remove {
+    background: transparent;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+  }
+  .season-item-action.remove:hover {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  /* Modal de férias */  .vacation-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.85);
@@ -3517,6 +3744,39 @@
     <div id="footer-meta"></div>
   </footer>
 
+</div>
+
+<!-- MODAL DE TEMPORADA TRIMESTRAL -->
+<div class="vacation-overlay" id="season-overlay">
+  <div class="vacation-card">
+    <button class="profile-close" id="season-close-btn" title="Fechar">✕</button>
+    <div class="vacation-title">📆 Temporadas (3 meses)</div>
+    <div class="vacation-subtitle">
+      Crie temporadas trimestrais flexíveis com início e fim personalizados. 
+      Ao encerrar uma temporada, ela vai pro histórico com o campeão registrado.
+    </div>
+    
+    <div class="season-form">
+      <div class="vacation-add-row" style="grid-template-columns: 1fr 1fr 1fr">
+        <div>
+          <label>Nome da temporada</label>
+          <input type="text" id="season-name" placeholder="Ex: Q2 2026">
+        </div>
+        <div>
+          <label>Início</label>
+          <input type="date" id="season-start">
+        </div>
+        <div>
+          <label>Fim</label>
+          <input type="date" id="season-end">
+        </div>
+      </div>
+      <button class="vacation-add-btn" id="season-start-btn" style="width:100%; margin-top:8px">🚀 Iniciar Nova Temporada</button>
+    </div>
+    
+    <div class="vacation-section-title">Histórico</div>
+    <div id="seasons-list"></div>
+  </div>
 </div>
 
 <!-- MODAL DE HISTÓRICO -->
@@ -4415,9 +4675,12 @@ function render() {
     const days = D.days;
     document.getElementById("period-label").textContent =
       `Período: ${fmtDate(days[0])} a ${fmtDate(days[days.length-1])} · ${D.records.length} registros`;
-    document.getElementById("footer-meta").textContent = "Campeonato · 3 divisões";
+    document.getElementById("footer-meta").textContent = "Campeonato · 4 divisões";
     return;
   }
+  
+  // Se está saindo do campeonato, para o countdown
+  if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
 
   // Modo normal
   document.getElementById("normal-view").style.display = "";
@@ -4887,7 +5150,6 @@ function getPersonStats(name) {
   let totalPct = 0, totalScore = 0, firstPlaceDays = 0;
   let currentStreak = 0, maxStreak = 0;
   
-  // Para calcular 1º lugar e top3, precisa pegar ranking de cada dia
   for (const h of hist) {
     totalPct += h.pct;
     totalScore += h.score;
@@ -4899,10 +5161,9 @@ function getPersonStats(name) {
     }
   }
   
-  // Calcula 1º lugar — ver quantos dias essa pessoa foi #1 em algum ranking
+  // Calcula 1º lugar
   const days = [...new Set(hist.map(h => h.day))];
   for (const d of days) {
-    // Verifica conferente do mesmo turno
     for (const shift of ['tarde', 'noite']) {
       const ranking = D.conferente_daily
         .filter(e => e.day === d && e.record_shift === shift)
@@ -4929,6 +5190,11 @@ function getPersonStats(name) {
   }
   currentStreak = curr;
   
+  // === MEDALHAS MENSAIS ===
+  // Calcula automaticamente top 3 de cada mês (separado por conferente/separador)
+  const monthlyMedals = computeMonthlyMedals(name);
+  const totalMedals = monthlyMedals.gold + monthlyMedals.silver + monthlyMedals.bronze;
+  
   return {
     name,
     daysWorked: total,
@@ -4943,26 +5209,115 @@ function getPersonStats(name) {
     maxStreak,
     consistencyPct: Math.round(100 * metaHits / total),
     history: hist,
+    monthlyMedals,
+    totalMedals,
   };
+}
+
+// Computa medalhas mensais (top 3 por mês baseado em média% do mês)
+// Cache por nome pra performance
+const _monthlyMedalsCache = {};
+function computeMonthlyMedals(name) {
+  if (_monthlyMedalsCache[name]) return _monthlyMedalsCache[name];
+  
+  // Pega TODOS os meses presentes em D.days
+  const months = new Set();
+  for (const d of D.days) months.add(d.substring(0, 7)); // "2026-05"
+  
+  let gold = 0, silver = 0, bronze = 0;
+  const wins = []; // [{month, place, role}]
+  
+  for (const month of months) {
+    // Para cada role, calcula ranking do mês
+    for (const role of ['conferente', 'separador']) {
+      const list = role === 'conferente' ? D.conferente_daily : D.separador_daily;
+      const meta = role === 'conferente' ? 450 : 440;
+      
+      // Pessoas com dados no mês
+      const byName = {};
+      for (const e of list) {
+        if (!e.day.startsWith(month)) continue;
+        if (e.record_shift !== 'tarde' && e.record_shift !== 'noite') continue;
+        if (!byName[e.name]) byName[e.name] = { totalPct: 0, days: 0 };
+        byName[e.name].totalPct += (e.score / meta * 100);
+        byName[e.name].days += 1;
+      }
+      
+      // Mínimo 5 dias trabalhados pra concorrer no mês
+      const ranking = Object.entries(byName)
+        .filter(([_, s]) => s.days >= 5)
+        .map(([n, s]) => ({ name: n, avgPct: s.totalPct / s.days }))
+        .sort((a, b) => b.avgPct - a.avgPct);
+      
+      // Verifica posição da pessoa
+      const idx = ranking.findIndex(r => r.name === name);
+      if (idx === 0) { gold++; wins.push({month, place: 1, role}); }
+      else if (idx === 1) { silver++; wins.push({month, place: 2, role}); }
+      else if (idx === 2) { bronze++; wins.push({month, place: 3, role}); }
+    }
+  }
+  
+  const result = { gold, silver, bronze, wins };
+  _monthlyMedalsCache[name] = result;
+  return result;
+}
+
+function clearMonthlyMedalsCache() {
+  for (const k in _monthlyMedalsCache) delete _monthlyMedalsCache[k];
 }
 
 // Catálogo de badges disponíveis
 const BADGES = [
-  { id: 'first_meta', icon: '🎯', title: 'Primeira Meta', desc: 'Bateu meta pela primeira vez', check: s => s.metaHits >= 1 },
-  { id: 'streak_3', icon: '🔥', title: 'Hot Streak', desc: '3 dias seguidos batendo meta', check: s => s.maxStreak >= 3 },
-  { id: 'streak_5', icon: '⚡', title: 'Imparável', desc: '5 dias seguidos batendo meta', check: s => s.maxStreak >= 5 },
-  { id: 'fire', icon: '💥', title: 'Em Chamas', desc: 'Bateu 120%+ da meta num dia', check: s => s.fireHits >= 1 },
-  { id: 'super_fire', icon: '🌋', title: 'Vulcão', desc: '3+ dias batendo 120%+ da meta', check: s => s.fireHits >= 3 },
-  { id: 'first_place', icon: '👑', title: 'Coroado', desc: 'Foi #1 no ranking num dia', check: s => s.firstPlaceDays >= 1 },
-  { id: 'first_place_3', icon: '🏆', title: 'Tricampeão', desc: 'Foi #1 em 3+ dias', check: s => s.firstPlaceDays >= 3 },
-  { id: 'first_place_5', icon: '👸', title: 'Realeza', desc: 'Foi #1 em 5+ dias', check: s => s.firstPlaceDays >= 5 },
-  { id: 'consistent_70', icon: '🛡️', title: 'Consistente', desc: 'Bateu meta em 70%+ dos dias', check: s => s.consistencyPct >= 70 && s.daysWorked >= 4 },
-  { id: 'best_150', icon: '🚀', title: 'Foguete', desc: 'Melhor dia com 150%+ da meta', check: s => s.bestPct >= 150 },
-  { id: 'worker', icon: '💪', title: 'Trabalhador', desc: 'Trabalhou 5+ dias na semana', check: s => s.daysWorked >= 5 },
-  { id: 'veteran', icon: '🎖️', title: 'Veterano', desc: 'Trabalhou 7+ dias', check: s => s.daysWorked >= 7 },
+  // === Primeiros passos (relativamente fáceis, mas precisa manter) ===
+  { id: 'first_meta', icon: '🎯', title: 'Primeira Meta', desc: 'Bateu meta em pelo menos 3 dias',
+    check: s => s.metaHits >= 3, maintain: s => s.metaHits >= 1 },
+  { id: 'worker', icon: '💪', title: 'Trabalhador', desc: 'Trabalhou 10+ dias com pelo menos 70% de média',
+    check: s => s.daysWorked >= 10 && s.avgPct >= 70, maintain: s => s.daysWorked >= 5 && s.avgPct >= 60 },
+
+  // === Constância (precisa estar entregando) ===
+  { id: 'streak_3', icon: '🔥', title: 'Hot Streak', desc: '5 dias seguidos batendo meta',
+    check: s => s.maxStreak >= 5, maintain: s => s.maxStreak >= 3 },
+  { id: 'streak_5', icon: '⚡', title: 'Imparável', desc: '8 dias seguidos batendo meta',
+    check: s => s.maxStreak >= 8, maintain: s => s.maxStreak >= 5 },
+  { id: 'consistent_70', icon: '🛡️', title: 'Consistente', desc: 'Bateu meta em 80%+ dos dias (mín. 8 dias trabalhados)',
+    check: s => s.consistencyPct >= 80 && s.daysWorked >= 8, maintain: s => s.consistencyPct >= 60 && s.daysWorked >= 5 },
+  { id: 'veteran', icon: '🎖️', title: 'Veterano', desc: 'Trabalhou 15+ dias com média ≥ 90%',
+    check: s => s.daysWorked >= 15 && s.avgPct >= 90, maintain: s => s.daysWorked >= 10 && s.avgPct >= 80 },
+
+  // === Performance (raros) ===
+  { id: 'fire', icon: '💥', title: 'Em Chamas', desc: '3+ dias batendo 120%+ da meta',
+    check: s => s.fireHits >= 3, maintain: s => s.fireHits >= 1 },
+  { id: 'super_fire', icon: '🌋', title: 'Vulcão', desc: '5+ dias batendo 120%+ da meta',
+    check: s => s.fireHits >= 5, maintain: s => s.fireHits >= 3 },
+  { id: 'best_150', icon: '🚀', title: 'Foguete', desc: 'Melhor dia com 160%+ da meta',
+    check: s => s.bestPct >= 160, maintain: s => s.bestPct >= 130 },
+  { id: 'super_avg', icon: '⭐', title: 'Estrela', desc: 'Média geral ≥ 110% (mín. 8 dias)',
+    check: s => s.avgPct >= 110 && s.daysWorked >= 8, maintain: s => s.avgPct >= 100 && s.daysWorked >= 5 },
+
+  // === Liderança (muito difíceis) ===
+  { id: 'first_place', icon: '👑', title: 'Coroado', desc: 'Foi #1 em 3+ dias',
+    check: s => s.firstPlaceDays >= 3, maintain: s => s.firstPlaceDays >= 1 },
+  { id: 'first_place_3', icon: '🏆', title: 'Tricampeão', desc: 'Foi #1 em 6+ dias',
+    check: s => s.firstPlaceDays >= 6, maintain: s => s.firstPlaceDays >= 3 },
+  { id: 'first_place_5', icon: '👸', title: 'Realeza', desc: 'Foi #1 em 10+ dias',
+    check: s => s.firstPlaceDays >= 10, maintain: s => s.firstPlaceDays >= 6 },
+
+  // === Lendárias ===
+  { id: 'gold_medal', icon: '🥇', title: 'Medalha de Ouro', desc: 'Ganhou medalha de ouro do mês',
+    check: s => (s.monthlyMedals && s.monthlyMedals.gold >= 1), maintain: s => true /* não perde */,
+    permanent: true },
+  { id: 'collector', icon: '💎', title: 'Colecionador', desc: 'Tem 3+ medalhas mensais (ouro/prata/bronze)',
+    check: s => s.totalMedals >= 3, maintain: s => s.totalMedals >= 2 },
 ];
 
+// Janela em dias para manter conquistas (se não cumprir nem o check nem o maintain por X dias, perde)
+const BADGE_MAINTAIN_DAYS = 30;
+
+// Catálogo rápido por id
+const BADGES_BY_ID = Object.fromEntries(BADGES.map(b => [b.id, b]));
+
 function computeBadges(stats) {
+  // Stats já vem com tudo computado. Aqui só checamos
   return BADGES.map(b => ({ ...b, earned: b.check(stats) }));
 }
 
@@ -5213,12 +5568,12 @@ function closeVS() {
 // === MODAL DE AJUDA DAS CONQUISTAS ===
 function openBadgesHelp() {
   const list = document.getElementById('help-badges-list');
-  // Agrupa em seções pra ficar mais didático
   const sections = [
     { title: '🎯 Primeiros passos', ids: ['first_meta', 'worker'] },
     { title: '🔥 Constância', ids: ['streak_3', 'streak_5', 'consistent_70', 'veteran'] },
-    { title: '💥 Performance', ids: ['fire', 'super_fire', 'best_150'] },
+    { title: '💥 Performance', ids: ['fire', 'super_fire', 'best_150', 'super_avg'] },
     { title: '👑 Liderança', ids: ['first_place', 'first_place_3', 'first_place_5'] },
+    { title: '🏅 Lendárias', ids: ['gold_medal', 'collector'] },
   ];
   
   let html = '';
@@ -5239,6 +5594,19 @@ function openBadgesHelp() {
     }
   }
   list.innerHTML = html;
+  
+  // Adiciona dica sobre manutenção das conquistas
+  list.innerHTML += `
+    <div class="help-section-title">⚠️ Manter as conquistas</div>
+    <div class="help-badge-row" style="grid-template-columns: 1fr">
+      <div class="help-badge-info">
+        <div class="help-badge-desc" style="font-size: 13px; line-height: 1.5">
+          Conquistas <strong>não são pra sempre</strong>. Você precisa manter o ritmo: se nos últimos 30 dias você não atingir nem o requisito de manutenção (geralmente mais fraco que o requisito de conquista), <strong>a medalha some</strong>. Continue produzindo bem pra manter o que conquistou. As medalhas de ouro/prata/bronze de campeonato mensal são permanentes.
+        </div>
+      </div>
+    </div>
+  `;
+  
   document.getElementById('help-overlay').classList.add('show');
 }
 
@@ -5397,7 +5765,8 @@ document.getElementById('help-overlay').addEventListener('click', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (document.getElementById('rules-overlay').classList.contains('show')) closeRulesModal();
+    if (document.getElementById('season-overlay').classList.contains('show')) closeSeasonModal();
+    else if (document.getElementById('rules-overlay').classList.contains('show')) closeRulesModal();
     else if (document.getElementById('history-overlay').classList.contains('show')) closeHistoryModal();
     else if (document.getElementById('vacation-overlay').classList.contains('show')) closeVacationModal();
     else if (document.getElementById('help-overlay').classList.contains('show')) closeBadgesHelp();
@@ -5436,10 +5805,12 @@ document.addEventListener('click', (e) => {
 
 // === CAMPEONATO ===
 const CHAMP = {
-  role: 'conferente',    // ou 'separador'
-  startDate: null,       // string ISO
-  endDate: null,         // string ISO
-  vacations: {},         // { "NOME": [{start, end, fixedDivision}] }
+  role: 'conferente',
+  startDate: null,
+  endDate: null,
+  vacations: {},
+  // Temporada trimestral em curso (separada do filtro de período acima)
+  season: null,         // { id, name, start, end } — temporada atual
 };
 
 // Carrega/persiste config no localStorage
@@ -5452,6 +5823,7 @@ function loadChampConfig() {
       if (cfg.endDate) CHAMP.endDate = cfg.endDate;
       if (cfg.vacations) CHAMP.vacations = cfg.vacations;
       if (cfg.role) CHAMP.role = cfg.role;
+      if (cfg.season) CHAMP.season = cfg.season;
     }
   } catch(e) { console.warn('[champ] erro ao ler config', e); }
 }
@@ -5462,8 +5834,22 @@ function saveChampConfig() {
       startDate: CHAMP.startDate,
       endDate: CHAMP.endDate,
       vacations: CHAMP.vacations,
+      season: CHAMP.season,
     }));
   } catch(e) { console.warn('[champ] erro ao salvar config', e); }
+}
+
+// === Temporadas trimestrais ===
+function seasonsKey() { return 'champ-seasons'; }
+function loadSeasons() {
+  try {
+    const raw = localStorage.getItem(seasonsKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function saveSeasonsList(list) {
+  try { localStorage.setItem(seasonsKey(), JSON.stringify(list)); }
+  catch(e) { console.warn('[seasons]', e); }
 }
 
 // Inicializa período com últimos 15 dias se não tiver salvo
@@ -5782,8 +6168,84 @@ function showChampToasts(divChanges) {
   });
 }
 
+// Data oficial de início do campeonato
+const CHAMP_START_DATE = new Date('2026-06-01T00:00:00');
+// Janela em dias pra mostrar "Campeonato começou!" depois do início
+const CHAMP_STARTED_DAYS = 7;
+let _countdownInterval = null;
+
+function renderCountdownHtml() {
+  const now = new Date();
+  const diffMs = CHAMP_START_DATE.getTime() - now.getTime();
+  
+  if (diffMs > 0) {
+    // Ainda vai começar
+    const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    return `
+      <div class="champ-countdown" id="champ-countdown">
+        <div class="champ-countdown-label">
+          <div class="champ-countdown-title">⏳ Campeonato começa em</div>
+          <div class="champ-countdown-date">1º de Junho de 2026</div>
+        </div>
+        <div class="champ-countdown-values">
+          <div class="champ-countdown-unit">
+            <div class="champ-countdown-num" id="cd-days">${days}</div>
+            <div class="champ-countdown-text">${days === 1 ? 'dia' : 'dias'}</div>
+          </div>
+          <div class="champ-countdown-unit">
+            <div class="champ-countdown-num" id="cd-hours">${hours}</div>
+            <div class="champ-countdown-text">${hours === 1 ? 'hora' : 'horas'}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Já começou — mostra mensagem por X dias
+  const daysSinceStart = Math.floor(-diffMs / (1000 * 60 * 60 * 24));
+  if (daysSinceStart < CHAMP_STARTED_DAYS) {
+    return `
+      <div class="champ-countdown started" id="champ-countdown">
+        <div class="champ-countdown-started-msg">🎉 Campeonato começou!</div>
+      </div>
+    `;
+  }
+  
+  // Passou da janela — não mostra nada
+  return '';
+}
+
+function updateCountdown() {
+  const el = document.getElementById('champ-countdown');
+  if (!el) {
+    // Saiu do campeonato — limpa interval
+    if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
+    return;
+  }
+  
+  const now = new Date();
+  const diffMs = CHAMP_START_DATE.getTime() - now.getTime();
+  
+  if (diffMs > 0) {
+    const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    const dEl = document.getElementById('cd-days');
+    const hEl = document.getElementById('cd-hours');
+    if (dEl) dEl.textContent = days;
+    if (hEl) hEl.textContent = hours;
+  } else {
+    // Mudou de "antes" pra "começou" — re-renderiza o campeonato pra atualizar a UI
+    if (STATE.shift === 'campeonato') renderCampeonato();
+  }
+}
+
 function renderCampeonato() {
   initChampPeriod();
+  clearMonthlyMedalsCache();
+  clearAvatarStampsCache();
   const view = document.getElementById('campeonato-view');
   
   // Calcula stats
@@ -5814,6 +6276,7 @@ function renderCampeonato() {
   const tvMode = document.body.classList.contains('tv-mode');
   
   view.innerHTML = `
+    ${renderCountdownHtml()}
     <div class="champ-header">
       <div class="champ-header-top">
         <div class="champ-title">🏆 Campeonato</div>
@@ -5826,12 +6289,18 @@ function renderCampeonato() {
         <label>De: <input type="date" id="champ-start" value="${CHAMP.startDate || ''}"></label>
         <label>Até: <input type="date" id="champ-end" value="${CHAMP.endDate || ''}"></label>
         <div class="champ-actions">
+          <button class="champ-btn" id="champ-season-btn" title="Temporada de 3 meses">📆 Temporada</button>
           <button class="champ-btn" id="champ-vacation-btn">🏖️ Férias</button>
           <button class="champ-btn" id="champ-history-btn">📚 Histórico</button>
           <button class="champ-btn" id="champ-rules-btn" title="Critérios e desempate">❓ Regras</button>
           <button class="champ-btn champ-btn-exit" id="champ-exit-btn" title="Sair do campeonato e bloquear">🚪 Sair</button>
         </div>
       </div>
+      ${CHAMP.season ? `
+        <div class="champ-season-banner">
+          🏆 Temporada em curso: <strong>${CHAMP.season.name}</strong> · ${fmtDate(CHAMP.season.start)} → ${fmtDate(CHAMP.season.end)}
+        </div>
+      ` : ''}
       <div class="champ-period-summary">
         📅 Período: <strong>${fmtDate(CHAMP.startDate)}</strong> a <strong>${fmtDate(CHAMP.endDate)}</strong> 
         (${totalDays} dias) · 
@@ -5887,6 +6356,13 @@ function renderCampeonato() {
   document.getElementById('champ-history-btn').onclick = openHistoryModal;
   document.getElementById('champ-rules-btn').onclick = openRulesModal;
   document.getElementById('champ-exit-btn').onclick = exitChampeonato;
+  document.getElementById('champ-season-btn').onclick = openSeasonModal;
+  
+  // Inicia ou reinicia interval do countdown (uma vez por minuto basta pra dias/horas)
+  if (_countdownInterval) clearInterval(_countdownInterval);
+  if (document.getElementById('champ-countdown')) {
+    _countdownInterval = setInterval(updateCountdown, 60000);
+  }
 }
 
 // Sai do campeonato: limpa auth, volta pra Tarde
@@ -6127,7 +6603,178 @@ function renderChampRow(stats, pos, meta, movements, prevPeriod) {
   `;
 }
 
-// === MODAL DE HISTÓRICO ===
+// === MODAL DE TEMPORADAS TRIMESTRAIS ===
+function openSeasonModal() {
+  const overlay = document.getElementById('season-overlay');
+  
+  // Sugere nome automático: "Q2 2026" se for entre abr-jun
+  const today = new Date();
+  const m = today.getMonth();
+  const q = Math.floor(m / 3) + 1;
+  const y = today.getFullYear();
+  const defaultName = `Q${q} ${y}`;
+  
+  // Sugere período: 3 meses a partir de hoje
+  const start = today.toISOString().split('T')[0];
+  const endDate = new Date(today);
+  endDate.setMonth(endDate.getMonth() + 3);
+  endDate.setDate(endDate.getDate() - 1);
+  const end = endDate.toISOString().split('T')[0];
+  
+  document.getElementById('season-name').value = CHAMP.season ? CHAMP.season.name : defaultName;
+  document.getElementById('season-start').value = CHAMP.season ? CHAMP.season.start : start;
+  document.getElementById('season-end').value = CHAMP.season ? CHAMP.season.end : end;
+  
+  renderSeasonsList();
+  overlay.classList.add('show');
+}
+
+function closeSeasonModal() {
+  document.getElementById('season-overlay').classList.remove('show');
+}
+
+function renderSeasonsList() {
+  const list = document.getElementById('seasons-list');
+  const seasons = loadSeasons();
+  
+  if (!seasons.length && !CHAMP.season) {
+    list.innerHTML = '<div class="vacation-empty">Nenhuma temporada criada. Crie a primeira acima!</div>';
+    return;
+  }
+  
+  let html = '';
+  if (CHAMP.season) {
+    html += `
+      <div class="season-item current">
+        <div class="season-item-info">
+          <div class="season-item-tag">🏆 EM CURSO</div>
+          <div class="season-item-name">${CHAMP.season.name}</div>
+          <div class="season-item-dates">${fmtDate(CHAMP.season.start)} → ${fmtDate(CHAMP.season.end)}</div>
+        </div>
+        <button class="season-item-action" data-season-action="close">Encerrar e arquivar</button>
+      </div>
+    `;
+  }
+  
+  // Temporadas passadas
+  for (const s of seasons) {
+    html += `
+      <div class="season-item">
+        <div class="season-item-info">
+          <div class="season-item-name">${s.name}</div>
+          <div class="season-item-dates">${fmtDate(s.start)} → ${fmtDate(s.end)}</div>
+          ${s.champion ? `<div class="season-item-champ">🏆 <strong>${s.champion.name}</strong> · ${s.champion.avgPct}%</div>` : ''}
+        </div>
+        <button class="season-item-action remove" data-season-id="${s.id}">Remover</button>
+      </div>
+    `;
+  }
+  
+  list.innerHTML = html;
+  
+  // Bind eventos
+  list.querySelectorAll('[data-season-action="close"]').forEach(b => {
+    b.onclick = () => closeCurrentSeason();
+  });
+  list.querySelectorAll('[data-season-id]').forEach(b => {
+    b.onclick = () => {
+      const id = b.dataset.seasonId;
+      const newList = loadSeasons().filter(s => s.id !== id);
+      saveSeasonsList(newList);
+      renderSeasonsList();
+    };
+  });
+}
+
+function startNewSeason() {
+  const name = document.getElementById('season-name').value.trim();
+  const start = document.getElementById('season-start').value;
+  const end = document.getElementById('season-end').value;
+  
+  if (!name) { BugGuard.toast('Defina um nome para a temporada', 'warn'); return; }
+  if (!start || !end) { BugGuard.toast('Defina datas de início e fim', 'warn'); return; }
+  if (start > end) { BugGuard.toast('Início deve ser antes do fim', 'warn'); return; }
+  
+  // Se já tem temporada ativa, oferece encerrar
+  if (CHAMP.season) {
+    if (!confirm(`Já existe uma temporada em curso: "${CHAMP.season.name}".\n\nEncerrar essa e iniciar a nova?`)) return;
+    closeCurrentSeason(true);
+  }
+  
+  CHAMP.season = { id: 's_' + Date.now(), name, start, end };
+  // Sincroniza filtro de período com a temporada
+  CHAMP.startDate = start;
+  CHAMP.endDate = end;
+  saveChampConfig();
+  
+  BugGuard.toast(`🏆 Temporada "${name}" iniciada!`, 'warn');
+  closeSeasonModal();
+  renderCampeonato();
+}
+
+function closeCurrentSeason(silent = false) {
+  if (!CHAMP.season) {
+    if (!silent) BugGuard.toast('Nenhuma temporada ativa', 'warn');
+    return;
+  }
+  
+  // Calcula campeão final
+  const oldRole = CHAMP.role;
+  const oldStart = CHAMP.startDate;
+  const oldEnd = CHAMP.endDate;
+  
+  // Usa as datas da temporada
+  CHAMP.startDate = CHAMP.season.start;
+  CHAMP.endDate = CHAMP.season.end;
+  
+  // Calcula stats finais pro conferente E pro separador
+  const finalStats = { conferente: null, separador: null };
+  for (const role of ['conferente', 'separador']) {
+    CHAMP.role = role;
+    const candidates = getChampCandidates(role);
+    const allStats = candidates.map(name => computeChampStats(name, role));
+    const divs = assignDivisions(allStats);
+    if (divs.div1.length > 0) {
+      const champ = divs.div1[0];
+      finalStats[role] = {
+        name: champ.name,
+        avgPct: Math.round(champ.avgPct),
+        avgDaily: Math.round(champ.avgDailyScore),
+        daysWorked: champ.daysWorked,
+        podium: divs.div1.slice(0, 3).map(s => ({ name: s.name, avgPct: Math.round(s.avgPct) })),
+      };
+    }
+  }
+  
+  // Restaura
+  CHAMP.role = oldRole;
+  
+  // Salva temporada encerrada
+  const seasons = loadSeasons();
+  seasons.unshift({
+    id: CHAMP.season.id,
+    name: CHAMP.season.name,
+    start: CHAMP.season.start,
+    end: CHAMP.season.end,
+    closedAt: new Date().toISOString(),
+    champion: finalStats.conferente || finalStats.separador,
+    conferente: finalStats.conferente,
+    separador: finalStats.separador,
+  });
+  saveSeasonsList(seasons);
+  
+  if (!silent) {
+    BugGuard.toast(`Temporada "${CHAMP.season.name}" encerrada e arquivada!`, 'warn');
+  }
+  
+  CHAMP.season = null;
+  saveChampConfig();
+  
+  if (!silent) {
+    closeSeasonModal();
+    renderCampeonato();
+  }
+}
 function openHistoryModal() {
   const overlay = document.getElementById('history-overlay');
   const list = document.getElementById('history-list');
@@ -6286,6 +6933,13 @@ document.getElementById('rules-overlay').addEventListener('click', (e) => {
   if (e.target.id === 'rules-overlay') closeRulesModal();
 });
 
+// Bind do modal de temporada
+document.getElementById('season-close-btn').onclick = closeSeasonModal;
+document.getElementById('season-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'season-overlay') closeSeasonModal();
+});
+document.getElementById('season-start-btn').onclick = startNewSeason;
+
 // Carrega config salva
 loadChampConfig();
 
@@ -6352,24 +7006,71 @@ function moodEmoji(mood) {
 function avatarFor(name, mood) {
   const photoUrl = (window.AVATARS && window.AVATARS[name]) || null;
   const emoji = moodEmoji(mood);
+  const stamps = badgeStampsForAvatar(name);
 
   if (photoUrl) {
     return `
       <span class="avatar-photo" style="background-image:url('${photoUrl}')">
         <span class="avatar-mood mood-${mood}">${emoji}</span>
+        ${stamps}
       </span>
     `;
   }
 
-  // Fallback: colored circle with initials
   const bg = colorFromName(name);
   const initials = initialOf(name);
   return `
     <span class="avatar-initial" style="background:${bg}">
       <span class="avatar-letter">${initials}</span>
       <span class="avatar-mood mood-${mood}">${emoji}</span>
+      ${stamps}
     </span>
   `;
+}
+
+// Retorna HTML dos "selinhos" de conquistas que a pessoa tem (até 3 mais importantes)
+const _avatarStampsCache = {};
+function badgeStampsForAvatar(name) {
+  // Cache pra não recalcular toda hora
+  if (_avatarStampsCache[name] !== undefined) return _avatarStampsCache[name];
+  
+  try {
+    const stats = getPersonStats(name);
+    if (!stats) { _avatarStampsCache[name] = ''; return ''; }
+    
+    const badges = computeBadges(stats);
+    const earned = badges.filter(b => b.earned);
+    
+    // Ordem de prioridade dos selinhos (lendárias > raras > comuns)
+    const priorityOrder = [
+      'gold_medal', 'collector',                                  // lendárias
+      'first_place_5', 'first_place_3', 'first_place',           // liderança
+      'super_avg', 'best_150', 'super_fire', 'fire',             // performance
+      'veteran', 'consistent_70', 'streak_5', 'streak_3',        // constância
+      'worker', 'first_meta',                                    // básicas
+    ];
+    
+    const sorted = earned.sort((a, b) => {
+      return priorityOrder.indexOf(a.id) - priorityOrder.indexOf(b.id);
+    });
+    
+    // Pega até 3 mais importantes
+    const top = sorted.slice(0, 3);
+    if (!top.length) { _avatarStampsCache[name] = ''; return ''; }
+    
+    const html = `<span class="avatar-stamps">${top.map(b =>
+      `<span class="avatar-stamp" title="${b.title}: ${b.desc}">${b.icon}</span>`
+    ).join('')}</span>`;
+    _avatarStampsCache[name] = html;
+    return html;
+  } catch(e) {
+    _avatarStampsCache[name] = '';
+    return '';
+  }
+}
+
+function clearAvatarStampsCache() {
+  for (const k in _avatarStampsCache) delete _avatarStampsCache[k];
 }
 
 function moodFromPct(p) {
