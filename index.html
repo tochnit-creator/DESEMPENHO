@@ -1993,6 +1993,15 @@
     background: rgba(255,176,32,0.25);
     border-color: var(--amber);
   }
+  .champ-btn.champ-btn-exit {
+    background: rgba(244,67,54,0.1);
+    border-color: rgba(244,67,54,0.3);
+    color: var(--red);
+  }
+  .champ-btn.champ-btn-exit:hover {
+    background: rgba(244,67,54,0.22);
+    border-color: var(--red);
+  }
   .champ-period-summary {
     font-size: 12px;
     color: var(--text-faint);
@@ -5820,6 +5829,7 @@ function renderCampeonato() {
           <button class="champ-btn" id="champ-vacation-btn">🏖️ Férias</button>
           <button class="champ-btn" id="champ-history-btn">📚 Histórico</button>
           <button class="champ-btn" id="champ-rules-btn" title="Critérios e desempate">❓ Regras</button>
+          <button class="champ-btn champ-btn-exit" id="champ-exit-btn" title="Sair do campeonato e bloquear">🚪 Sair</button>
         </div>
       </div>
       <div class="champ-period-summary">
@@ -5836,10 +5846,10 @@ function renderCampeonato() {
     ${renderPodium(div1)}
     
     <div class="champ-divisions">
-      ${renderDivision('div-1', '🥇 1ª Divisão · Elite', 'média ≥ 100% da meta', div1, meta, movements, prevPeriod)}
-      ${renderDivision('div-2', '🥈 2ª Divisão · Acesso', 'média entre 80% e 99%', div2, meta, movements, prevPeriod)}
-      ${renderDivision('div-3', '🥉 3ª Divisão · Base', 'média entre 70% e 79%', div3, meta, movements, prevPeriod)}
-      ${renderDivision('div-4', '⚠️ 4ª Divisão · Reforço', 'média abaixo de 70%', div4, meta, movements, prevPeriod)}
+      ${renderDivision('div-1', '🥇 1ª Divisão · Elite', 'média ≥ 100% da meta', div1, meta, movements, prevPeriod, 0)}
+      ${renderDivision('div-2', '🥈 2ª Divisão · Acesso', 'média entre 80% e 99%', div2, meta, movements, prevPeriod, div1.length)}
+      ${renderDivision('div-3', '🥉 3ª Divisão · Base', 'média entre 70% e 79%', div3, meta, movements, prevPeriod, div1.length + div2.length)}
+      ${renderDivision('div-4', '⚠️ 4ª Divisão · Reforço', 'média abaixo de 70%', div4, meta, movements, prevPeriod, div1.length + div2.length + div3.length)}
     </div>
   `;
   
@@ -5876,6 +5886,18 @@ function renderCampeonato() {
   document.getElementById('champ-vacation-btn').onclick = openVacationModal;
   document.getElementById('champ-history-btn').onclick = openHistoryModal;
   document.getElementById('champ-rules-btn').onclick = openRulesModal;
+  document.getElementById('champ-exit-btn').onclick = exitChampeonato;
+}
+
+// Sai do campeonato: limpa auth, volta pra Tarde
+function exitChampeonato() {
+  sessionStorage.removeItem("champ-auth");
+  const tab = document.getElementById("tab-campeonato");
+  if (tab) tab.classList.remove("unlocked");
+  STATE.shift = "tarde";
+  ensureValidDay();
+  render();
+  BugGuard.toast("Saiu do campeonato. Senha será pedida novamente.", "warn");
 }
 
 // === TÉCNICOS ===
@@ -5999,7 +6021,7 @@ function renderPodium(div1) {
   `;
 }
 
-function renderDivision(cls, title, rule, list, meta, movements, prevPeriod) {
+function renderDivision(cls, title, rule, list, meta, movements, prevPeriod, posOffset = 0) {
   if (!list.length) {
     return `
       <div class="champ-division ${cls}">
@@ -6019,7 +6041,7 @@ function renderDivision(cls, title, rule, list, meta, movements, prevPeriod) {
         <div class="champ-div-rule">${rule}</div>
       </div>
       <div class="champ-div-body">
-        ${list.map((s, i) => renderChampRow(s, i + 1, meta, movements, prevPeriod)).join('')}
+        ${list.map((s, i) => renderChampRow(s, posOffset + i + 1, meta, movements, prevPeriod)).join('')}
       </div>
     </div>
   `;
@@ -6031,6 +6053,7 @@ function renderChampRow(stats, pos, meta, movements, prevPeriod) {
     ? `<div class="champ-avatar" data-person-name="${stats.name}" style="background-image:url('${photo}')"></div>`
     : `<div class="champ-avatar" data-person-name="${stats.name}" style="background:${colorFromName(stats.name)}"><span class="ini">${initialOf(stats.name)}</span></div>`;
   
+  // Ouro/prata/bronze só para os 3 primeiros do ranking GERAL
   let posClass = '';
   if (pos === 1) posClass = 'gold';
   else if (pos === 2) posClass = 'silver';
