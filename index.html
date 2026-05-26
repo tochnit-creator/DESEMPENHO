@@ -189,6 +189,7 @@
   .shift-tab[data-shift="tarde"].active::after { background: var(--tarde); }
   .shift-tab[data-shift="noite"].active::after { background: var(--noite-2); }
   .shift-tab[data-shift="suporte"].active::after { background: var(--blue); }
+  .shift-tab[data-shift="campeonato"].active::after { background: var(--amber); }
   .shift-tab[data-shift="horas"].active::after { background: var(--amber); }
   .shift-tab-locked {
     opacity: 0.6;
@@ -1891,6 +1892,387 @@
   .vs-row .left { text-align: right; }
   .vs-row .right { text-align: left; }
 
+  /* === CAMPEONATO === */
+  .campeonato-view { margin-top: 8px; }
+  .champ-header {
+    background: linear-gradient(135deg, rgba(255,176,32,0.08), rgba(255,176,32,0.02));
+    border: 1px solid rgba(255,176,32,0.25);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+  .champ-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .champ-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--amber);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .champ-role-toggle {
+    display: flex;
+    gap: 4px;
+    background: var(--bg);
+    padding: 3px;
+    border-radius: 100px;
+  }
+  .champ-role-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 6px 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+  .champ-role-btn.active {
+    background: var(--amber);
+    color: #1a1410;
+  }
+  .champ-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .champ-filters label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .champ-filters input[type="date"] {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color-scheme: dark;
+  }
+  .champ-filters input[type="date"]:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+  .champ-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .champ-btn {
+    background: rgba(255,176,32,0.12);
+    border: 1px solid rgba(255,176,32,0.3);
+    color: var(--amber);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .champ-btn:hover {
+    background: rgba(255,176,32,0.25);
+    border-color: var(--amber);
+  }
+  .champ-period-summary {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+  .champ-period-summary strong { color: var(--text); }
+
+  /* Divisões */
+  .champ-divisions { display: flex; flex-direction: column; gap: 14px; }
+  .champ-division {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .champ-division.div-1 { border-left: 4px solid #ffd700; }
+  .champ-division.div-2 { border-left: 4px solid #c0c0c0; }
+  .champ-division.div-3 { border-left: 4px solid #cd7f32; }
+  .champ-div-header {
+    padding: 12px 18px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .champ-div-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .champ-division.div-1 .champ-div-title { color: #ffd700; }
+  .champ-division.div-2 .champ-div-title { color: #c0c0c0; }
+  .champ-division.div-3 .champc-div-title, .champ-division.div-3 .champ-div-title { color: #cd7f32; }
+  .champ-div-count {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .champ-div-rule {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-style: italic;
+    font-family: var(--font-sans);
+  }
+  .champ-div-body { padding: 8px 0; }
+  .champ-row {
+    display: grid;
+    grid-template-columns: 32px 36px 1fr auto auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.15s;
+  }
+  .champ-row:last-child { border-bottom: none; }
+  .champ-row:hover { background: rgba(255,176,32,0.04); }
+  .champ-row.on-vacation { opacity: 0.55; background: rgba(33,150,243,0.04); }
+  .champ-pos {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-faint);
+    text-align: center;
+  }
+  .champ-pos.gold { color: #ffd700; }
+  .champ-pos.silver { color: #c0c0c0; }
+  .champ-pos.bronze { color: #cd7f32; }
+  .champ-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .champ-avatar:hover { transform: scale(1.1); }
+  .champ-avatar .ini {
+    font-family: var(--font-display);
+    font-size: 12px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .champ-name {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .champ-vacation-badge {
+    background: rgba(33,150,243,0.18);
+    color: var(--blue);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 100px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .champ-metric {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: right;
+    min-width: 56px;
+  }
+  .champ-metric-label {
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 1px;
+  }
+  .champ-metric-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .champ-empty {
+    text-align: center;
+    color: var(--text-faint);
+    padding: 16px;
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  /* Modal de férias */
+  .vacation-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 20px;
+    animation: postit-fade-in 0.2s;
+    overflow-y: auto;
+  }
+  .vacation-overlay.show { display: flex; }
+  .vacation-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 540px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    animation: profile-slide-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .vacation-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .vacation-subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+  }
+  .vacation-add-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr auto;
+    gap: 8px;
+    margin-bottom: 16px;
+    align-items: end;
+  }
+  .vacation-add-row label {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .vacation-add-row select,
+  .vacation-add-row input {
+    width: 100%;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 7px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color-scheme: dark;
+  }
+  .vacation-add-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 35px;
+  }
+  .vacation-add-btn:hover { background: #1976d2; }
+  .vacation-list {
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+  }
+  .vacation-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .vacation-item:last-child { border-bottom: none; }
+  .vacation-item-name {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .vacation-item-dates {
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: var(--font-display);
+  }
+  .vacation-item-remove {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--red);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 11px;
+  }
+  .vacation-item-remove:hover { background: rgba(255,87,87,0.1); }
+  .vacation-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12px;
+    font-style: italic;
+  }
+
   /* === Post-it de feedback (clip animado) === */
   .postit-trigger {
     display: inline-flex;
@@ -2598,6 +2980,7 @@
     <button class="shift-tab active" data-shift="tarde">Tarde<span class="count" id="count-tarde"></span></button>
     <button class="shift-tab" data-shift="noite">Noite<span class="count" id="count-noite"></span></button>
     <button class="shift-tab" data-shift="suporte">Suporte<span class="count" id="count-suporte"></span></button>
+    <button class="shift-tab shift-tab-locked" data-shift="campeonato" id="tab-campeonato">🔒 🏆 Campeonato</button>
     <button class="shift-tab shift-tab-locked" data-shift="horas" id="tab-horas">🔒 Horas</button>
   </div>
 
@@ -2646,12 +3029,40 @@
   </div>
 
   <div id="horas-view" class="horas-view" style="display:none"></div>
+  <div id="campeonato-view" class="campeonato-view" style="display:none"></div>
 
   <footer class="footer">
     <div>Fonte: relatório de conferência · KDT-Informática</div>
     <div id="footer-meta"></div>
   </footer>
 
+</div>
+
+<!-- MODAL DE FÉRIAS -->
+<div class="vacation-overlay" id="vacation-overlay">
+  <div class="vacation-card">
+    <button class="profile-close" id="vacation-close-btn" title="Fechar">✕</button>
+    <div class="vacation-title">🏖️ Gerenciar Férias</div>
+    <div class="vacation-subtitle">Marque colaboradores que estão de férias. Eles aparecerão com o badge "Em férias" no campeonato e manterão a posição atual sem serem penalizados.</div>
+    
+    <div class="vacation-add-row">
+      <div>
+        <label>Colaborador</label>
+        <select id="vacation-person"></select>
+      </div>
+      <div>
+        <label>De</label>
+        <input type="date" id="vacation-start">
+      </div>
+      <div>
+        <label>Até</label>
+        <input type="date" id="vacation-end">
+      </div>
+      <button class="vacation-add-btn" id="vacation-add-btn">Adicionar</button>
+    </div>
+    
+    <div id="vacation-list"></div>
+  </div>
 </div>
 
 <!-- BANNER DE MODO COMPARAÇÃO -->
@@ -3429,6 +3840,7 @@ function render() {
   if (STATE.shift === "horas") {
     document.getElementById("normal-view").style.display = "none";
     document.getElementById("horas-view").style.display = "block";
+    document.getElementById("campeonato-view").style.display = "none";
     document.getElementById("day-bar").style.display = "none";
     renderHoras();
     const days = D.days;
@@ -3438,9 +3850,24 @@ function render() {
     return;
   }
 
+  // Modo CAMPEONATO
+  if (STATE.shift === "campeonato") {
+    document.getElementById("normal-view").style.display = "none";
+    document.getElementById("horas-view").style.display = "none";
+    document.getElementById("campeonato-view").style.display = "block";
+    document.getElementById("day-bar").style.display = "none";
+    renderCampeonato();
+    const days = D.days;
+    document.getElementById("period-label").textContent =
+      `Período: ${fmtDate(days[0])} a ${fmtDate(days[days.length-1])} · ${D.records.length} registros`;
+    document.getElementById("footer-meta").textContent = "Campeonato · 3 divisões";
+    return;
+  }
+
   // Modo normal
   document.getElementById("normal-view").style.display = "";
   document.getElementById("horas-view").style.display = "none";
+  document.getElementById("campeonato-view").style.display = "none";
   document.getElementById("day-bar").style.display = "";
 
   renderDayBar();
@@ -4415,7 +4842,8 @@ document.getElementById('help-overlay').addEventListener('click', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (document.getElementById('help-overlay').classList.contains('show')) closeBadgesHelp();
+    if (document.getElementById('vacation-overlay').classList.contains('show')) closeVacationModal();
+    else if (document.getElementById('help-overlay').classList.contains('show')) closeBadgesHelp();
     else if (document.getElementById('vs-overlay').classList.contains('show')) closeVS();
     else if (document.getElementById('profile-overlay').classList.contains('show')) closeProfile();
     else if (COMPARE.active) disableCompareMode();
@@ -4447,6 +4875,398 @@ document.addEventListener('click', (e) => {
   } catch (err) {
     console.error('[click row-rank]', err);
   }
+});
+
+// === CAMPEONATO ===
+const CHAMP = {
+  role: 'conferente',    // ou 'separador'
+  startDate: null,       // string ISO
+  endDate: null,         // string ISO
+  vacations: {},         // { "NOME": [{start, end, fixedDivision}] }
+};
+
+// Carrega/persiste config no localStorage
+function loadChampConfig() {
+  try {
+    const raw = localStorage.getItem('champ-config');
+    if (raw) {
+      const cfg = JSON.parse(raw);
+      if (cfg.startDate) CHAMP.startDate = cfg.startDate;
+      if (cfg.endDate) CHAMP.endDate = cfg.endDate;
+      if (cfg.vacations) CHAMP.vacations = cfg.vacations;
+      if (cfg.role) CHAMP.role = cfg.role;
+    }
+  } catch(e) { console.warn('[champ] erro ao ler config', e); }
+}
+function saveChampConfig() {
+  try {
+    localStorage.setItem('champ-config', JSON.stringify({
+      role: CHAMP.role,
+      startDate: CHAMP.startDate,
+      endDate: CHAMP.endDate,
+      vacations: CHAMP.vacations,
+    }));
+  } catch(e) { console.warn('[champ] erro ao salvar config', e); }
+}
+
+// Inicializa período com últimos 15 dias se não tiver salvo
+function initChampPeriod() {
+  if (!CHAMP.startDate || !CHAMP.endDate) {
+    if (D.days.length === 0) return;
+    CHAMP.endDate = D.days[D.days.length - 1];
+    // 15 dias atrás do último
+    const last = new Date(CHAMP.endDate + 'T12:00:00');
+    last.setDate(last.getDate() - 14);
+    CHAMP.startDate = last.toISOString().split('T')[0];
+  }
+}
+
+// Verifica se uma pessoa está de férias num dia específico
+function isOnVacation(name, day) {
+  const vacList = CHAMP.vacations[name];
+  if (!vacList || !vacList.length) return false;
+  return vacList.some(v => day >= v.start && day <= v.end);
+}
+
+// Verifica se a pessoa está de férias HOJE (ponto de referência: último dia do período)
+function isOnVacationNow(name) {
+  if (!CHAMP.endDate) return false;
+  return isOnVacation(name, CHAMP.endDate);
+}
+
+// Computa estatísticas do campeonato pra uma pessoa
+function computeChampStats(name, role) {
+  const list = role === 'conferente' ? D.conferente_daily : D.separador_daily;
+  const meta = role === 'conferente' ? 450 : 440;
+  
+  // Filtra entries no período
+  const entriesAll = list.filter(e => 
+    e.name === name && 
+    e.day >= CHAMP.startDate && 
+    e.day <= CHAMP.endDate
+  );
+  
+  // Dias que NÃO estavam de férias
+  const entries = entriesAll.filter(e => !isOnVacation(name, e.day));
+  
+  // Total de dias no período
+  const periodDays = [];
+  let d = new Date(CHAMP.startDate + 'T12:00:00');
+  const end = new Date(CHAMP.endDate + 'T12:00:00');
+  while (d <= end) {
+    periodDays.push(d.toISOString().split('T')[0]);
+    d.setDate(d.getDate() + 1);
+  }
+  
+  // Dias de férias no período
+  const vacationDays = periodDays.filter(day => isOnVacation(name, day));
+  
+  const daysWorked = entries.length;
+  const totalPedidos = entries.reduce((s, e) => s + e.pedidos, 0);
+  const totalItens = entries.reduce((s, e) => s + e.itens, 0);
+  const totalScore = entries.reduce((s, e) => s + e.score, 0);
+  const totalPct = entries.reduce((s, e) => s + (e.score / meta * 100), 0);
+  
+  return {
+    name,
+    role,
+    daysWorked,
+    totalPedidos,
+    totalItens,
+    totalScore,
+    avgDailyScore: daysWorked > 0 ? totalScore / daysWorked : 0,
+    avgPct: daysWorked > 0 ? totalPct / daysWorked : 0,
+    vacationDays: vacationDays.length,
+    onVacation: isOnVacationNow(name),
+    hasData: daysWorked > 0,
+  };
+}
+
+// Pega todos os candidatos (todos que já trabalharam em algum dia desse role)
+function getChampCandidates(role) {
+  const list = role === 'conferente' ? D.conferente_daily : D.separador_daily;
+  const names = new Set();
+  for (const e of list) {
+    // Só conta tarde e noite — suporte fica de fora do campeonato
+    if (e.record_shift === 'tarde' || e.record_shift === 'noite') {
+      names.add(e.name);
+    }
+  }
+  return Array.from(names);
+}
+
+// Decide a divisão de uma pessoa
+// Critério INICIAL (você ajusta depois): proporcional - terço top/meio/baixo
+function assignDivisions(statsList) {
+  // Ordena por avgDailyScore decrescente — só quem tem dados
+  const withData = statsList.filter(s => s.hasData);
+  const withoutData = statsList.filter(s => !s.hasData);
+  
+  withData.sort((a, b) => b.avgDailyScore - a.avgDailyScore);
+  
+  const n = withData.length;
+  if (n === 0) return { div1: [], div2: [], div3: withoutData };
+  
+  // Terço pra cada
+  const cutD1 = Math.max(1, Math.ceil(n / 3));
+  const cutD2 = Math.max(cutD1 + 1, Math.ceil((2 * n) / 3));
+  
+  const div1 = withData.slice(0, cutD1);
+  const div2 = withData.slice(cutD1, cutD2);
+  const div3 = withData.slice(cutD2).concat(withoutData);
+  
+  return { div1, div2, div3 };
+}
+
+function renderCampeonato() {
+  initChampPeriod();
+  const view = document.getElementById('campeonato-view');
+  
+  // Calcula stats de todos
+  const candidates = getChampCandidates(CHAMP.role);
+  const allStats = candidates.map(name => computeChampStats(name, CHAMP.role));
+  const { div1, div2, div3 } = assignDivisions(allStats);
+  
+  const meta = CHAMP.role === 'conferente' ? 450 : 440;
+  const roleLabel = CHAMP.role === 'conferente' ? 'Conferentes' : 'Separadores';
+  
+  // Conta dias no período
+  let totalDays = 0;
+  if (CHAMP.startDate && CHAMP.endDate) {
+    const d1 = new Date(CHAMP.startDate + 'T12:00:00');
+    const d2 = new Date(CHAMP.endDate + 'T12:00:00');
+    totalDays = Math.floor((d2 - d1) / 86400000) + 1;
+  }
+  
+  // Conta pessoas em férias
+  const onVacationCount = allStats.filter(s => s.onVacation).length;
+  
+  view.innerHTML = `
+    <div class="champ-header">
+      <div class="champ-header-top">
+        <div class="champ-title">🏆 Campeonato</div>
+        <div class="champ-role-toggle">
+          <button class="champ-role-btn ${CHAMP.role === 'conferente' ? 'active' : ''}" data-champ-role="conferente">Conferente</button>
+          <button class="champ-role-btn ${CHAMP.role === 'separador' ? 'active' : ''}" data-champ-role="separador">Separador</button>
+        </div>
+      </div>
+      <div class="champ-filters">
+        <label>De: <input type="date" id="champ-start" value="${CHAMP.startDate || ''}"></label>
+        <label>Até: <input type="date" id="champ-end" value="${CHAMP.endDate || ''}"></label>
+        <div class="champ-actions">
+          <button class="champ-btn" id="champ-vacation-btn">🏖️ Férias</button>
+        </div>
+      </div>
+      <div class="champ-period-summary">
+        📅 Período: <strong>${fmtDate(CHAMP.startDate)}</strong> a <strong>${fmtDate(CHAMP.endDate)}</strong> 
+        (${totalDays} dias) · 
+        <strong>${roleLabel}</strong> · 
+        ${allStats.length} pessoas no ranking
+        ${onVacationCount > 0 ? ` · 🏖️ ${onVacationCount} em férias` : ''}
+      </div>
+    </div>
+    
+    <div class="champ-divisions">
+      ${renderDivision('div-1', '🥇 1ª Divisão · Elite', 'top do ranking', div1, meta)}
+      ${renderDivision('div-2', '🥈 2ª Divisão · Acesso', 'meio do ranking', div2, meta)}
+      ${renderDivision('div-3', '🥉 3ª Divisão · Base', 'restante do ranking', div3, meta)}
+    </div>
+  `;
+  
+  // Bind eventos
+  document.querySelectorAll('.champ-role-btn').forEach(b => {
+    b.onclick = () => {
+      CHAMP.role = b.dataset.champRole;
+      saveChampConfig();
+      renderCampeonato();
+    };
+  });
+  
+  document.getElementById('champ-start').onchange = (e) => {
+    CHAMP.startDate = e.target.value;
+    saveChampConfig();
+    renderCampeonato();
+  };
+  document.getElementById('champ-end').onchange = (e) => {
+    CHAMP.endDate = e.target.value;
+    saveChampConfig();
+    renderCampeonato();
+  };
+  document.getElementById('champ-vacation-btn').onclick = openVacationModal;
+}
+
+function renderDivision(cls, title, rule, list, meta) {
+  if (!list.length) {
+    return `
+      <div class="champ-division ${cls}">
+        <div class="champ-div-header">
+          <div class="champ-div-title">${title} <span class="champ-div-count">(0)</span></div>
+          <div class="champ-div-rule">${rule}</div>
+        </div>
+        <div class="champ-empty">Nenhum colaborador nesta divisão no período selecionado</div>
+      </div>
+    `;
+  }
+  
+  return `
+    <div class="champ-division ${cls}">
+      <div class="champ-div-header">
+        <div class="champ-div-title">${title} <span class="champ-div-count">(${list.length})</span></div>
+        <div class="champ-div-rule">${rule}</div>
+      </div>
+      <div class="champ-div-body">
+        ${list.map((s, i) => renderChampRow(s, i + 1, meta)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderChampRow(stats, pos, meta) {
+  const photo = window.AVATARS && window.AVATARS[stats.name];
+  const avatarHtml = photo
+    ? `<div class="champ-avatar" data-person-name="${stats.name}" style="background-image:url('${photo}')"></div>`
+    : `<div class="champ-avatar" data-person-name="${stats.name}" style="background:${colorFromName(stats.name)}"><span class="ini">${initialOf(stats.name)}</span></div>`;
+  
+  let posClass = '';
+  if (pos === 1) posClass = 'gold';
+  else if (pos === 2) posClass = 'silver';
+  else if (pos === 3) posClass = 'bronze';
+  
+  const vacBadge = stats.onVacation
+    ? `<span class="champ-vacation-badge">🏖️ Em férias</span>`
+    : '';
+  
+  const avgDaily = Math.round(stats.avgDailyScore);
+  const avgPct = Math.round(stats.avgPct);
+  
+  return `
+    <div class="champ-row ${stats.onVacation ? 'on-vacation' : ''}">
+      <div class="champ-pos ${posClass}">${pos}º</div>
+      ${avatarHtml}
+      <div class="champ-name">${stats.name}${vacBadge}</div>
+      <div class="champ-metric-wrap">
+        <div class="champ-metric">${avgDaily}</div>
+        <div class="champ-metric-label">média/dia</div>
+      </div>
+      <div class="champ-metric-wrap">
+        <div class="champ-metric">${avgPct}%</div>
+        <div class="champ-metric-label">% meta</div>
+      </div>
+      <div class="champ-metric-wrap">
+        <div class="champ-metric">${stats.daysWorked}</div>
+        <div class="champ-metric-label">dias</div>
+      </div>
+    </div>
+  `;
+}
+
+// === MODAL DE FÉRIAS ===
+function openVacationModal() {
+  const overlay = document.getElementById('vacation-overlay');
+  const select = document.getElementById('vacation-person');
+  
+  // Popula select com todos os nomes
+  const allNames = new Set();
+  for (const e of D.conferente_daily) allNames.add(e.name);
+  for (const e of D.separador_daily) allNames.add(e.name);
+  const sorted = Array.from(allNames).sort();
+  
+  select.innerHTML = '<option value="">Selecione...</option>' +
+    sorted.map(n => `<option value="${n}">${n}</option>`).join('');
+  
+  // Default das datas: hoje
+  const today = (CHAMP.endDate || new Date().toISOString().split('T')[0]);
+  document.getElementById('vacation-start').value = today;
+  document.getElementById('vacation-end').value = today;
+  
+  renderVacationList();
+  overlay.classList.add('show');
+}
+
+function closeVacationModal() {
+  document.getElementById('vacation-overlay').classList.remove('show');
+}
+
+function renderVacationList() {
+  const list = document.getElementById('vacation-list');
+  const entries = [];
+  for (const [name, vacs] of Object.entries(CHAMP.vacations)) {
+    for (let i = 0; i < vacs.length; i++) {
+      entries.push({ name, idx: i, ...vacs[i] });
+    }
+  }
+  entries.sort((a, b) => b.start.localeCompare(a.start));
+  
+  if (!entries.length) {
+    list.innerHTML = '<div class="vacation-empty">Nenhuma férias registrada</div>';
+    return;
+  }
+  
+  list.innerHTML = entries.map(e => `
+    <div class="vacation-item">
+      <div class="vacation-item-name">${e.name}</div>
+      <div class="vacation-item-dates">${fmtDate(e.start)} → ${fmtDate(e.end)}</div>
+      <button class="vacation-item-remove" data-vac-name="${e.name}" data-vac-idx="${e.idx}">Remover</button>
+    </div>
+  `).join('');
+  
+  list.querySelectorAll('.vacation-item-remove').forEach(b => {
+    b.onclick = () => {
+      const name = b.dataset.vacName;
+      const idx = parseInt(b.dataset.vacIdx, 10);
+      CHAMP.vacations[name].splice(idx, 1);
+      if (CHAMP.vacations[name].length === 0) delete CHAMP.vacations[name];
+      saveChampConfig();
+      renderVacationList();
+      if (STATE.shift === 'campeonato') renderCampeonato();
+    };
+  });
+}
+
+function addVacation() {
+  const name = document.getElementById('vacation-person').value;
+  const start = document.getElementById('vacation-start').value;
+  const end = document.getElementById('vacation-end').value;
+  
+  if (!name) {
+    BugGuard.toast('Selecione um colaborador', 'warn');
+    return;
+  }
+  if (!start || !end) {
+    BugGuard.toast('Defina as datas de início e fim', 'warn');
+    return;
+  }
+  if (start > end) {
+    BugGuard.toast('Data de início deve ser antes ou igual à data de fim', 'warn');
+    return;
+  }
+  
+  if (!CHAMP.vacations[name]) CHAMP.vacations[name] = [];
+  CHAMP.vacations[name].push({ start, end });
+  saveChampConfig();
+  renderVacationList();
+  if (STATE.shift === 'campeonato') renderCampeonato();
+}
+
+// Bind do modal de férias
+document.getElementById('vacation-close-btn').onclick = closeVacationModal;
+document.getElementById('vacation-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'vacation-overlay') closeVacationModal();
+});
+document.getElementById('vacation-add-btn').onclick = addVacation;
+
+// Carrega config salva
+loadChampConfig();
+
+// === click no avatar do campeonato pra abrir perfil ===
+document.addEventListener('click', (e) => {
+  try {
+    const av = e.target.closest('.champ-avatar');
+    if (av && av.dataset.personName) {
+      e.stopPropagation();
+      openProfile(av.dataset.personName);
+    }
+  } catch (err) { console.error(err); }
 });
 
 function escapeHtml(s) {
@@ -4651,7 +5471,6 @@ document.querySelectorAll(".shift-tab").forEach(t => {
   t.onclick = () => {
     const shift = t.dataset.shift;
     if (shift === "horas") {
-      // Aba protegida: verifica auth da sessão
       if (sessionStorage.getItem("horas-auth") === "ok") {
         STATE.shift = "horas";
         render();
@@ -4660,18 +5479,33 @@ document.querySelectorAll(".shift-tab").forEach(t => {
       }
       return;
     }
+    if (shift === "campeonato") {
+      STATE.shift = "campeonato";
+      render();
+      return;
+    }
     STATE.shift = shift;
     ensureValidDay();
     render();
   };
 });
 
-// === Modal de senha pra aba Horas ===
+// === Modal de senha (Horas + Campeonato) ===
 const PWD_CORRETA = "horas";
-function openPwdModal() {
+const PWD_CHAMP = "champ";   // senha do campeonato
+let PWD_CONTEXT = "horas";   // qual aba está pedindo senha
+
+function openPwdModal(context = "horas") {
+  PWD_CONTEXT = context;
   const m = document.getElementById("pwd-modal");
   const inp = document.getElementById("pwd-input");
   const err = document.getElementById("pwd-error");
+  const title = document.getElementById("pwd-title");
+  if (title) {
+    title.textContent = context === "campeonato"
+      ? "🏆 Campeonato — área restrita"
+      : "🔒 Horas — área restrita";
+  }
   m.classList.add("show");
   inp.value = "";
   err.classList.remove("show");
@@ -4683,18 +5517,33 @@ function closePwdModal() {
 function tryPwd() {
   const inp = document.getElementById("pwd-input");
   const err = document.getElementById("pwd-error");
-  if (inp.value.trim().toLowerCase() === PWD_CORRETA) {
-    sessionStorage.setItem("horas-auth", "ok");
-    document.getElementById("tab-horas").classList.add("unlocked");
-    closePwdModal();
-    STATE.shift = "horas";
-    render();
+  const v = inp.value.trim().toLowerCase();
+  
+  if (PWD_CONTEXT === "campeonato") {
+    if (v === PWD_CHAMP) {
+      sessionStorage.setItem("champ-auth", "ok");
+      document.getElementById("tab-campeonato").classList.add("unlocked");
+      closePwdModal();
+      STATE.shift = "campeonato";
+      render();
+      return;
+    }
   } else {
-    err.classList.add("show");
-    inp.classList.add("shake");
-    setTimeout(() => inp.classList.remove("shake"), 400);
-    inp.select();
+    if (v === PWD_CORRETA) {
+      sessionStorage.setItem("horas-auth", "ok");
+      document.getElementById("tab-horas").classList.add("unlocked");
+      closePwdModal();
+      STATE.shift = "horas";
+      render();
+      return;
+    }
   }
+  
+  // senha errada
+  err.classList.add("show");
+  inp.classList.add("shake");
+  setTimeout(() => inp.classList.remove("shake"), 400);
+  inp.select();
 }
 document.getElementById("pwd-ok").onclick = tryPwd;
 document.getElementById("pwd-cancel").onclick = closePwdModal;
@@ -4705,9 +5554,12 @@ document.getElementById("pwd-input").addEventListener("keydown", (e) => {
 document.getElementById("pwd-modal").addEventListener("click", (e) => {
   if (e.target.id === "pwd-modal") closePwdModal();
 });
-// Se já autenticou nesta sessão, marca a aba como destravada
+// Se já autenticou nesta sessão, marca as abas como destravadas
 if (sessionStorage.getItem("horas-auth") === "ok") {
   document.getElementById("tab-horas").classList.add("unlocked");
+}
+if (sessionStorage.getItem("champ-auth") === "ok") {
+  document.getElementById("tab-campeonato").classList.add("unlocked");
 }
 
 // Search
@@ -4773,6 +5625,9 @@ triggerCelebration = BugGuard.safe(_triggerCelebration, 'triggerCelebration');
 
 const _renderHoras = renderHoras;
 renderHoras = BugGuard.safe(_renderHoras, 'renderHoras');
+
+const _renderCampeonato = renderCampeonato;
+renderCampeonato = BugGuard.safe(_renderCampeonato, 'renderCampeonato');
 
 // init
 STATE.day = D.days[D.days.length - 1];
