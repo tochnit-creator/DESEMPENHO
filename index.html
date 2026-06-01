@@ -4168,6 +4168,45 @@
     <button class="shift-tab shift-tab-locked" data-shift="horas" id="tab-horas">🔒 Horas</button>
   </div>
 
+  <style>
+    .sheet-bar { margin: 4px 0 10px; }
+    .sheet-toggle {
+      background: var(--bg-3); color: var(--text-dim); border: 1px solid var(--line);
+      border-radius: 6px; padding: 7px 12px; font-size: 12px; cursor: pointer;
+      font-family: var(--font-mono); letter-spacing: .04em; transition: all .15s;
+    }
+    .sheet-toggle:hover { color: var(--text); border-color: var(--tarde-2); }
+    .sheet-toggle.active { color: #1a1206; background: linear-gradient(90deg,#fde047,#f59e0b); border-color:#f59e0b; font-weight:700; }
+    .sheet-panel {
+      margin-top: 8px; padding: 12px; background: var(--bg-2); border: 1px solid var(--line);
+      border-radius: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+    .sheet-panel input {
+      flex: 1 1 320px; min-width: 220px; background: var(--bg-3); border: 1px solid var(--line);
+      color: var(--text); border-radius: 6px; padding: 8px 10px; font-size: 12px;
+    }
+    .sheet-panel button {
+      background: var(--tarde-2); color: #1a1206; border: none; border-radius: 6px;
+      padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .sheet-panel button.ghost { background: transparent; color: var(--text-faint); border: 1px solid var(--line); font-weight: 400; }
+    .sheet-panel button:hover { filter: brightness(1.08); }
+    .sheet-status { flex: 1 1 100%; font-size: 12px; color: var(--text-dim); line-height: 1.5; min-height: 1px; }
+    .sheet-status.err { color: var(--red); }
+    .sheet-status.ok { color: var(--green); }
+    .sheet-hint { flex: 1 1 100%; font-size: 11px; color: var(--text-faint); line-height: 1.5; }
+  </style>
+  <div class="sheet-bar" id="sheet-bar">
+    <button class="sheet-toggle" id="sheet-toggle">🔄 Atualizar pela planilha</button>
+    <div class="sheet-panel" id="sheet-panel" style="display:none">
+      <input type="text" id="sheet-url" placeholder="Cole aqui o link CSV publicado da aba Tarde + Suporte" autocomplete="off" spellcheck="false" />
+      <button id="sheet-update">Atualizar rank</button>
+      <button id="sheet-clear" class="ghost">Limpar</button>
+      <div class="sheet-status" id="sheet-status"></div>
+      <div class="sheet-hint">Lê coluna A (nomes), G (pedidos), I (itens); seções SEPARADORES/CONFERENTES; data em N3. Turno vem do mapa; quem não é Tarde/Suporte é ignorado. Peterson fica fora.</div>
+    </div>
+  </div>
+
   <div class="day-bar" id="day-bar">
     <span class="day-bar-label">Dia:</span>
   </div>
@@ -8385,6 +8424,136 @@ renderHoras = BugGuard.safe(_renderHoras, 'renderHoras');
 
 const _renderCampeonato = renderCampeonato;
 renderCampeonato = BugGuard.safe(_renderCampeonato, 'renderCampeonato');
+
+// ============================================================
+// IMPORTAÇÃO PELA PLANILHA (Google Sheets publicado como CSV)
+// Aba: Tarde + Suporte. A=nomes, G=pedidos, I=itens. Seções A4/A38. Data N3.
+// ============================================================
+function sheetParseCSV(text){
+  const rows=[]; let row=[], field='', i=0, inQ=false;
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  while(i<text.length){
+    const c=text[i];
+    if(inQ){ if(c==='"'){ if(text[i+1]==='"'){field+='"';i+=2;continue;} inQ=false;i++;continue; } field+=c;i++;continue; }
+    if(c==='"'){inQ=true;i++;continue;}
+    if(c===','){row.push(field);field='';i++;continue;}
+    if(c==='\n'){row.push(field);rows.push(row);row=[];field='';i++;continue;}
+    field+=c;i++;
+  }
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  return rows;
+}
+function sheetNum(s){
+  if(s==null) return 0; s=String(s).trim(); if(!s) return 0;
+  if(/^\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,'');
+  s=s.replace(/\s/g,'').replace(',','.');
+  const n=parseFloat(s.replace(/[^0-9.\-]/g,'')); return isNaN(n)?0:Math.round(n);
+}
+const SHEET_MESES={janeiro:1,fevereiro:2,'março':3,marco:3,abril:4,maio:5,junho:6,julho:7,agosto:8,setembro:9,outubro:10,novembro:11,dezembro:12};
+function sheetDate(raw){
+  if(!raw) return null; let s=String(raw).trim().toLowerCase();
+  let m=s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(m) return `${m[3]}-${String(+m[2]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;
+  m=s.match(/(\d{1,2})\s+de\s+([a-zç]+)\s+de\s+(\d{4})/); if(m && SHEET_MESES[m[2]]) return `${m[3]}-${String(SHEET_MESES[m[2]]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;
+  m=s.match(/(\d{4})-(\d{2})-(\d{2})/); if(m) return `${m[1]}-${m[2]}-${m[3]}`;
+  return null;
+}
+function sheetIsHeader(cell,kind){
+  const t=(cell||'').trim().toLowerCase();
+  return kind==='sep' ? /^separador(es)?$/.test(t) : /^conferente(s)?$/.test(t);
+}
+function sheetIngest(rows){
+  let COL_PED=6, COL_IT=8;
+  const hr=rows.find(r=> r.some(c=>/pedidos/i.test(c)) && r.some(c=>/iten/i.test(c)) );
+  if(hr){ const pi=hr.findIndex(c=>/pedidos/i.test(c)), ii=hr.findIndex(c=>/iten/i.test(c)); if(pi>=0)COL_PED=pi; if(ii>=0)COL_IT=ii; }
+  let date=sheetDate((rows[2]||[])[13]);
+  if(!date){ for(const r of rows){ const j=r.findIndex(c=>/atualiza/i.test(c)); if(j>=0){ date=sheetDate(r[j])||sheetDate(r[j+1]); if(date)break; } } }
+  if(!date) throw new Error('não encontrei a data (célula N3).');
+  const sm={}; Object.keys(D.shift_map||{}).forEach(k=>sm[k.trim().toUpperCase()]=D.shift_map[k]);
+  const out={date, sep:[], conf:[], suporte:[], warnings:[]};
+  let mode=null;
+  for(const r of rows){
+    const a=(r[0]||'').trim();
+    if(sheetIsHeader(a,'sep')){mode='separador';continue;}
+    if(sheetIsHeader(a,'conf')){mode='conferente';continue;}
+    if(!a||!mode) continue;
+    const ped=sheetNum(r[COL_PED]), it=sheetNum(r[COL_IT]); const name=a.toUpperCase();
+    if(name==='PETERSON SANTOS') continue;
+    if(ped===0&&it===0) continue;
+    const shift=sm[name]; let rec;
+    if(shift==='tarde'||shift==='suporte') rec=shift;
+    else if(!shift){ rec='tarde'; out.warnings.push(`${name}: sem turno no mapa → assumido TARDE`); }
+    else { out.warnings.push(`${name}: turno '${shift}' (não Tarde/Suporte) → ignorado`); continue; }
+    const e={name, role:mode, record_shift:rec, pedidos:ped, itens:it, score:ped+it};
+    if(rec==='suporte') out.suporte.push(e); else if(mode==='separador') out.sep.push(e); else out.conf.push(e);
+  }
+  return out;
+}
+function sheetApply(res){
+  const date=res.date;
+  if(!D.days.includes(date)){ D.days.push(date); D.days.sort(); }
+  const keep=e=> !(e.day===date && (e.record_shift==='tarde'||e.record_shift==='suporte'));
+  D.separador_daily=D.separador_daily.filter(keep);
+  D.conferente_daily=D.conferente_daily.filter(keep);
+  const prevOf=(arr,name)=>{const p=arr.filter(e=>e.name===name&&e.day<date).sort((a,b)=>a.day<b.day?1:-1)[0];return p?{prev_score:p.score,prev_day:p.day}:{prev_score:null,prev_day:null};};
+  const add=(arr,e,role)=>{ const pv=prevOf(arr,e.name); arr.push({name:e.name, primary_shift:(D.shift_map[e.name]||e.record_shift), record_shift:e.record_shift, day:date, pedidos:e.pedidos, itens:e.itens, vol:0, score:e.score, dupla:false, main_role:role, streak:0, prev_score:pv.prev_score, prev_day:pv.prev_day}); };
+  res.sep.forEach(e=>add(D.separador_daily,e,'separador'));
+  res.conf.forEach(e=>add(D.conferente_daily,e,'conferente'));
+  res.suporte.forEach(e=> e.role==='separador' ? add(D.separador_daily,e,'separador') : add(D.conferente_daily,e,'conferente'));
+}
+function sheetSave(res,url){ try{ localStorage.setItem('painel_sheet_import_v1', JSON.stringify({res,url,ts:Date.now()})); localStorage.setItem('painel_sheet_url', url||''); }catch(e){} }
+function sheetLoadSaved(){ try{ const raw=localStorage.getItem('painel_sheet_import_v1'); if(!raw) return null; const o=JSON.parse(raw); if(o&&o.res&&o.res.date){ sheetApply(o.res); return o; } }catch(e){} return null; }
+function sheetStatus(msg,cls){ const el=document.getElementById('sheet-status'); if(!el)return; el.textContent=msg||''; el.className='sheet-status'+(cls?(' '+cls):''); }
+
+async function sheetUpdate(){
+  const input=document.getElementById('sheet-url');
+  const url=(input.value||'').trim();
+  if(!url){ sheetStatus('Cole o link CSV publicado da planilha primeiro.','err'); return; }
+  if(!/^https?:\/\//.test(url)){ sheetStatus('Link inválido — precisa começar com https://','err'); return; }
+  sheetStatus('Baixando planilha…');
+  try{
+    const resp=await fetch(url,{cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP '+resp.status+' — a planilha está publicada como CSV?');
+    const text=await resp.text();
+    if(/<html/i.test(text.slice(0,200))) throw new Error('o link retornou uma página, não CSV. Use “Publicar na web → CSV”.');
+    const rows=sheetParseCSV(text);
+    const res=sheetIngest(rows);
+    sheetApply(res); sheetSave(res,url);
+    if(typeof ensureValidDay==='function'){ try{ensureValidDay();}catch(e){} }
+    render();
+    const d=res.date.split('-'); const ddmm=d[2]+'/'+d[1];
+    let msg=`✅ Importado dia ${ddmm}: ${res.sep.length} separador(es), ${res.conf.length} conferente(s), ${res.suporte.length} suporte.`;
+    sheetStatus(msg,'ok');
+    if(res.warnings.length){ sheetStatus(msg+' ⚠️ '+res.warnings.join(' · '),'ok'); }
+  }catch(err){
+    var m = (err && err.message) ? err.message : String(err);
+    if(/failed to fetch|networkerror|load failed|cors/i.test(m)){
+      var inFrame=false; try{ inFrame = (window.self!==window.top); }catch(e){ inFrame=true; }
+      if(inFrame){
+        sheetStatus('❌ Não baixou. Você está vendo o painel numa PRÉ-VISUALIZAÇÃO, que bloqueia acessos externos. Baixe o arquivo HTML e abra no Chrome — aí o botão funciona.','err');
+      } else {
+        sheetStatus('❌ Não baixou (Failed to fetch). Quase sempre o link não é o CSV publicado. Na planilha: Arquivo › Compartilhar › Publicar na web › escolha a aba › formato CSV. Cole ESSE link (termina com output=csv), não o link normal de compartilhar/editar.','err');
+      }
+      return;
+    }
+    sheetStatus('❌ '+m,'err');
+  }
+}
+(function wireSheet(){
+  const toggle=document.getElementById('sheet-toggle');
+  const panel=document.getElementById('sheet-panel');
+  const input=document.getElementById('sheet-url');
+  if(!toggle) return;
+  try{ const u=localStorage.getItem('painel_sheet_url'); if(u&&input) input.value=u; }catch(e){}
+  toggle.addEventListener('click',()=>{ const show=panel.style.display==='none'; panel.style.display=show?'flex':'none'; toggle.classList.toggle('active',show); });
+  document.getElementById('sheet-update').addEventListener('click',sheetUpdate);
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter') sheetUpdate(); });
+  document.getElementById('sheet-clear').addEventListener('click',()=>{
+    try{ localStorage.removeItem('painel_sheet_import_v1'); }catch(e){}
+    sheetStatus('Importação salva limpa. Recarregue a página para ver os dados originais.','');
+  });
+})();
+// aplica o último import salvo (se houver) ANTES do primeiro render
+var _sheetSaved = sheetLoadSaved();
 
 // init
 STATE.day = D.days[D.days.length - 1];
