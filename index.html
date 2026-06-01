@@ -8501,7 +8501,7 @@ function sheetApply(res){
   res.suporte.forEach(e=> e.role==='separador' ? add(D.separador_daily,e,'separador') : add(D.conferente_daily,e,'conferente'));
 }
 function sheetSave(res,url){ try{ localStorage.setItem('painel_sheet_import_v1', JSON.stringify({res,url,ts:Date.now()})); localStorage.setItem('painel_sheet_url', url||''); }catch(e){} }
-function sheetLoadSaved(){ try{ const raw=localStorage.getItem('painel_sheet_import_v1'); if(!raw) return null; const o=JSON.parse(raw); if(o&&o.res&&o.res.date){ sheetApply(o.res); return o; } }catch(e){} return null; }
+function sheetLoadSaved(){ try{ const raw=localStorage.getItem('painel_sheet_import_v1'); if(!raw) return null; const o=JSON.parse(raw); if(o&&o.res&&o.res.date){ const t=(o.res.sep||[]).length+(o.res.conf||[]).length+(o.res.suporte||[]).length; if(t===0){ localStorage.removeItem('painel_sheet_import_v1'); return null; } sheetApply(o.res); return o; } }catch(e){} return null; }
 function sheetStatus(msg,cls){ const el=document.getElementById('sheet-status'); if(!el)return; el.textContent=msg||''; el.className='sheet-status'+(cls?(' '+cls):''); }
 
 async function sheetUpdate(){
@@ -8517,6 +8517,11 @@ async function sheetUpdate(){
     if(/<html/i.test(text.slice(0,200))) throw new Error('o link retornou uma página, não CSV. Use “Publicar na web → CSV”.');
     const rows=sheetParseCSV(text);
     const res=sheetIngest(rows);
+    const total=res.sep.length+res.conf.length+res.suporte.length;
+    if(total===0){
+      sheetStatus('❌ Baixei a planilha mas não achei nenhuma linha em SEPARADORES/CONFERENTES. O link está pegando a ABA ERRADA — publique a aba Tarde+Suporte (com as seções em A4/A38). Nada foi alterado.','err');
+      return;
+    }
     sheetApply(res); sheetSave(res,url);
     if(typeof ensureValidDay==='function'){ try{ensureValidDay();}catch(e){} }
     render();
