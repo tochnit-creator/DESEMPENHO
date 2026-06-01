@@ -4199,7 +4199,7 @@
   <div class="sheet-bar" id="sheet-bar">
     <button class="sheet-toggle" id="sheet-toggle">🔄 Atualizar pela planilha</button>
     <div class="sheet-panel" id="sheet-panel" style="display:none">
-      <input type="text" id="sheet-url" placeholder="Cole aqui o link CSV publicado da aba Tarde + Suporte" autocomplete="off" spellcheck="false" />
+      <input type="text" id="sheet-url" placeholder="Link CSV publicado da aba BASE" autocomplete="off" spellcheck="false" />
       <button id="sheet-update">Atualizar rank</button>
       <button id="sheet-clear" class="ghost">Limpar</button>
       <div class="sheet-status" id="sheet-status"></div>
@@ -8548,7 +8548,9 @@ async function sheetUpdate(){
   const panel=document.getElementById('sheet-panel');
   const input=document.getElementById('sheet-url');
   if(!toggle) return;
-  try{ const u=localStorage.getItem('painel_sheet_url'); if(u&&input) input.value=u; }catch(e){}
+  // Link CSV padrão: aba BASE (gid 196190407) do documento publicado
+  var SHEET_DEFAULT_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSlKnvLY6rJ1EcaxaWMdo2Qqor5DvhhYscL4zd-FIa3sUz_QJ05m2aLhLVDpocNo54VWh_EYsgnFrmt/pub?gid=196190407&single=true&output=csv";
+  try{ const u=localStorage.getItem('painel_sheet_url'); if(input) input.value = (u && u.trim()) ? u : SHEET_DEFAULT_URL; }catch(e){ if(input) input.value = SHEET_DEFAULT_URL; }
   toggle.addEventListener('click',()=>{ const show=panel.style.display==='none'; panel.style.display=show?'flex':'none'; toggle.classList.toggle('active',show); });
   document.getElementById('sheet-update').addEventListener('click',sheetUpdate);
   input.addEventListener('keydown',e=>{ if(e.key==='Enter') sheetUpdate(); });
