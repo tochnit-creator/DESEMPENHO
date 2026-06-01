@@ -6428,6 +6428,11 @@ function loadChampConfig() {
       if (cfg.season) CHAMP.season = cfg.season;
     }
   } catch(e) { console.warn('[champ] erro ao ler config', e); }
+  // Temporada oficial 01/06–01/08/2026: corrige períodos antigos salvos
+  if (CHAMP.endDate && CHAMP.endDate < '2026-06-01') {
+    CHAMP.startDate = '2026-06-01';
+    CHAMP.endDate = '2026-08-01';
+  }
 }
 function saveChampConfig() {
   try {
@@ -6454,15 +6459,11 @@ function saveSeasonsList(list) {
   catch(e) { console.warn('[seasons]', e); }
 }
 
-// Inicializa período com últimos 15 dias se não tiver salvo
+// Período padrão da temporada: 01/06/2026 a 01/08/2026 (3 meses)
 function initChampPeriod() {
   if (!CHAMP.startDate || !CHAMP.endDate) {
-    if (D.days.length === 0) return;
-    CHAMP.endDate = D.days[D.days.length - 1];
-    // 15 dias atrás do último
-    const last = new Date(CHAMP.endDate + 'T12:00:00');
-    last.setDate(last.getDate() - 14);
-    CHAMP.startDate = last.toISOString().split('T')[0];
+    CHAMP.startDate = '2026-06-01';
+    CHAMP.endDate = '2026-08-01';
   }
 }
 
