@@ -1199,8 +1199,27 @@
     animation: mood-pop 2.6s ease-in-out infinite;
   }
   .mood-happy { background: linear-gradient(135deg, #34d399, #10b981); }
-  .mood-meh   { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-  .mood-sad   { background: linear-gradient(135deg, #fb7185, #e11d48); }
+  .mood-good  { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .mood-meh   { background: linear-gradient(135deg, #94a3b8, #64748b); }
+  .mood-low   { background: linear-gradient(135deg, #fb923c, #f59e0b); }
+  /* Movimento reativo ao desempenho (!important pra vencer as variações nth-child) */
+  .avatar-photo.ava-happy, .avatar-initial.ava-happy {
+    animation: avatar-bounce 1.5s ease-in-out infinite !important;
+    box-shadow: 0 2px 10px rgba(16,185,129,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  .avatar-photo.ava-low, .avatar-initial.ava-low {
+    animation: avatar-sway 4.2s ease-in-out infinite !important;
+  }
+  @keyframes avatar-bounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-6px) scale(1.06); }
+    50% { transform: translateY(0) scale(1); }
+    65% { transform: translateY(-3px) scale(1.03); }
+  }
+  @keyframes avatar-sway {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-1px) rotate(2deg); }
+  }
   @keyframes mood-pop {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.12); }
@@ -8113,8 +8132,9 @@ function initialOf(name) {
 
 function moodEmoji(mood) {
   if (mood === "happy") return "😄";
-  if (mood === "meh") return "🙂";
-  return "😞";
+  if (mood === "good") return "🙂";
+  if (mood === "meh") return "😐";
+  return "😟";
 }
 
 // Build avatar HTML — uses photo if available, else colored initials
@@ -8124,7 +8144,7 @@ function avatarFor(name, mood) {
 
   if (photoUrl) {
     return `
-      <span class="avatar-photo" style="background-image:url('${photoUrl}')">
+      <span class="avatar-photo ava-${mood}" style="background-image:url('${photoUrl}')">
         <span class="avatar-mood mood-${mood}">${emoji}</span>
       </span>
     `;
@@ -8133,7 +8153,7 @@ function avatarFor(name, mood) {
   const bg = colorFromName(name);
   const initials = initialOf(name);
   return `
-    <span class="avatar-initial" style="background:${bg}">
+    <span class="avatar-initial ava-${mood}" style="background:${bg}">
       <span class="avatar-letter">${initials}</span>
       <span class="avatar-mood mood-${mood}">${emoji}</span>
     </span>
@@ -8188,9 +8208,10 @@ function clearAvatarStampsCache() {
 }
 
 function moodFromPct(p) {
-  if (p >= 100) return "happy";
-  if (p >= 90) return "meh";
-  return "sad";
+  if (p >= 100) return "happy";  // bateu a meta
+  if (p >= 85) return "good";    // quase lá
+  if (p >= 70) return "meh";     // mediano
+  return "low";                  // abaixo — tom de incentivo
 }
 
 // ---------- Celebration ----------
