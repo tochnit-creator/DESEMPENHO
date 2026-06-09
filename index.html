@@ -6551,6 +6551,10 @@ function loadChampConfig() {
     CHAMP.startDate = '2026-06-01';
     CHAMP.endDate = '2026-08-01';
   }
+  // Férias do CASSIO FREITAS desde a última atividade (05/06). Só semeia se ninguém já configurou.
+  if (!CHAMP.vacations['CASSIO FREITAS']) {
+    CHAMP.vacations['CASSIO FREITAS'] = [{ start: '2026-06-06', end: '2026-08-01' }];
+  }
 }
 function saveChampConfig() {
   try {
