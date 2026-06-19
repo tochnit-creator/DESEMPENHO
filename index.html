@@ -4734,6 +4734,42 @@ if (!D.days) D.days = [];
 if (!D.shift_map) D.shift_map = {};
 
 // ============================================================
+// CADASTRO + UNIFICAÇÃO DE NOMES
+// ------------------------------------------------------------
+// Pessoas que aparecem no sistema com mais de um nome são tratadas
+// como UMA só. A chave é o nome alternativo; o valor é o nome oficial.
+// Ex.: "JEFFERSON" e "JEFFERSON DE LI" são a mesma pessoa (noite).
+// IMPORTANTE: comparação é EXATA — "JEFFERSON VIRISSIMO DE LIMA"
+// (técnico da noite) NÃO é afetado.
+const NAME_ALIAS = {
+  "JEFFERSON": "JEFFERSON DE LI",
+};
+function canonName(n){
+  const k = (n || "").trim().toUpperCase();
+  return NAME_ALIAS[k] || k;
+}
+
+// Cadastro de turno (mescla sem apagar o que já existe)
+(function cadastro(){
+  const add = (nome, turno) => { if(!D.shift_map[nome]) D.shift_map[nome] = turno; };
+  add("GENEILDA", "suporte");
+  add("JEFFERSON DE LI", "noite");
+  add("JEFFERSON", "noite"); // alias antigo continua válido
+})();
+
+// Normaliza nomes em todo o DATA: cada pessoa vira o nome oficial.
+(function normalizeAliases(){
+  // 1) renomeia entradas das listas diárias
+  ["conferente_daily","separador_daily"].forEach(key=>{
+    (D[key]||[]).forEach(e=>{ if(e && e.name) e.name = canonName(e.name); });
+  });
+  // 2) garante que o turno do nome oficial existe no mapa
+  Object.keys(D.shift_map).forEach(k=>{
+    const c = canonName(k);
+    if(c !== k && !D.shift_map[c]) D.shift_map[c] = D.shift_map[k];
+  });
+})();
+// ============================================================
 
 // ---------- helpers ----------
 function fmtDate(iso) {
@@ -8717,7 +8753,7 @@ function sheetIngest(rows){
     if(sheetIsHeader(a,'sep')){mode='separador';continue;}
     if(sheetIsHeader(a,'conf')){mode='conferente';continue;}
     if(!a||!mode) continue;
-    const ped=sheetNum(r[COL_PED]), it=sheetNum(r[COL_IT]); const name=a.toUpperCase();
+    const ped=sheetNum(r[COL_PED]), it=sheetNum(r[COL_IT]); const name=canonName(a);
     if(name==='PETERSON SANTOS') continue;
     if(ped===0&&it===0) continue;
     const shift=sm[name]; let rec;
