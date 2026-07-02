@@ -8973,6 +8973,16 @@ function sheetIngestGeral(rows){
   return {format:'geral', dates, byDate, count, warnings};
 }
 
+// Função principal da pessoa = a que ela mais fez no histórico (dias), desempate pelo score do dia.
+function sheetMainRole(name, cScore, sScore){
+  let cd=0, sd=0;
+  for(const e of D.conferente_daily) if(e.name===name && !e.dupla_shadow) cd++;
+  for(const e of D.separador_daily) if(e.name===name && !e.dupla_shadow) sd++;
+  if(cd!==sd) return cd>sd ? 'conferente' : 'separador';
+  if(cScore!==sScore) return cScore>sScore ? 'conferente' : 'separador';
+  return 'conferente';
+}
+
 function sheetApplyGeral(res){
   const affected=new Set(res.dates);
   // a planilha é autoritativa: remove tudo (qualquer turno) das datas que ela traz e reconstrói
@@ -8997,8 +9007,8 @@ function sheetApplyGeral(res){
       const hasC=!!(c && c.score>0), hasS=!!(s && s.score>0);
       if(!hasC && !hasS) continue;
       if(hasC && hasS){
-        // DUPLA FUNÇÃO — principal (total) na função de maior score + sombra na outra
-        const dominant = (c.score > s.score) ? 'conferente' : 'separador';
+        // DUPLA FUNÇÃO — principal (total) na função predominante da pessoa + sombra na outra
+        const dominant = sheetMainRole(name, c.score, s.score);
         const shift = (dominant==='conferente' ? c.shift : s.shift) || c.shift || s.shift || D.shift_map[name] || 'tarde';
         if(shift && !D.shift_map[name]) D.shift_map[name]=shift;
         const primaryShift = D.shift_map[name] || shift;
