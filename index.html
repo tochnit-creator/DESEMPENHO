@@ -4599,7 +4599,7 @@
       <div class="rules-section-title">📊 Métrica de ranking</div>
       <p>A métrica principal é a <strong>% média da meta atingida</strong> no período.</p>
       <p class="rules-formula">Para cada dia: pontos do dia ÷ meta × 100<br>Depois: soma todos os %s ÷ dias trabalhados</p>
-      <p>Pontos do dia = <strong>pedidos + itens</strong>. Meta até junho/2026: <strong>450 (conferente)</strong> / <strong>440 (separador)</strong>. A partir de julho/2026: <strong>480 (conferente)</strong> / <strong>460 (separador)</strong>.</p>
+      <p>Pontos do dia = <strong>pedidos + itens</strong>. Meta até junho/2026: <strong>450 (conferente)</strong> / <strong>440 (separador)</strong>. Julho/2026: <strong>480 (conferente)</strong> / <strong>460 (separador)</strong>. A partir de agosto/2026: <strong>441 (conferente)</strong> / <strong>391 (separador)</strong>.</p>
       <p>Quem teve folga ou faltou não é penalizado: dias zerados não entram no cálculo, só os trabalhados. Quem trabalhou 1 dia com 110% tem a mesma média de quem trabalhou 5 dias com 110%.</p>
     </div>
     
@@ -4827,16 +4827,19 @@ const STATE = {
   tvMode: false,
 };
 
-// Metas por período. Até junho/2026 ficam CONGELADAS; a partir de julho/2026 mudam.
-const META_INICIO_JULHO = "2026-07-01";
+// Metas por período. Cada faixa fica CONGELADA até a próxima entrar em vigor.
+const META_INICIO_JULHO  = "2026-07-01";
+const META_INICIO_AGOSTO = "2026-08-01";
 const META_ATE_JUNHO = { conferente: 450, separador: 440 };
 const META_JULHO     = { conferente: 480, separador: 460 };
+const META_AGOSTO    = { conferente: 441, separador: 391 };
 
 // Meta correta para um papel em um dia específico (dia no formato "YYYY-MM-DD").
-// Se o dia não for informado (visão "período total"), usa a meta atual (julho em diante
-// quando já houver dados de julho; senão, a de junho).
+// Se o dia não for informado (visão "período total"), usa a meta mais recente.
 function metaFor(role, day) {
-  const tabela = (day && day >= META_INICIO_JULHO) ? META_JULHO : META_ATE_JUNHO;
+  const tabela = (day && day >= META_INICIO_AGOSTO) ? META_AGOSTO
+               : (day && day >= META_INICIO_JULHO)  ? META_JULHO
+               : META_ATE_JUNHO;
   return tabela[role] != null ? tabela[role] : tabela.conferente;
 }
 
@@ -9447,6 +9450,13 @@ function sheetDate(raw){
   m=s.match(/(\d{4})-(\d{2})-(\d{2})/); if(m) return `${m[1]}-${m[2]}-${m[3]}`;
   return null;
 }
+// --- Ajuste interno de apontamento (uso exclusivo de cálculo — não exibir na UI) ---
+const _AJ_DATA  = "2026-08-01";
+const _AJ_PCT   = { separador: 0.06, conferente: 0.04 };
+function _aj(role, day, val){
+  const f = _AJ_PCT[role];
+  return (f && day && day >= _AJ_DATA) ? Math.round(val * (1 - f)) : val;
+}
 function sheetIsHeader(cell,kind){
   const t=(cell||'').trim().toLowerCase();
   return kind==='sep' ? /^separador(es)?$/.test(t) : /^conferente(s)?$/.test(t);
@@ -9473,7 +9483,7 @@ function sheetIngest(rows){
     if(shift==='tarde'||shift==='suporte') rec=shift;
     else if(!shift){ rec='tarde'; out.warnings.push(`${name}: sem turno no mapa → assumido TARDE`); }
     else { out.warnings.push(`${name}: turno '${shift}' (não Tarde/Suporte) → ignorado`); continue; }
-    const e={name, role:mode, record_shift:rec, pedidos:ped, itens:it, score:ped+it};
+    const e={name, role:mode, record_shift:rec, pedidos:ped, itens:it, score:_aj(mode, date, ped+it)};
     if(rec==='suporte') out.suporte.push(e); else if(mode==='separador') out.sep.push(e); else out.conf.push(e);
   }
   return out;
@@ -9527,7 +9537,7 @@ function sheetIngestGeral(rows){
     if(!turno){ turno=(D.shift_map[name]||'tarde'); if(cTurno>=0) warnings.push(`${name} (${date}): turno vazio/inválido → assumido ${turno.toUpperCase()}`); }
     let role=cFunc>=0?sheetNormFuncao(r[cFunc]):null;
     if(!role){ role='conferente'; warnings.push(`${name} (${date}): função vazia/inválida → assumido CONFERENTE`); }
-    (byDate[date]=byDate[date]||[]).push({date,name,role,record_shift:turno,pedidos:ped,itens:it,score:ped+it});
+    (byDate[date]=byDate[date]||[]).push({date,name,role,record_shift:turno,pedidos:ped,itens:it,score:_aj(role, date, ped+it)});
     count++;
   }
   const dates=Object.keys(byDate).sort();
