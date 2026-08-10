@@ -1293,7 +1293,7 @@
     50% { transform: scale(1.12); }
   }
 
-  /* Selinhos de conquistas — inline ao lado dos badges TARDE/DUPLA FUNÇÃO */
+  /* Selinhos de conquistas — inline ao lado dos badges TARDE/POLIVALENTE */
   .row-stamps {
     display: inline-flex;
     align-items: center;
@@ -4405,13 +4405,13 @@
       <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Precisa melhorar (&lt;90%)</div>
       <div class="legend-item">🔥 Em chamas (≥120%)</div>
       <div class="legend-item">⚠️ Atenção urgente (&lt;50%)</div>
-      <div class="legend-item" style="margin-left:auto"><span class="badge dupla" style="font-size:9px">DUPLA FUNÇÃO</span> Conferiu E separou no mesmo turno</div>
+      <div class="legend-item" style="margin-left:auto"><span class="badge dupla" style="font-size:9px">POLIVALENTE</span> Conferiu E separou no mesmo turno</div>
     </div>
 
     <div id="dupla-banner" class="dupla-banner" style="display:none">
       <div class="db-icon">⚡</div>
       <div class="db-text">
-        <strong>Regra ativa:</strong> quando uma pessoa conferiu E separou no mesmo turno/dia, a pontuação do papel <em>menor</em> é somada ao papel <em>maior</em>. A soma conta apenas no ranking onde ela fez <em>mais pontos</em>; no outro ranking ela aparece só com a parte daquela função. Marcada com a tag <span class="badge dupla" style="font-size:8px;vertical-align:middle">DUPLA FUNÇÃO</span> e o detalhamento abaixo da barra.
+        <strong>Regra ativa:</strong> quando uma pessoa conferiu E separou no mesmo turno/dia, a pontuação do papel <em>menor</em> é somada ao papel <em>maior</em>. A soma conta apenas no ranking onde ela fez <em>mais pontos</em>; no outro ranking ela aparece só com a parte daquela função. Marcada com a tag <span class="badge dupla" style="font-size:8px;vertical-align:middle">POLIVALENTE</span> e o detalhamento abaixo da barra.
       </div>
     </div>
 
@@ -4616,7 +4616,7 @@
     <div class="rules-section">
       <div class="rules-section-title">⚡ Dupla função</div>
       <p>Quem faz as duas funções no mesmo dia compete <strong>só na função oficial</strong> dele. Ex.: um separador que também conferiu aparece apenas no ranking de <strong>Separadores</strong>, nunca no de Conferentes.</p>
-      <p>A média de pontos, porém, usa a <strong>produção cheia do dia</strong> — se ele fez dupla função, o total dos dois (separação + conferência) entra no cálculo daquele dia. No <strong>diário</strong> ele também aparece nas duas abas, com o número de cada função.</p>
+      <p>A média de pontos, porém, usa a <strong>produção cheia do dia</strong> — se ele fez polivalente, o total dos dois (separação + conferência) entra no cálculo daquele dia. No <strong>diário</strong> ele também aparece nas duas abas, com o número de cada função.</p>
     </div>
     
     <div class="rules-section">
@@ -5344,7 +5344,7 @@ function renderRanking(rows) {
       : `<span class="badge outro">não classificado</span>`;
 
     const duplaBadge = r.dupla
-      ? `<span class="badge dupla" title="Pontuou em ambos os papéis — somados aqui">DUPLA FUNÇÃO</span>`
+      ? `<span class="badge dupla" title="Pontuou em ambos os papéis — somados aqui">POLIVALENTE</span>`
       : "";
 
     const liderBadge = LIDERES.includes(r.name)
@@ -5379,7 +5379,7 @@ function renderRanking(rows) {
       ? ""
       : `<span class="seg"><span class="k">dias:</span><span class="v">${r.daysCount}</span></span>`;
 
-    // Build breakdown for dupla função entries (only when a single day is selected;
+    // Build breakdown for polivalente entries (only when a single day is selected;
     // when "Todos" is selected, the dupla flag may not be consistent across days)
     let breakdownHtml = "";
     if (r.dupla && STATE.day && r.breakdown) {
@@ -5629,7 +5629,7 @@ function renderRankingSuporte(rows) {
     const allDays = daysUsedByPerson(r.name);
 
     const duplaBadge = r.dupla
-      ? `<span class="badge dupla" title="Conferiu E separou no mesmo turno/dia">DUPLA FUNÇÃO</span>`
+      ? `<span class="badge dupla" title="Conferiu E separou no mesmo turno/dia">POLIVALENTE</span>`
       : "";
 
     // Build per-day mini chart (only when viewing "Todos")
@@ -7351,7 +7351,7 @@ function champEntryRolePart(e, role) {
 }
 // Produção diária da pessoa na função oficial (não mistura a outra função)
 function champRoleEntries(name, role) {
-  // Produção diária TOTAL da pessoa (1 registro por dia, já somado na dupla função).
+  // Produção diária TOTAL da pessoa (1 registro por dia, já somado na polivalente).
   // 'role' é usado só para elegibilidade da aba (champOfficialRole); o score aqui é o total do dia.
   const byDay = {};
   for (const list of [D.separador_daily, D.conferente_daily]) {
@@ -9034,7 +9034,7 @@ function avatarFor(name, mood) {
 }
 
 // Retorna HTML dos "selinhos" de conquistas que a pessoa tem (até 4 mais importantes)
-// Renderiza inline (ao lado dos badges TARDE/DUPLA FUNÇÃO), não em cima do avatar
+// Renderiza inline (ao lado dos badges TARDE/POLIVALENTE), não em cima do avatar
 const _avatarStampsCache = {};
 function badgeStampsInline(name) {
   if (_avatarStampsCache[name] !== undefined) return _avatarStampsCache[name];
@@ -9578,7 +9578,7 @@ function sheetApplyGeral(res){
         continue;
       }
       if(hasC && hasS){
-        // DUPLA FUNÇÃO — a soma vai para a função de MAIOR pontuação do dia; a outra mostra só a sua parte
+        // POLIVALENTE — a soma vai para a função de MAIOR pontuação do dia; a outra mostra só a sua parte
         const dominant = (c.score > s.score) ? 'conferente' : 'separador';
         const shift = (dominant==='conferente' ? c.shift : s.shift) || c.shift || s.shift || D.shift_map[name] || 'tarde';
         if(shift && !D.shift_map[name]) D.shift_map[name]=shift;
