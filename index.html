@@ -3057,6 +3057,98 @@
   }
   .duel-team.tarde .duel-team-name { color: var(--tarde); }
   .duel-team.noite .duel-team-name { color: var(--noite-2); }
+
+  /* === TARDE CHAMPIONS (equipes internas Insônia x Tropa do Rebite) === */
+  .tc-wrap { padding: 4px 0 24px; }
+  .tc-headline {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+  }
+  .tc-title {
+    font-family: var(--font-display); font-size: 22px; letter-spacing: 0.02em;
+  }
+  .tc-subtitle { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+  .tc-period {
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 20px;
+    padding: 6px 14px;
+  }
+  .tc-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; margin-bottom: 18px;
+  }
+  .tc-subtabs { display: flex; gap: 8px; }
+  .tc-subtab {
+    background: var(--bg-2); color: var(--text-dim); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s; font-family: var(--font-sans);
+  }
+  .tc-subtab:hover { color: var(--text); border-color: var(--line-2); }
+  .tc-subtab.active {
+    color: #1a1206; background: linear-gradient(90deg,#fde047,#f59e0b);
+    border-color: #f59e0b; font-weight: 700;
+  }
+  .tc-select {
+    background: var(--bg-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px; font-size: 12px; font-family: var(--font-mono);
+  }
+  .tc-teams { display: flex; align-items: stretch; gap: 14px; }
+  .tc-vs {
+    align-self: center; font-family: var(--font-display); font-size: 15px;
+    color: var(--text-faint); letter-spacing: 0.1em;
+  }
+  .tc-team-card {
+    flex: 1; min-width: 0; background: var(--bg-2); border: 2px solid var(--line);
+    border-radius: 14px; padding: 16px; transition: transform .3s, box-shadow .3s, border-color .3s;
+  }
+  .tc-team-card.tc-leading {
+    border-color: var(--tc-color); transform: translateY(-3px);
+    box-shadow: 0 0 24px var(--tc-color-soft, rgba(255,255,255,0.08));
+  }
+  .tc-team-head { display: flex; align-items: center; gap: 8px; }
+  .tc-team-icon { font-size: 20px; }
+  .tc-team-name {
+    font-family: var(--font-display); font-size: 16px; letter-spacing: 0.01em;
+    color: var(--tc-color); flex: 1;
+  }
+  .tc-crown { font-size: 16px; }
+  .tc-team-total {
+    font-family: var(--font-display); font-size: 34px; color: var(--text);
+    margin-top: 6px; line-height: 1;
+  }
+  .tc-team-total-label { font-size: 11px; color: var(--text-dim); margin-left: 6px; font-family: var(--font-sans); }
+  .tc-team-vsbar-wrap {
+    height: 6px; background: var(--bg-3); border-radius: 4px; overflow: hidden; margin: 10px 0 14px;
+  }
+  .tc-team-vsbar { height: 100%; border-radius: 4px; transition: width .5s ease; }
+  .tc-members { display: flex; flex-direction: column; gap: 8px; }
+  .tc-member-row {
+    display: flex; align-items: center; gap: 8px; background: var(--bg-3);
+    border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px;
+  }
+  .tc-member-pos { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); width: 18px; }
+  .tc-member-avatar {
+    width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .tc-member-name {
+    font-size: 12px; font-weight: 600; color: var(--text); flex: 1 1 auto;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tc-member-bar-wrap {
+    flex: 1 1 60px; height: 5px; background: var(--bg-2); border-radius: 3px; overflow: hidden;
+    display: none;
+  }
+  .tc-member-bar { height: 100%; border-radius: 3px; }
+  .tc-member-score { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text); width: 44px; text-align: right; }
+  .tc-empty { font-size: 12px; color: var(--text-faint); padding: 10px 0; text-align: center; }
+  @media (min-width: 640px) {
+    .tc-member-bar-wrap { display: block; }
+  }
+  @media (max-width: 640px) {
+    .tc-teams { flex-direction: column; }
+    .tc-vs { padding: 2px 0; }
+  }
   .duel-team-pct {
     font-family: var(--font-display); font-size: 42px; font-weight: 800;
     color: var(--text); line-height: 1.15;
@@ -4331,6 +4423,7 @@
     <button class="shift-tab" data-shift="noite">Noite<span class="count" id="count-noite"></span></button>
     <button class="shift-tab" data-shift="suporte">Suporte<span class="count" id="count-suporte"></span></button>
     <button class="shift-tab" data-shift="campeonato" id="tab-campeonato">🏆 Campeonato</button>
+    <button class="shift-tab" data-shift="tardechamps" id="tab-tardechamps">🥊 Tarde Champions</button>
     <button class="shift-tab shift-tab-locked" data-shift="horas" id="tab-horas">🔒 Horas</button>
     <button class="shift-tab shift-tab-locked" data-shift="mensal" id="tab-mensal">🔒 Fechamento</button>
   </div>
@@ -4420,6 +4513,7 @@
 
   <div id="horas-view" class="horas-view" style="display:none"></div>
   <div id="campeonato-view" class="campeonato-view" style="display:none"></div>
+  <div id="tardechamps-view" class="tardechamps-view" style="display:none"></div>
   <style>
     .mensal-view { padding: 4px 0 24px; }
     .mensal-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
@@ -4825,6 +4919,7 @@ const STATE = {
   day: null,
   search: "",
   tvMode: false,
+  tc: { mode: "diario", day: null, month: null }, // estado da aba Tarde Champions
 };
 
 // Metas por período. Cada faixa fica CONGELADA até a próxima entrar em vigor.
@@ -4861,6 +4956,32 @@ const LIDERES = ["MAURICIO NASCIM"];
 const TEAM_NAMES = {
   tarde: "THE SURVIVORS",
   noite: "PILARES",
+};
+
+// === TARDE CHAMPIONS — duas equipes internas do turno da tarde ===
+// "roster" usa nome completo (ou só o primeiro nome, se bastar pra identificar
+// a pessoa dentro do turno da tarde). O casamento com os nomes da planilha é
+// tolerante a truncamento/acentos, então não precisa bater 100% igual.
+// Para adicionar/trocar gente, é só editar as listas abaixo.
+const TARDE_CHAMPS = {
+  teams: [
+    {
+      id: "insonia",
+      name: "Insônia",
+      icon: "🌙",
+      color: "#8b5cf6",
+      colorSoft: "rgba(139,92,246,0.28)",
+      roster: ["LUCIANO", "MARCOS FERNANDES", "VANESSA GOMES", "ALLAN SOARES", "LUIZ"],
+    },
+    {
+      id: "rebite",
+      name: "Tropa do Rebite",
+      icon: "🔩",
+      color: "#f97316",
+      colorSoft: "rgba(249,115,22,0.28)",
+      roster: ["JESSICA", "LUCAS VIEIRA", "LUCAS DAS GRACAS", "FABIANE", "GABRIEL", "BEATRIZ"],
+    },
+  ],
 };
 
 // ============================================================
@@ -5697,6 +5818,22 @@ function render() {
   renderShiftCounts();
 
   { const _mv = document.getElementById("mensal-view"); if (_mv) _mv.style.display = "none"; }
+  { const _tc = document.getElementById("tardechamps-view"); if (_tc) _tc.style.display = "none"; }
+
+  // Modo TARDE CHAMPIONS (Insônia × Tropa do Rebite)
+  if (STATE.shift === "tardechamps") {
+    document.getElementById("normal-view").style.display = "none";
+    document.getElementById("horas-view").style.display = "none";
+    document.getElementById("campeonato-view").style.display = "none";
+    document.getElementById("tardechamps-view").style.display = "block";
+    document.getElementById("day-bar").style.display = "none";
+    renderTardeChamps();
+    const days = D.days;
+    document.getElementById("period-label").textContent =
+      `Período: ${fmtDate(days[0])} a ${fmtDate(days[days.length-1])} · ${D.records.length} registros`;
+    document.getElementById("footer-meta").textContent = "Tarde Champions · Insônia × Tropa do Rebite";
+    return;
+  }
 
   // Modo HORAS: view diferente
   if (STATE.shift === "horas") {
@@ -7852,6 +7989,187 @@ function renderTeamDuel(allStats) {
   `;
 }
 
+// ============================================================
+// === TARDE CHAMPIONS — Insônia × Tropa do Rebite ===
+// Ranking interno das duas equipes do turno da tarde, com visão
+// Diário (um dia específico) e Mensal (soma do mês inteiro).
+// Pontuação de cada pessoa = pedidos + itens daquele dia/mês
+// (mesma fórmula do resto do painel), somando conferente+separador
+// sem contar duas vezes quem fez dupla função.
+// ============================================================
+function tcNorm(s) {
+  return (s || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase().replace(/\s+/g, " ").trim();
+}
+
+// Compara o nome da planilha com uma chave do elenco.
+// Casa por igualdade OU por prefixo palavra-a-palavra (em qualquer direção),
+// então "MARCOS FERNANDES" bate com "MARCOS FERNANDE" e "LUCIANO" bate com
+// "LUCIANO PEREIRA".
+function tcMatchesRoster(dataName, rosterKey) {
+  const nd = tcNorm(canonName(dataName));
+  const nk = tcNorm(rosterKey);
+  if (!nd || !nk) return false;
+  if (nd === nk) return true;
+  const dWords = nd.split(" ");
+  const kWords = nk.split(" ");
+  const n = Math.min(dWords.length, kWords.length);
+  for (let i = 0; i < n; i++) {
+    const dw = dWords[i], kw = kWords[i];
+    if (dw !== kw && !dw.startsWith(kw) && !kw.startsWith(dw)) return false;
+  }
+  return true;
+}
+
+function tcTeamForName(dataName) {
+  for (const t of TARDE_CHAMPS.teams) {
+    if (t.roster.some(key => tcMatchesRoster(dataName, key))) return t.id;
+  }
+  return null;
+}
+
+// Junta conferente_daily + separador_daily do turno da tarde, sem contar
+// duas vezes o "espelho" de quem fez dupla função (dupla_shadow).
+function tcCollectEntries() {
+  const all = [...D.conferente_daily, ...D.separador_daily];
+  return all.filter(e => e.record_shift === "tarde" && !e.zero_day && !e.dupla_shadow);
+}
+
+function tcMonthLabel(ym) {
+  const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  const [y, m] = ym.split("-").map(Number);
+  return `${meses[(m || 1) - 1]}/${y}`;
+}
+
+function tcAvailableMonths() {
+  return [...new Set(D.days.map(d => d.slice(0, 7)))].sort();
+}
+
+// Monta os totais das duas equipes (times ordenados como em TARDE_CHAMPS.teams)
+// a partir de um filtro sobre as entradas (por dia ou por mês).
+function tcBuildTotals(filterFn) {
+  const entries = tcCollectEntries().filter(filterFn);
+  const perTeam = {};
+  TARDE_CHAMPS.teams.forEach(t => perTeam[t.id] = new Map());
+  entries.forEach(e => {
+    const teamId = tcTeamForName(e.name);
+    if (!teamId) return;
+    const map = perTeam[teamId];
+    map.set(e.name, (map.get(e.name) || 0) + e.score);
+  });
+  return TARDE_CHAMPS.teams.map(t => {
+    const members = [...perTeam[t.id].entries()]
+      .map(([name, score]) => ({ name, score }))
+      .sort((a, b) => b.score - a.score);
+    const total = members.reduce((s, m) => s + m.score, 0);
+    return { ...t, members, total };
+  });
+}
+
+function renderTardeChamps() {
+  const view = document.getElementById("tardechamps-view");
+  if (!view) return;
+
+  if (!STATE.tc.day) {
+    const tardeDays = new Set(tcCollectEntries().map(e => e.day));
+    const available = D.days.filter(d => tardeDays.has(d));
+    STATE.tc.day = available.length ? available[available.length - 1] : (D.days[D.days.length - 1] || null);
+  }
+  if (!STATE.tc.month) {
+    const months = tcAvailableMonths();
+    STATE.tc.month = months.length ? months[months.length - 1] : null;
+  }
+
+  const mode = STATE.tc.mode;
+  const teams = mode === "diario"
+    ? tcBuildTotals(e => e.day === STATE.tc.day)
+    : tcBuildTotals(e => STATE.tc.month && e.day.slice(0, 7) === STATE.tc.month);
+
+  const [teamA, teamB] = teams;
+  const maxTotal = Math.max(teamA.total, teamB.total, 1);
+  const leaderId = teamA.total === teamB.total ? null : (teamA.total > teamB.total ? teamA.id : teamB.id);
+
+  const periodLabel = mode === "diario"
+    ? (STATE.tc.day ? fmtDate(STATE.tc.day) : "—")
+    : (STATE.tc.month ? tcMonthLabel(STATE.tc.month) : "—");
+
+  const dayOptions = D.days.map(d =>
+    `<option value="${d}" ${d === STATE.tc.day ? "selected" : ""}>${fmtDate(d)}</option>`
+  ).join("");
+  const monthOptions = tcAvailableMonths().map(m =>
+    `<option value="${m}" ${m === STATE.tc.month ? "selected" : ""}>${tcMonthLabel(m)}</option>`
+  ).join("");
+
+  const teamCardHtml = (t) => {
+    const isLeader = t.id === leaderId;
+    const barPct = Math.round((t.total / maxTotal) * 100);
+    const topScore = t.members.length ? t.members[0].score : 1;
+    const membersHtml = t.members.length
+      ? t.members.map((m, idx) => {
+          const pct = Math.max(6, Math.round((m.score / (topScore || 1)) * 100));
+          return `
+            <div class="tc-member-row">
+              <span class="tc-member-pos">${idx + 1}º</span>
+              <span class="tc-member-avatar" style="background:${colorFromName(m.name)}">${escapeHtml(initialOf(m.name))}</span>
+              <span class="tc-member-name">${escapeHtml(m.name)}</span>
+              <span class="tc-member-bar-wrap"><span class="tc-member-bar" style="width:${pct}%;background:${t.color}"></span></span>
+              <span class="tc-member-score">${m.score}</span>
+            </div>`;
+        }).join("")
+      : `<div class="tc-empty">Sem pontuação registrada neste período.</div>`;
+
+    return `
+      <div class="tc-team-card ${isLeader ? "tc-leading" : ""}" style="--tc-color:${t.color};--tc-color-soft:${t.colorSoft}">
+        <div class="tc-team-head">
+          <span class="tc-team-icon">${t.icon}</span>
+          <span class="tc-team-name">${escapeHtml(t.name)}</span>
+          ${isLeader ? '<span class="tc-crown" title="Na frente">👑</span>' : ""}
+        </div>
+        <div class="tc-team-total">${t.total.toLocaleString("pt-BR")}<span class="tc-team-total-label">pts</span></div>
+        <div class="tc-team-vsbar-wrap"><div class="tc-team-vsbar" style="width:${barPct}%;background:${t.color}"></div></div>
+        <div class="tc-members">${membersHtml}</div>
+      </div>`;
+  };
+
+  view.innerHTML = `
+    <div class="tc-wrap">
+      <div class="tc-headline">
+        <div>
+          <div class="tc-title">🥊 Tarde Champions</div>
+          <div class="tc-subtitle">Disputa interna do turno da Tarde · pontuação = pedidos + itens</div>
+        </div>
+        <div class="tc-period">${escapeHtml(periodLabel)}</div>
+      </div>
+
+      <div class="tc-controls">
+        <div class="tc-subtabs">
+          <button class="tc-subtab ${mode === "diario" ? "active" : ""}" data-tcmode="diario">📅 Diário</button>
+          <button class="tc-subtab ${mode === "mensal" ? "active" : ""}" data-tcmode="mensal">🗓️ Mensal</button>
+        </div>
+        ${mode === "diario"
+          ? `<select class="tc-select" id="tc-day-select">${dayOptions}</select>`
+          : `<select class="tc-select" id="tc-month-select">${monthOptions}</select>`
+        }
+      </div>
+
+      <div class="tc-teams">
+        ${teamCardHtml(teamA)}
+        <div class="tc-vs">VS</div>
+        ${teamCardHtml(teamB)}
+      </div>
+    </div>
+  `;
+
+  view.querySelectorAll(".tc-subtab").forEach(b => {
+    b.onclick = () => { STATE.tc.mode = b.dataset.tcmode; renderTardeChamps(); };
+  });
+  const daySel = document.getElementById("tc-day-select");
+  if (daySel) daySel.onchange = () => { STATE.tc.day = daySel.value; renderTardeChamps(); };
+  const monthSel = document.getElementById("tc-month-select");
+  if (monthSel) monthSel.onchange = () => { STATE.tc.month = monthSel.value; renderTardeChamps(); };
+}
+
 function renderCampeonato() {
   initChampPeriod();
   clearMonthlyMedalsCache();
@@ -9227,6 +9545,11 @@ document.querySelectorAll(".shift-tab").forEach(t => {
     }
     if (shift === "campeonato") {
       STATE.shift = "campeonato";
+      render();
+      return;
+    }
+    if (shift === "tardechamps") {
+      STATE.shift = "tardechamps";
       render();
       return;
     }
