@@ -3128,8 +3128,9 @@
   }
   .tc-member-pos { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); width: 18px; }
   .tc-member-avatar {
-    width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center;
+    width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center;
     justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+    background-size: cover; background-position: center; border: 1px solid var(--line-2);
   }
   .tc-member-name {
     font-size: 12px; font-weight: 600; color: var(--text); flex: 1 1 auto;
@@ -8108,10 +8109,14 @@ function renderTardeChamps() {
     const membersHtml = t.members.length
       ? t.members.map((m, idx) => {
           const pct = Math.max(6, Math.round((m.score / (topScore || 1)) * 100));
+          const photo = window.AVATARS && window.AVATARS[m.name];
+          const avatarHtml = photo
+            ? `<span class="tc-member-avatar" style="background-image:url('${photo}')"></span>`
+            : `<span class="tc-member-avatar" style="background:${colorFromName(m.name)}">${escapeHtml(initialOf(m.name))}</span>`;
           return `
             <div class="tc-member-row">
               <span class="tc-member-pos">${idx + 1}º</span>
-              <span class="tc-member-avatar" style="background:${colorFromName(m.name)}">${escapeHtml(initialOf(m.name))}</span>
+              ${avatarHtml}
               <span class="tc-member-name">${escapeHtml(m.name)}</span>
               <span class="tc-member-bar-wrap"><span class="tc-member-bar" style="width:${pct}%;background:${t.color}"></span></span>
               <span class="tc-member-score">${m.score}</span>
