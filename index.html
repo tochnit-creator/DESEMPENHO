@@ -615,6 +615,12 @@
     border-color: var(--amber);
     font-weight: 700;
   }
+  .badge.desligado {
+    color: #fff;
+    background: rgba(120,120,128,0.35);
+    border-color: rgba(180,180,190,0.5);
+    font-weight: 700;
+  }
 
   .breakdown {
     grid-column: 2 / 3;
@@ -4953,6 +4959,19 @@ const COACHES = {
 // === LÍDERES (produção é auxílio do turno, não cobrança de meta) ===
 const LIDERES = ["MAURICIO NASCIM"];
 
+// === DESLIGADOS ===
+// Pessoas que pediram desligamento/foram desligadas, mas cujo histórico
+// ainda aparece no painel (dados de dias em que trabalharam). Enquanto
+// houver registros deles no período consultado, o nome aparece marcado
+// como "(desligado)". Quando a planilha/base de dados parar de trazer
+// linhas com o nome da pessoa (próximas exportações), ela deixa de
+// aparecer no painel automaticamente — não precisa tirar daqui.
+// Para adicionar alguém: coloque o nome EXATAMENTE como aparece nos dados.
+const DESLIGADOS = ["LUCAS VIEIRA"];
+function isDesligado(name) {
+  return DESLIGADOS.includes((name || "").trim().toUpperCase());
+}
+
 // === NOMES DOS TIMES (mostrados no Campeonato) ===
 const TEAM_NAMES = {
   tarde: "THE SURVIVORS",
@@ -5476,6 +5495,10 @@ function renderRanking(rows) {
       ? `<span class="badge lider" title="Líder do turno — produção é auxílio">⭐ LÍDER</span>`
       : "";
 
+    const desligadoBadge = isDesligado(r.name)
+      ? `<span class="badge desligado" title="Colaborador desligado — permanece no histórico enquanto houver dados dele no período">(desligado)</span>`
+      : "";
+
     // Streak badge — only when single day selected and streak >= 2
     let streakBadge = "";
     if (STATE.day && r.streak >= 2) {
@@ -5553,7 +5576,7 @@ function renderRanking(rows) {
       + (isDanger ? " danger" : "");
     row.innerHTML = `
       <div class="row-rank ${rankClass} clickable" data-person-name="${r.name}" title="Clique pra ver o perfil">${avatar}<span class="rank-num">${String(i+1).padStart(2,"0")}</span></div>
-      <div class="row-name">${r.name}<span class="postit-trigger ${postitClass(r.p)}" data-postit-idx="${i}" title="Ver dica/feedback">📌</span>${shiftBadge}${liderBadge}${duplaBadge}${streakBadge}${badgeStampsInline(r.name)}</div>
+      <div class="row-name">${r.name}<span class="postit-trigger ${postitClass(r.p)}" data-postit-idx="${i}" title="Ver dica/feedback">📌</span>${shiftBadge}${liderBadge}${desligadoBadge}${duplaBadge}${streakBadge}${badgeStampsInline(r.name)}</div>
       <div class="row-status">
         <div class="row-pct ${st}${isFire ? " on-fire-pct" : ""}${isDanger ? " danger-pct" : ""}" data-pct="${r.p}">0%</div>
         <div class="row-status-label ${st}">${statusLabel(r.p)}</div>
@@ -5757,6 +5780,10 @@ function renderRankingSuporte(rows) {
       ? `<span class="badge dupla" title="Conferiu E separou no mesmo turno/dia">POLIVALENTE</span>`
       : "";
 
+    const desligadoBadgeSuporte = isDesligado(r.name)
+      ? `<span class="badge desligado" title="Colaborador desligado — permanece no histórico enquanto houver dados dele no período">(desligado)</span>`
+      : "";
+
     // Build per-day mini chart (only when viewing "Todos")
     let miniChart = "";
     if (!STATE.day && allDays.length > 0) {
@@ -5788,7 +5815,7 @@ function renderRankingSuporte(rows) {
     row.className = "row suporte-row" + (r.dupla ? " dupla" : "");
     row.innerHTML = `
       <div class="row-rank ${i === 0 ? "top" : ""}">${avatar}<span class="rank-num">${String(i+1).padStart(2,"0")}</span></div>
-      <div class="row-name">${r.name}<span class="badge suporte">suporte</span>${duplaBadge}</div>
+      <div class="row-name">${r.name}<span class="badge suporte">suporte</span>${duplaBadge}${desligadoBadgeSuporte}</div>
       <div class="row-summary">
         <div class="row-points-big" data-tween="pts-${i}">0</div>
         <div class="row-points-label">pontos no período</div>
@@ -6935,7 +6962,9 @@ function openProfile(name) {
     avatarEl.innerHTML = `<span class="ini">${initialOf(name)}</span>`;
   }
   
-  document.getElementById('profile-name').innerHTML = name + (LIDERES.includes(name) ? ' <span class="badge lider" title="Líder do turno — produção é auxílio">⭐ LÍDER</span>' : '');
+  document.getElementById('profile-name').innerHTML = name
+    + (LIDERES.includes(name) ? ' <span class="badge lider" title="Líder do turno — produção é auxílio">⭐ LÍDER</span>' : '')
+    + (isDesligado(name) ? ' <span class="badge desligado" title="Colaborador desligado — permanece no histórico enquanto houver dados dele no período">(desligado)</span>' : '');
   
   // Determina role principal
   const lastEntry = stats.history[stats.history.length - 1];
@@ -8813,11 +8842,12 @@ function renderPodium(div1) {
           : `<div class="podium-avatar place-${s.place}" data-person-name="${s.name}" style="background:${colorFromName(s.name)}"><span>${initialOf(s.name)}</span></div>`;
         const trophy = s.place === 1 ? '🥇' : (s.place === 2 ? '🥈' : '🥉');
         const onVac = s.onVacation ? '<span class="champ-vacation-badge">🏖️</span>' : '';
+        const onDeslig = isDesligado(s.name) ? '<span class="badge desligado" title="Colaborador desligado">(desligado)</span>' : '';
         return `
           <div class="podium-spot place-${s.place}">
             ${avatar}
             <div class="podium-trophy">${trophy}</div>
-            <div class="podium-name">${s.name}${onVac}</div>
+            <div class="podium-name">${s.name}${onVac}${onDeslig}</div>
             <div class="podium-stats">
               <div class="podium-pct">${Math.round(s.avgPct)}%</div>
               <div class="podium-meta">${Math.round(s.avgDailyScore)} pts/dia · ${s.daysWorked} dias</div>
@@ -8871,6 +8901,9 @@ function renderChampRow(stats, pos, meta, movements, prevPeriod) {
   const vacBadge = stats.onVacation
     ? `<span class="champ-vacation-badge">🏖️ Em férias</span>`
     : '';
+  const desligBadge = isDesligado(stats.name)
+    ? `<span class="badge desligado" title="Colaborador desligado — permanece no histórico enquanto houver dados dele no período">(desligado)</span>`
+    : '';
   
   // Indicador de movimento (subiu/desceu/novo/mesmo)
   let movHtml = '';
@@ -8918,7 +8951,7 @@ function renderChampRow(stats, pos, meta, movements, prevPeriod) {
     <div class="champ-row ${stats.onVacation ? 'on-vacation' : ''}">
       <div class="champ-pos ${posClass}">${pos}º${movHtml}</div>
       ${avatarHtml}
-      <div class="champ-name">${stats.name}${vacBadge}</div>
+      <div class="champ-name">${stats.name}${vacBadge}${desligBadge}</div>
       <div class="champ-metric-wrap">
         <div class="champ-metric">${avgPct}%</div>
         <div class="champ-metric-label">% meta</div>
