@@ -4432,7 +4432,7 @@
     <button class="shift-tab" data-shift="campeonato" id="tab-campeonato">🏆 Campeonato</button>
     <button class="shift-tab" data-shift="tardechamps" id="tab-tardechamps">🥊 Tarde Champions</button>
     <button class="shift-tab shift-tab-locked" data-shift="horas" id="tab-horas">🔒 Horas</button>
-    <button class="shift-tab shift-tab-locked" data-shift="mensal" id="tab-mensal">🔒 Fechamento</button>
+    <button class="shift-tab shift-tab-locked" data-shift="administrador" id="tab-administrador">🔒 Administrador</button>
   </div>
 
   <style>
@@ -4639,6 +4639,20 @@
     }
   </style>
   <div id="mensal-view" class="mensal-view" style="display:none"></div>
+  <style>
+    .admin-view { padding: 4px 0 24px; }
+    .admin-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .admin-row label { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; }
+    .admin-pct-input { width:90px; background:var(--bg-3); border:1px solid var(--line); border-radius:6px; color:var(--text); padding:7px 10px; font-family:var(--font-mono); font-size:14px; color-scheme:dark; }
+    .admin-range { flex:1; min-width:160px; accent-color:var(--red); }
+    .admin-save-btn { background:var(--red); color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+    .admin-save-btn:hover { background:#e04545; }
+    .admin-reset-btn { background:transparent; border:1px solid var(--line); color:var(--text-dim); border-radius:6px; padding:8px 14px; cursor:pointer; font-size:12px; }
+    .admin-reset-btn:hover { color:var(--text); border-color:var(--text-dim); }
+    .admin-current { font-family:var(--font-mono); font-size:13px; color:var(--amber); margin-top:8px; }
+    .admin-warn { font-size:12px; color:var(--text-dim); background:var(--bg-2); border:1px solid var(--line); border-left:3px solid var(--red); border-radius:6px; padding:10px 12px; margin-top:14px; line-height:1.55; }
+  </style>
+  <div id="administrador-view" class="mensal-view admin-view" style="display:none"></div>
 
   <footer class="footer">
     <div>Fonte: relatório de conferência · KDT-Informática</div>
@@ -5847,6 +5861,7 @@ function render() {
 
   { const _mv = document.getElementById("mensal-view"); if (_mv) _mv.style.display = "none"; }
   { const _tc = document.getElementById("tardechamps-view"); if (_tc) _tc.style.display = "none"; }
+  { const _av = document.getElementById("administrador-view"); if (_av && STATE.shift !== "administrador") _av.style.display = "none"; }
 
   // Modo TARDE CHAMPIONS (Insônia × Tropa do Rebite)
   if (STATE.shift === "tardechamps") {
@@ -5903,6 +5918,22 @@ function render() {
     document.getElementById("period-label").textContent =
       `Período: ${fmtDate(days[0])} a ${fmtDate(days[days.length-1])} · ${D.records.length} registros`;
     document.getElementById("footer-meta").textContent = "Fechamento mensal · acesso restrito";
+    return;
+  }
+
+  // Modo ADMINISTRADOR
+  if (STATE.shift === "administrador") {
+    document.getElementById("normal-view").style.display = "none";
+    document.getElementById("horas-view").style.display = "none";
+    document.getElementById("campeonato-view").style.display = "none";
+    { const _mv2 = document.getElementById("mensal-view"); if (_mv2) _mv2.style.display = "none"; }
+    document.getElementById("administrador-view").style.display = "block";
+    document.getElementById("day-bar").style.display = "none";
+    renderAdmin();
+    const days = D.days;
+    document.getElementById("period-label").textContent =
+      `Período: ${fmtDate(days[0])} a ${fmtDate(days[days.length-1])} · ${D.records.length} registros`;
+    document.getElementById("footer-meta").textContent = "Administrador · acesso restrito";
     return;
   }
 
@@ -7461,6 +7492,57 @@ function saveChampConfig() {
       season: CHAMP.season,
     }));
   } catch(e) { console.warn('[champ] erro ao salvar config', e); }
+}
+
+// === Painel do Administrador (redução de pontuação) ===
+const ADMIN = {
+  globalReductionPct: 0,   // 0-100: reduz o score de TODOS (diário e mensal) nessa %
+  deductions: {},          // { "NOME": { "YYYY-MM-DD": pontosASubtrair } }
+};
+function loadAdminConfig() {
+  try {
+    const raw = localStorage.getItem('admin-config');
+    if (raw) {
+      const cfg = JSON.parse(raw);
+      if (typeof cfg.globalReductionPct === 'number') ADMIN.globalReductionPct = cfg.globalReductionPct;
+      if (cfg.deductions) ADMIN.deductions = cfg.deductions;
+    }
+  } catch(e) { console.warn('[admin] erro ao ler config', e); }
+}
+function saveAdminConfig() {
+  try {
+    localStorage.setItem('admin-config', JSON.stringify({
+      globalReductionPct: ADMIN.globalReductionPct,
+      deductions: ADMIN.deductions,
+    }));
+  } catch(e) { console.warn('[admin] erro ao salvar config', e); }
+}
+// Aplica a redução global (%) e os descontos individuais por dia em cima do
+// score ORIGINAL de cada registro (guardado em _origScore na 1a passada).
+// Como D.conferente_daily/separador_daily são os mesmos objetos usados por
+// TODAS as telas (diária, mensal, campeonato), mutar e.score aqui já reflete
+// a redução em qualquer aba que exiba pontuação/percentual.
+function applyAdminAdjustments() {
+  const pct = Math.max(0, Math.min(100, Number(ADMIN.globalReductionPct) || 0));
+  const factor = 1 - (pct / 100);
+  for (const list of [D.conferente_daily, D.separador_daily]) {
+    for (const e of list) {
+      if (e._origScore === undefined) e._origScore = e.score;
+      let base = e._origScore;
+      const ded = ADMIN.deductions[e.name] && ADMIN.deductions[e.name][e.day];
+      if (ded) base = Math.max(0, base - Number(ded));
+      e.score = Math.max(0, Math.round(base * factor));
+      if (e.breakdown) {
+        for (const role of ['conferente', 'separador']) {
+          const b = e.breakdown[role];
+          if (b) {
+            if (b._origScore === undefined) b._origScore = b.score;
+            b.score = Math.max(0, Math.round(b._origScore * factor));
+          }
+        }
+      }
+    }
+  }
 }
 
 // === Temporadas trimestrais ===
@@ -9279,6 +9361,171 @@ function addVacation() {
   if (STATE.shift === 'campeonato') renderCampeonato();
 }
 
+// === Painel do Administrador ===
+function renderAdmin() {
+  const view = document.getElementById("administrador-view");
+  if (!view) return;
+
+  const allNames = new Set();
+  for (const e of D.conferente_daily) allNames.add(e.name);
+  for (const e of D.separador_daily) allNames.add(e.name);
+  const sortedNames = Array.from(allNames).sort();
+
+  const html = `
+    <div class="mensal-header">
+      <div class="mh-info">
+        <span class="lock">🔓</span>
+        <div class="txt"><strong>Painel do Administrador</strong><br>Reduza o percentual de pontuação de todos (diário e mensal) ou desconte pontos de uma pessoa em um dia específico.</div>
+      </div>
+      <button class="mensal-logout" id="admin-logout-btn">Sair</button>
+    </div>
+
+    <div class="mensal-card">
+      <div class="mensal-card-head">
+        <div class="mc-title">📉 Redução global de pontuação</div>
+        <div class="mc-sub">Aplica sobre TODOS os registros — diário, mensal e campeonato</div>
+      </div>
+      <div class="admin-row">
+        <label>Percentual</label>
+        <input type="range" min="0" max="100" step="1" id="admin-pct-range" class="admin-range" value="${ADMIN.globalReductionPct}">
+        <input type="number" min="0" max="100" step="1" id="admin-pct-input" class="admin-pct-input" value="${ADMIN.globalReductionPct}">
+        <span>%</span>
+        <button class="admin-save-btn" id="admin-pct-save">Aplicar</button>
+        <button class="admin-reset-btn" id="admin-pct-reset">Zerar</button>
+      </div>
+      <div class="admin-current">Redução ativa agora: ${ADMIN.globalReductionPct}%</div>
+      <div class="admin-warn">⚠️ Isso reescreve a pontuação (score) de todos os dias e pessoas na hora — os percentuais mostrados em Tarde/Noite/Suporte, Campeonato e Fechamento mensal já saem reduzidos.</div>
+    </div>
+
+    <div class="mensal-card">
+      <div class="mensal-card-head">
+        <div class="mc-title">✂️ Descontar pontos de um dia específico</div>
+        <div class="mc-sub">Subtrai pontos do score daquela pessoa naquele dia, antes da redução global</div>
+      </div>
+      <div class="vacation-add-row">
+        <div>
+          <label>Colaborador</label>
+          <select id="admin-ded-person"></select>
+        </div>
+        <div>
+          <label>Dia</label>
+          <input type="date" id="admin-ded-day">
+        </div>
+        <div>
+          <label>Pontos a descontar</label>
+          <input type="number" min="1" step="1" id="admin-ded-points" placeholder="ex: 50">
+        </div>
+        <button class="vacation-add-btn" id="admin-ded-add-btn">Adicionar</button>
+      </div>
+      <div class="vacation-list" id="admin-ded-list"></div>
+    </div>
+  `;
+
+  view.innerHTML = html;
+
+  const select = document.getElementById("admin-ded-person");
+  select.innerHTML = '<option value="">Selecione...</option>' +
+    sortedNames.map(n => `<option value="${n}">${n}</option>`).join("");
+  const today = (CHAMP.endDate || new Date().toISOString().split('T')[0]);
+  const dayInput = document.getElementById("admin-ded-day");
+  if (dayInput) dayInput.value = today;
+
+  renderAdminDeductionList();
+
+  const logoutBtn = document.getElementById("admin-logout-btn");
+  if (logoutBtn) logoutBtn.onclick = () => {
+    sessionStorage.removeItem("admin-auth");
+    const tab = document.getElementById("tab-administrador");
+    if (tab) tab.classList.remove("unlocked");
+    BugGuard.toast("Saiu do administrador. Senha será pedida novamente.", "warn");
+    STATE.shift = "tarde";
+    ensureValidDay();
+    render();
+  };
+
+  const pctRange = document.getElementById("admin-pct-range");
+  const pctInput = document.getElementById("admin-pct-input");
+  if (pctRange && pctInput) {
+    pctRange.oninput = () => { pctInput.value = pctRange.value; };
+    pctInput.oninput = () => { pctRange.value = pctInput.value; };
+  }
+
+  const saveBtn = document.getElementById("admin-pct-save");
+  if (saveBtn) saveBtn.onclick = () => {
+    let v = Math.round(Number(pctInput.value));
+    if (isNaN(v)) v = 0;
+    v = Math.max(0, Math.min(100, v));
+    ADMIN.globalReductionPct = v;
+    applyAdminAdjustments();
+    saveAdminConfig();
+    BugGuard.toast(`Redução global aplicada: ${v}%`, "ok");
+    renderAdmin();
+  };
+
+  const resetBtn = document.getElementById("admin-pct-reset");
+  if (resetBtn) resetBtn.onclick = () => {
+    ADMIN.globalReductionPct = 0;
+    applyAdminAdjustments();
+    saveAdminConfig();
+    BugGuard.toast("Redução global zerada", "ok");
+    renderAdmin();
+  };
+
+  const addBtn = document.getElementById("admin-ded-add-btn");
+  if (addBtn) addBtn.onclick = () => {
+    const name = document.getElementById("admin-ded-person").value;
+    const day = document.getElementById("admin-ded-day").value;
+    const pts = Number(document.getElementById("admin-ded-points").value);
+    if (!name) { BugGuard.toast("Selecione um colaborador", "warn"); return; }
+    if (!day) { BugGuard.toast("Escolha um dia", "warn"); return; }
+    if (!pts || pts <= 0) { BugGuard.toast("Informe quantos pontos descontar", "warn"); return; }
+    if (!ADMIN.deductions[name]) ADMIN.deductions[name] = {};
+    ADMIN.deductions[name][day] = pts;
+    applyAdminAdjustments();
+    saveAdminConfig();
+    renderAdmin();
+  };
+}
+
+function renderAdminDeductionList() {
+  const list = document.getElementById("admin-ded-list");
+  if (!list) return;
+  const entries = [];
+  for (const [name, byDay] of Object.entries(ADMIN.deductions)) {
+    for (const [day, pts] of Object.entries(byDay)) {
+      if (Number(pts) > 0) entries.push({ name, day, pts: Number(pts) });
+    }
+  }
+  entries.sort((a, b) => b.day.localeCompare(a.day));
+
+  if (!entries.length) {
+    list.innerHTML = '<div class="vacation-empty">Nenhum desconto individual registrado</div>';
+    return;
+  }
+
+  list.innerHTML = entries.map(e => `
+    <div class="vacation-item">
+      <div class="vacation-item-name">${escapeHtml(e.name)}</div>
+      <div class="vacation-item-dates">${fmtDate(e.day)} · -${e.pts} pts</div>
+      <button class="vacation-item-remove" data-ded-name="${escapeHtml(e.name)}" data-ded-day="${e.day}">Remover</button>
+    </div>
+  `).join("");
+
+  list.querySelectorAll(".vacation-item-remove").forEach(b => {
+    b.onclick = () => {
+      const name = b.dataset.dedName;
+      const day = b.dataset.dedDay;
+      if (ADMIN.deductions[name]) {
+        delete ADMIN.deductions[name][day];
+        if (Object.keys(ADMIN.deductions[name]).length === 0) delete ADMIN.deductions[name];
+      }
+      applyAdminAdjustments();
+      saveAdminConfig();
+      renderAdminDeductionList();
+    };
+  });
+}
+
 // Bind do modal de férias
 document.getElementById('vacation-close-btn').onclick = closeVacationModal;
 document.getElementById('vacation-overlay').addEventListener('click', (e) => {
@@ -9305,6 +9552,7 @@ document.getElementById('season-start-btn').onclick = startNewSeason;
 
 // Carrega config salva
 loadChampConfig();
+loadAdminConfig();
 
 // === click no avatar do campeonato pra abrir perfil ===
 document.addEventListener('click', (e) => {
@@ -9597,6 +9845,15 @@ document.querySelectorAll(".shift-tab").forEach(t => {
       }
       return;
     }
+    if (shift === "administrador") {
+      if (sessionStorage.getItem("admin-auth") === "ok") {
+        STATE.shift = "administrador";
+        render();
+      } else {
+        openPwdModal("administrador");
+      }
+      return;
+    }
     STATE.shift = shift;
     ensureValidDay();
     render();
@@ -9610,6 +9867,7 @@ const PWD_CHAMP = "champ";   // senha do campeonato
 const PWD_COACH = "coach";   // senha do painel do técnico (tarde)
 const PWD_COACH2 = "coach2"; // senha do painel do técnico (noite)
 const PWD_MENSAL = "1992";  // senha do fechamento mensal
+const PWD_ADMIN = "2929";   // senha do painel do administrador
 let PWD_CONTEXT = "horas";   // qual aba está pedindo senha
 
 function openPwdModal(context = "horas") {
@@ -9628,6 +9886,8 @@ function openPwdModal(context = "horas") {
         ? "🏆 Campeonato — área restrita"
         : context === "mensal"
         ? "🔒 Fechamento mensal — área restrita"
+        : context === "administrador"
+        ? "🔒 Administrador — área restrita"
         : "🔒 Horas — área restrita";
     }
   }
@@ -9666,9 +9926,19 @@ function tryPwd() {
   } else if (PWD_CONTEXT === "mensal") {
     if (v === PWD_MENSAL) {
       sessionStorage.setItem("mensal-auth", "ok");
-      document.getElementById("tab-mensal").classList.add("unlocked");
+      const tabM = document.getElementById("tab-mensal");
+      if (tabM) tabM.classList.add("unlocked");
       closePwdModal();
       STATE.shift = "mensal";
+      render();
+      return;
+    }
+  } else if (PWD_CONTEXT === "administrador") {
+    if (v === PWD_ADMIN) {
+      sessionStorage.setItem("admin-auth", "ok");
+      document.getElementById("tab-administrador").classList.add("unlocked");
+      closePwdModal();
+      STATE.shift = "administrador";
       render();
       return;
     }
@@ -9706,7 +9976,11 @@ if (sessionStorage.getItem("champ-auth") === "ok") {
   document.getElementById("tab-campeonato").classList.add("unlocked");
 }
 if (sessionStorage.getItem("mensal-auth") === "ok") {
-  document.getElementById("tab-mensal").classList.add("unlocked");
+  const tabMensalStartup = document.getElementById("tab-mensal");
+  if (tabMensalStartup) tabMensalStartup.classList.add("unlocked");
+}
+if (sessionStorage.getItem("admin-auth") === "ok") {
+  document.getElementById("tab-administrador").classList.add("unlocked");
 }
 
 // Search
@@ -10061,6 +10335,7 @@ async function sheetUpdate(){
         return;
       }
       sheetApplyGeral(res); sheetSaveGeral(res,url);
+      applyAdminAdjustments();
       if(typeof ensureValidDay==='function'){ try{ensureValidDay();}catch(e){} }
       render();
       let msg=`✅ Planilha lida: ${res.count} registro(s) em ${res.dates.length} dia(s) (${res.dates[0]} a ${res.dates[res.dates.length-1]}). 💾 Histórico completo vem da planilha.`;
@@ -10075,6 +10350,7 @@ async function sheetUpdate(){
       return;
     }
     sheetApply(res); sheetSave(res,url);
+    applyAdminAdjustments();
     if(typeof ensureValidDay==='function'){ try{ensureValidDay();}catch(e){} }
     render();
     let totalDias=0; try{ totalDias=Object.keys(JSON.parse(localStorage.getItem('painel_sheet_imports_v2')||'{}')).length; }catch(e){}
@@ -10117,6 +10393,7 @@ async function sheetUpdate(){
 var _sheetSaved = sheetLoadSaved();
 
 // init
+applyAdminAdjustments();
 STATE.day = D.days[D.days.length - 1];
 try {
   ensureValidDay();
