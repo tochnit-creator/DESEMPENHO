@@ -7446,12 +7446,9 @@ function loadChampConfig() {
     CHAMP.startDate = '2026-06-01';
     CHAMP.endDate = '2026-08-01';
   }
-  // Férias do CASSIO FREITAS: 06/06 até 28/06 (voltou em 29/06). Semeia se ninguém configurou.
-  if (!CHAMP.vacations['CASSIO FREITAS']) {
-    CHAMP.vacations['CASSIO FREITAS'] = [{ start: '2026-06-06', end: '2026-06-28' }];
-  } else {
-    // corrige config antiga que ainda terminava em 01/08
-    CHAMP.vacations['CASSIO FREITAS'].forEach(v => { if (v.end === '2026-08-01') v.end = '2026-06-28'; });
+  // CASSIO FREITAS voltou de férias (desde 07/2026) — não fica mais na lista de férias.
+  if (CHAMP.vacations['CASSIO FREITAS']) {
+    delete CHAMP.vacations['CASSIO FREITAS'];
   }
 }
 function saveChampConfig() {
