@@ -7495,9 +7495,16 @@ function saveChampConfig() {
 }
 
 // === Painel do Administrador (redução de pontuação) ===
+// Os DESCONTOS individuais vêm de uma aba "DESCONTOS" na mesma planilha
+// (colunas DATA | COLABORADOR | PONTOS), publicada como CSV — igual ao
+// resto dos dados. Assim qualquer aparelho que abrir o painel lê o mesmo
+// lugar, sem precisar de login nem de servidor próprio.
+// Troque a URL abaixo pelo link CSV publicado da aba DESCONTOS.
+const DESCONTOS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9d98Fb-WzyTNLd74bZTk6CVsuFXR2rghLg4c3SlEiz2X2KjBA9k6N7o69CBb4ej3V1yRgTuNj_k6O/pub?gid=657814865&single=true&output=csv";
+
 const ADMIN = {
-  globalReductionPct: 0,   // 0-100: reduz o score de TODOS (diário e mensal) nessa %
-  deductions: {},          // { "NOME": { "YYYY-MM-DD": pontosASubtrair } }
+  globalReductionPct: 0,   // 0-100: reduz o score de TODOS (diário e mensal) nessa % — fica só neste aparelho
+  deductions: {},          // { "NOME": { "YYYY-MM-DD": pontosASubtrair } } — vem da planilha
 };
 function loadAdminConfig() {
   try {
@@ -7505,7 +7512,7 @@ function loadAdminConfig() {
     if (raw) {
       const cfg = JSON.parse(raw);
       if (typeof cfg.globalReductionPct === 'number') ADMIN.globalReductionPct = cfg.globalReductionPct;
-      if (cfg.deductions) ADMIN.deductions = cfg.deductions;
+      if (cfg.deductions) ADMIN.deductions = cfg.deductions; // cache local, sobrescrito ao ler a planilha
     }
   } catch(e) { console.warn('[admin] erro ao ler config', e); }
 }
@@ -7516,6 +7523,49 @@ function saveAdminConfig() {
       deductions: ADMIN.deductions,
     }));
   } catch(e) { console.warn('[admin] erro ao salvar config', e); }
+}
+// Busca a aba DESCONTOS publicada como CSV e reconstrói ADMIN.deductions
+// inteiro a partir dela (a planilha é a fonte da verdade, igual ao resto
+// dos dados do painel). Se não estiver configurada ou a rede falhar, mantém
+// o que já tinha (do cache local) e avisa no console.
+async function loadDescontosFromSheet() {
+  if (!DESCONTOS_SHEET_URL || DESCONTOS_SHEET_URL.indexOf('COLE_AQUI') !== -1) {
+    return { ok: false, reason: 'not-configured' };
+  }
+  try {
+    const bust = DESCONTOS_SHEET_URL + (DESCONTOS_SHEET_URL.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+    const resp = await fetch(bust, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const text = await resp.text();
+    const rows = sheetParseCSV(text);
+    const hr = rows.find(r => r.some(c => /\bdata\b/i.test(c)) && r.some(c => /colaborador|nome/i.test(c)));
+    if (!hr) throw new Error('não achei o cabeçalho (DATA / COLABORADOR / PONTOS)');
+    const iData = hr.findIndex(c => /\bdata\b/i.test(c));
+    const iNome = hr.findIndex(c => /colaborador|nome/i.test(c));
+    const iPts  = hr.findIndex(c => /ponto|desconto/i.test(c));
+    const headerIdx = rows.indexOf(hr);
+    const newDeductions = {};
+    let count = 0;
+    for (let i = headerIdx + 1; i < rows.length; i++) {
+      const r = rows[i];
+      if (!r || !r.length) continue;
+      const rawName = (r[iNome] || '').trim();
+      if (!rawName) continue;
+      const day = sheetDate(r[iData]);
+      const pts = sheetNum(r[iPts]);
+      if (!day || pts <= 0) continue;
+      const name = canonName(rawName);
+      if (!newDeductions[name]) newDeductions[name] = {};
+      newDeductions[name][day] = pts;
+      count++;
+    }
+    ADMIN.deductions = newDeductions;
+    saveAdminConfig(); // guarda uma cópia local como fallback
+    return { ok: true, count };
+  } catch(e) {
+    console.warn('[admin] não consegui ler a aba DESCONTOS, mantendo cache local', e);
+    return { ok: false, reason: 'fetch-error', error: e };
+  }
 }
 // Aplica a redução global (%) e os descontos individuais por dia em cima do
 // score ORIGINAL de cada registro (guardado em _origScore na 1a passada).
@@ -9366,10 +9416,7 @@ function renderAdmin() {
   const view = document.getElementById("administrador-view");
   if (!view) return;
 
-  const allNames = new Set();
-  for (const e of D.conferente_daily) allNames.add(e.name);
-  for (const e of D.separador_daily) allNames.add(e.name);
-  const sortedNames = Array.from(allNames).sort();
+  const syncConfigured = DESCONTOS_SHEET_URL && DESCONTOS_SHEET_URL.indexOf('COLE_AQUI') === -1;
 
   const html = `
     <div class="mensal-header">
@@ -9383,7 +9430,7 @@ function renderAdmin() {
     <div class="mensal-card">
       <div class="mensal-card-head">
         <div class="mc-title">📉 Redução global de pontuação</div>
-        <div class="mc-sub">Aplica sobre TODOS os registros — diário, mensal e campeonato</div>
+        <div class="mc-sub">Aplica sobre TODOS os registros — diário, mensal e campeonato · só neste aparelho</div>
       </div>
       <div class="admin-row">
         <label>Percentual</label>
@@ -9399,36 +9446,20 @@ function renderAdmin() {
 
     <div class="mensal-card">
       <div class="mensal-card-head">
-        <div class="mc-title">✂️ Descontar pontos de um dia específico</div>
-        <div class="mc-sub">Subtrai pontos do score daquela pessoa naquele dia, antes da redução global</div>
+        <div class="mc-title">✂️ Descontos por dia (vêm da planilha)</div>
+        <div class="mc-sub">Aba <strong>DESCONTOS</strong> · colunas DATA · COLABORADOR · PONTOS</div>
       </div>
-      <div class="vacation-add-row">
-        <div>
-          <label>Colaborador</label>
-          <select id="admin-ded-person"></select>
-        </div>
-        <div>
-          <label>Dia</label>
-          <input type="date" id="admin-ded-day">
-        </div>
-        <div>
-          <label>Pontos a descontar</label>
-          <input type="number" min="1" step="1" id="admin-ded-points" placeholder="ex: 50">
-        </div>
-        <button class="vacation-add-btn" id="admin-ded-add-btn">Adicionar</button>
+      <div class="admin-row">
+        <button class="admin-save-btn" id="admin-ded-refresh">🔄 Atualizar da planilha</button>
+        <span id="admin-ded-status" class="admin-current" style="margin-top:0"></span>
       </div>
-      <div class="vacation-list" id="admin-ded-list"></div>
+      ${syncConfigured ? '' : `<div class="admin-warn">⚠️ A URL da aba DESCONTOS ainda não foi configurada no código. Publique a aba como CSV e cole o link na constante <code>DESCONTOS_SHEET_URL</code> no início do arquivo.</div>`}
+      <div class="vacation-list" id="admin-ded-list" style="margin-top:12px"></div>
+      <div class="admin-warn" style="margin-top:12px">Para adicionar, mudar ou remover um desconto: edite a aba <strong>DESCONTOS</strong> direto na planilha (uma linha por pessoa/dia) e clique em "Atualizar da planilha" aqui — ou simplesmente recarregue a página.</div>
     </div>
   `;
 
   view.innerHTML = html;
-
-  const select = document.getElementById("admin-ded-person");
-  select.innerHTML = '<option value="">Selecione...</option>' +
-    sortedNames.map(n => `<option value="${n}">${n}</option>`).join("");
-  const today = (CHAMP.endDate || new Date().toISOString().split('T')[0]);
-  const dayInput = document.getElementById("admin-ded-day");
-  if (dayInput) dayInput.value = today;
 
   renderAdminDeductionList();
 
@@ -9471,19 +9502,25 @@ function renderAdmin() {
     renderAdmin();
   };
 
-  const addBtn = document.getElementById("admin-ded-add-btn");
-  if (addBtn) addBtn.onclick = () => {
-    const name = document.getElementById("admin-ded-person").value;
-    const day = document.getElementById("admin-ded-day").value;
-    const pts = Number(document.getElementById("admin-ded-points").value);
-    if (!name) { BugGuard.toast("Selecione um colaborador", "warn"); return; }
-    if (!day) { BugGuard.toast("Escolha um dia", "warn"); return; }
-    if (!pts || pts <= 0) { BugGuard.toast("Informe quantos pontos descontar", "warn"); return; }
-    if (!ADMIN.deductions[name]) ADMIN.deductions[name] = {};
-    ADMIN.deductions[name][day] = pts;
+  const refreshBtn = document.getElementById("admin-ded-refresh");
+  if (refreshBtn) refreshBtn.onclick = async () => {
+    const status = document.getElementById("admin-ded-status");
+    refreshBtn.disabled = true;
+    if (status) status.textContent = "Buscando na planilha…";
+    const res = await loadDescontosFromSheet();
     applyAdminAdjustments();
-    saveAdminConfig();
-    renderAdmin();
+    renderAdminDeductionList();
+    refreshBtn.disabled = false;
+    if (res.ok) {
+      BugGuard.toast(`Descontos atualizados: ${res.count} linha(s) na aba DESCONTOS`, "ok");
+      if (status) status.textContent = `Última leitura: ${res.count} desconto(s) ativo(s)`;
+    } else if (res.reason === 'not-configured') {
+      BugGuard.toast("A URL da aba DESCONTOS ainda não foi configurada no código.", "warn");
+      if (status) status.textContent = "";
+    } else {
+      BugGuard.toast("Não consegui buscar a planilha agora. Veja o console para detalhes.", "warn");
+      if (status) status.textContent = "";
+    }
   };
 }
 
@@ -9499,7 +9536,7 @@ function renderAdminDeductionList() {
   entries.sort((a, b) => b.day.localeCompare(a.day));
 
   if (!entries.length) {
-    list.innerHTML = '<div class="vacation-empty">Nenhum desconto individual registrado</div>';
+    list.innerHTML = '<div class="vacation-empty">Nenhum desconto ativo na aba DESCONTOS</div>';
     return;
   }
 
@@ -9507,23 +9544,8 @@ function renderAdminDeductionList() {
     <div class="vacation-item">
       <div class="vacation-item-name">${escapeHtml(e.name)}</div>
       <div class="vacation-item-dates">${fmtDate(e.day)} · -${e.pts} pts</div>
-      <button class="vacation-item-remove" data-ded-name="${escapeHtml(e.name)}" data-ded-day="${e.day}">Remover</button>
     </div>
   `).join("");
-
-  list.querySelectorAll(".vacation-item-remove").forEach(b => {
-    b.onclick = () => {
-      const name = b.dataset.dedName;
-      const day = b.dataset.dedDay;
-      if (ADMIN.deductions[name]) {
-        delete ADMIN.deductions[name][day];
-        if (Object.keys(ADMIN.deductions[name]).length === 0) delete ADMIN.deductions[name];
-      }
-      applyAdminAdjustments();
-      saveAdminConfig();
-      renderAdminDeductionList();
-    };
-  });
 }
 
 // Bind do modal de férias
@@ -10393,7 +10415,7 @@ async function sheetUpdate(){
 var _sheetSaved = sheetLoadSaved();
 
 // init
-applyAdminAdjustments();
+applyAdminAdjustments(); // usa o cache local de descontos por enquanto (instantâneo)
 STATE.day = D.days[D.days.length - 1];
 try {
   ensureValidDay();
@@ -10403,6 +10425,15 @@ try {
   console.error('[init]', err);
   BugGuard.toast('Erro ao carregar o painel. Recarregue a página.');
 }
+// Busca os descontos atualizados da aba DESCONTOS em segundo plano (não trava
+// a primeira tela) e re-renderiza só se a planilha respondeu com sucesso —
+// assim qualquer aparelho, ao abrir o link, já reflete o que está na planilha.
+loadDescontosFromSheet().then(res => {
+  if (res && res.ok) {
+    applyAdminAdjustments();
+    render();
+  }
+}).catch(err => console.warn('[admin] busca inicial de descontos falhou', err));
 </script>
 </body>
 </html>
