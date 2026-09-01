@@ -3149,6 +3149,67 @@
   .tc-member-bar { height: 100%; border-radius: 3px; }
   .tc-member-score { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text); width: 44px; text-align: right; }
   .tc-empty { font-size: 12px; color: var(--text-faint); padding: 10px 0; text-align: center; }
+
+  /* === LIGA CHAMPIONS (bracket: Tarde x Noite → Final) === */
+  .lc-bracket {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    gap: 18px; margin-bottom: 22px; padding: 20px;
+    background: radial-gradient(ellipse at center, rgba(96,165,250,0.08), transparent 70%), var(--bg-2);
+    border: 1px solid var(--line); border-radius: 16px;
+  }
+  .lc-conf { display: flex; flex-direction: column; gap: 8px; }
+  .lc-conf-label {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--text-faint);
+    text-align: center; margin-bottom: 2px;
+  }
+  .lc-conf-connector { height: 10px; }
+  .lc-slot {
+    display: flex; align-items: center; gap: 8px; background: var(--bg-3);
+    border: 2px solid var(--line); border-radius: 10px; padding: 8px 12px;
+    transition: transform .3s, box-shadow .3s, border-color .3s; position: relative;
+  }
+  .lc-slot-icon { font-size: 15px; }
+  .lc-slot-name {
+    font-family: var(--font-display); font-size: 12px; color: var(--text); flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .lc-slot-total { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+  .lc-slot-crown { font-size: 13px; }
+  .lc-slot.lc-advancing {
+    border-color: var(--tc-color); box-shadow: 0 0 18px var(--tc-color-soft);
+  }
+  .lc-conf-tarde .lc-slot.lc-advancing { transform: translateX(8px); }
+  .lc-conf-noite .lc-slot.lc-advancing { transform: translateX(-8px); }
+  .lc-final {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 130px;
+  }
+  .lc-trophy { font-size: 30px; filter: drop-shadow(0 0 10px rgba(245,158,11,0.5)); }
+  .lc-final-label {
+    font-family: var(--font-display); font-size: 13px; letter-spacing: 0.08em; color: #f59e0b;
+  }
+  .lc-final-slots { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .lc-final-slot-filled {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    border: 2px solid var(--tc-color); border-radius: 10px; padding: 6px 10px;
+    background: var(--bg-3); font-size: 16px;
+  }
+  .lc-final-slot-filled span:last-child { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); }
+  .lc-final-slot-empty {
+    border: 2px dashed var(--line); border-radius: 10px; padding: 10px 16px;
+    color: var(--text-faint); font-size: 14px;
+  }
+  .lc-final-vs { font-family: var(--font-display); font-size: 12px; color: var(--text-faint); }
+  .lc-champion {
+    margin-top: 6px; font-family: var(--font-display); font-size: 12px;
+    color: var(--tc-color, #f59e0b); text-align: center;
+  }
+  .lc-champion-tbd { color: var(--text-faint); font-family: var(--font-sans); }
+  .tc-teams-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 860px) {
+    .lc-bracket { grid-template-columns: 1fr; }
+    .lc-conf-tarde .lc-slot.lc-advancing, .lc-conf-noite .lc-slot.lc-advancing { transform: none; }
+    .tc-teams-4 { grid-template-columns: 1fr; }
+  }
   @media (min-width: 640px) {
     .tc-member-bar-wrap { display: block; }
   }
@@ -4430,7 +4491,7 @@
     <button class="shift-tab" data-shift="noite">Noite<span class="count" id="count-noite"></span></button>
     <button class="shift-tab" data-shift="suporte">Suporte<span class="count" id="count-suporte"></span></button>
     <button class="shift-tab" data-shift="campeonato" id="tab-campeonato">🏆 Campeonato</button>
-    <button class="shift-tab" data-shift="tardechamps" id="tab-tardechamps">🥊 Tarde Champions</button>
+    <button class="shift-tab" data-shift="tardechamps" id="tab-tardechamps">🏆 Liga Champions</button>
     <button class="shift-tab shift-tab-locked" data-shift="mensal" id="tab-mensal">🔒 Fechamento</button>
     <button class="shift-tab shift-tab-locked" data-shift="administrador" id="tab-administrador">🔒 Administrador</button>
   </div>
@@ -5014,6 +5075,29 @@ const TARDE_CHAMPS = {
       color: "#f97316",
       colorSoft: "rgba(249,115,22,0.28)",
       roster: ["JESSICA", "LUCAS VIEIRA", "LUCAS DAS GRACAS", "FABIANE", "GABRIEL", "BEATRIZ"],
+    },
+  ],
+};
+
+// Times da NOITE — divisão ainda provisória/aleatória (pedido explícito),
+// só pra visualizar como a Liga Champions vai ficar com 4 times.
+const NOITE_CHAMPS = {
+  teams: [
+    {
+      id: "saipala",
+      name: "Sai Pala",
+      icon: "⚡",
+      color: "#22d3ee",
+      colorSoft: "rgba(34,211,238,0.28)",
+      roster: ["JOHN MIKE", "CASSIO FREITAS", "MAICON SILVA", "DANILO", "WESLEY FIORAVAN", "LEONIDAS", "JEFFERSON DE LI", "OSVALDO"],
+    },
+    {
+      id: "geracao2000",
+      name: "Geração 2000",
+      icon: "🕹️",
+      color: "#ec4899",
+      colorSoft: "rgba(236,72,153,0.28)",
+      roster: ["LAERTE ANTONIO", "MICHEL SILVA", "RODRIGO SOUZA", "SILVIO GOMES", "CARLOS ALBERTO", "JOSEMAR", "LUCAS SOUZA"],
     },
   ],
 };
@@ -8182,18 +8266,26 @@ function tcMatchesRoster(dataName, rosterKey) {
   return true;
 }
 
-function tcTeamForName(dataName) {
-  for (const t of TARDE_CHAMPS.teams) {
+function tcTeamForNameIn(dataName, teamsArr) {
+  for (const t of teamsArr) {
     if (t.roster.some(key => tcMatchesRoster(dataName, key))) return t.id;
   }
   return null;
 }
 
-// Junta conferente_daily + separador_daily do turno da tarde, sem contar
+function tcTeamForName(dataName) {
+  return tcTeamForNameIn(dataName, TARDE_CHAMPS.teams);
+}
+
+// Coleta conferente_daily + separador_daily de um turno qualquer, sem contar
 // duas vezes o "espelho" de quem fez dupla função (dupla_shadow).
-function tcCollectEntries() {
+function tcCollectEntriesForShift(shiftName) {
   const all = [...D.conferente_daily, ...D.separador_daily];
-  return all.filter(e => e.record_shift === "tarde" && !e.zero_day && !e.dupla_shadow);
+  return all.filter(e => e.record_shift === shiftName && !e.zero_day && !e.dupla_shadow);
+}
+
+function tcCollectEntries() {
+  return tcCollectEntriesForShift("tarde");
 }
 
 function tcMonthLabel(ym) {
@@ -8206,19 +8298,18 @@ function tcAvailableMonths() {
   return [...new Set(D.days.map(d => d.slice(0, 7)))].sort();
 }
 
-// Monta os totais das duas equipes (times ordenados como em TARDE_CHAMPS.teams)
-// a partir de um filtro sobre as entradas (por dia ou por mês).
-function tcBuildTotals(filterFn) {
-  const entries = tcCollectEntries().filter(filterFn);
+// Monta os totais de uma lista de times a partir de um conjunto de entradas
+// já filtrado (por dia ou por mês).
+function tcBuildTotalsFor(teamsArr, entries) {
   const perTeam = {};
-  TARDE_CHAMPS.teams.forEach(t => perTeam[t.id] = new Map());
+  teamsArr.forEach(t => perTeam[t.id] = new Map());
   entries.forEach(e => {
-    const teamId = tcTeamForName(e.name);
+    const teamId = tcTeamForNameIn(e.name, teamsArr);
     if (!teamId) return;
     const map = perTeam[teamId];
     map.set(e.name, (map.get(e.name) || 0) + e.score);
   });
-  return TARDE_CHAMPS.teams.map(t => {
+  return teamsArr.map(t => {
     const members = [...perTeam[t.id].entries()]
       .map(([name, score]) => ({ name, score }))
       .sort((a, b) => b.score - a.score);
@@ -8227,14 +8318,20 @@ function tcBuildTotals(filterFn) {
   });
 }
 
+// Monta os totais das duas equipes da TARDE (mantido por compatibilidade —
+// times ordenados como em TARDE_CHAMPS.teams) a partir de um filtro sobre
+// as entradas (por dia ou por mês).
+function tcBuildTotals(filterFn) {
+  const entries = tcCollectEntries().filter(filterFn);
+  return tcBuildTotalsFor(TARDE_CHAMPS.teams, entries);
+}
+
 function renderTardeChamps() {
   const view = document.getElementById("tardechamps-view");
   if (!view) return;
 
   if (!STATE.tc.day) {
-    const tardeDays = new Set(tcCollectEntries().map(e => e.day));
-    const available = D.days.filter(d => tardeDays.has(d));
-    STATE.tc.day = available.length ? available[available.length - 1] : (D.days[D.days.length - 1] || null);
+    STATE.tc.day = D.days.length ? D.days[D.days.length - 1] : null;
   }
   if (!STATE.tc.month) {
     const months = tcAvailableMonths();
@@ -8242,13 +8339,23 @@ function renderTardeChamps() {
   }
 
   const mode = STATE.tc.mode;
-  const teams = mode === "diario"
-    ? tcBuildTotals(e => e.day === STATE.tc.day)
-    : tcBuildTotals(e => STATE.tc.month && e.day.slice(0, 7) === STATE.tc.month);
+  const periodFilter = mode === "diario"
+    ? (e => e.day === STATE.tc.day)
+    : (e => STATE.tc.month && e.day.slice(0, 7) === STATE.tc.month);
 
-  const [teamA, teamB] = teams;
-  const maxTotal = Math.max(teamA.total, teamB.total, 1);
-  const leaderId = teamA.total === teamB.total ? null : (teamA.total > teamB.total ? teamA.id : teamB.id);
+  const tardeTeams = tcBuildTotalsFor(TARDE_CHAMPS.teams, tcCollectEntriesForShift("tarde").filter(periodFilter));
+  const noiteTeams = tcBuildTotalsFor(NOITE_CHAMPS.teams, tcCollectEntriesForShift("noite").filter(periodFilter));
+
+  const [tA, tB] = tardeTeams;
+  const [nA, nB] = noiteTeams;
+  const tardeWinner = tA.total === tB.total ? null : (tA.total > tB.total ? tA : tB);
+  const noiteWinner = nA.total === nB.total ? null : (nA.total > nB.total ? nA : nB);
+  let finalWinner = null;
+  if (tardeWinner && noiteWinner && tardeWinner.total !== noiteWinner.total) {
+    finalWinner = tardeWinner.total > noiteWinner.total ? tardeWinner : noiteWinner;
+  }
+
+  const maxTotalAll = Math.max(tA.total, tB.total, nA.total, nB.total, 1);
 
   const periodLabel = mode === "diario"
     ? (STATE.tc.day ? fmtDate(STATE.tc.day) : "—")
@@ -8261,9 +8368,21 @@ function renderTardeChamps() {
     `<option value="${m}" ${m === STATE.tc.month ? "selected" : ""}>${tcMonthLabel(m)}</option>`
   ).join("");
 
-  const teamCardHtml = (t) => {
-    const isLeader = t.id === leaderId;
-    const barPct = Math.round((t.total / maxTotal) * 100);
+  // Tag compacta pro bracket (topo da página)
+  const lcSlot = (t, { advancing = false, side = "" } = {}) => `
+    <div class="lc-slot ${advancing ? "lc-advancing" : ""} ${side}" style="--tc-color:${t.color};--tc-color-soft:${t.colorSoft}">
+      <span class="lc-slot-icon">${t.icon}</span>
+      <span class="lc-slot-name">${escapeHtml(t.name)}</span>
+      <span class="lc-slot-total">${t.total.toLocaleString("pt-BR")}</span>
+      ${advancing ? '<span class="lc-slot-crown">👑</span>' : ""}
+    </div>`;
+  const lcFinalSlot = (t) => t
+    ? `<div class="lc-final-slot-filled" style="--tc-color:${t.color}"><span>${t.icon}</span><span>${escapeHtml(t.name)}</span></div>`
+    : `<div class="lc-final-slot-empty">—</div>`;
+
+  // Card detalhado (igual ao antigo, com elenco) pra cada um dos 4 times
+  const teamCardHtml = (t, isLeaderOfPair) => {
+    const barPct = Math.round((t.total / maxTotalAll) * 100);
     const topScore = t.members.length ? t.members[0].score : 1;
     const membersHtml = t.members.length
       ? t.members.map((m, idx) => {
@@ -8284,11 +8403,11 @@ function renderTardeChamps() {
       : `<div class="tc-empty">Sem pontuação registrada neste período.</div>`;
 
     return `
-      <div class="tc-team-card ${isLeader ? "tc-leading" : ""}" style="--tc-color:${t.color};--tc-color-soft:${t.colorSoft}">
+      <div class="tc-team-card ${isLeaderOfPair ? "tc-leading" : ""}" style="--tc-color:${t.color};--tc-color-soft:${t.colorSoft}">
         <div class="tc-team-head">
           <span class="tc-team-icon">${t.icon}</span>
           <span class="tc-team-name">${escapeHtml(t.name)}</span>
-          ${isLeader ? '<span class="tc-crown" title="Na frente">👑</span>' : ""}
+          ${isLeaderOfPair ? '<span class="tc-crown" title="Na frente">👑</span>' : ""}
         </div>
         <div class="tc-team-total">${t.total.toLocaleString("pt-BR")}<span class="tc-team-total-label">pts</span></div>
         <div class="tc-team-vsbar-wrap"><div class="tc-team-vsbar" style="width:${barPct}%;background:${t.color}"></div></div>
@@ -8300,8 +8419,8 @@ function renderTardeChamps() {
     <div class="tc-wrap">
       <div class="tc-headline">
         <div>
-          <div class="tc-title">🥊 Tarde Champions</div>
-          <div class="tc-subtitle">Disputa interna do turno da Tarde · pontuação = pedidos + itens</div>
+          <div class="tc-title">🏆 Liga Champions</div>
+          <div class="tc-subtitle">Tarde x Noite · 2 times de cada · pontuação = pedidos + itens</div>
         </div>
         <div class="tc-period">${escapeHtml(periodLabel)}</div>
       </div>
@@ -8317,10 +8436,40 @@ function renderTardeChamps() {
         }
       </div>
 
-      <div class="tc-teams">
-        ${teamCardHtml(teamA)}
-        <div class="tc-vs">VS</div>
-        ${teamCardHtml(teamB)}
+      <div class="lc-bracket">
+        <div class="lc-conf lc-conf-tarde">
+          <div class="lc-conf-label">☀️ SEMIFINAL TARDE</div>
+          ${lcSlot(tA, { advancing: tardeWinner === tA, side: "lc-side-left" })}
+          <div class="lc-conf-connector"></div>
+          ${lcSlot(tB, { advancing: tardeWinner === tB, side: "lc-side-left" })}
+        </div>
+
+        <div class="lc-final">
+          <div class="lc-trophy">🏆</div>
+          <div class="lc-final-label">FINAL</div>
+          <div class="lc-final-slots">
+            ${lcFinalSlot(tardeWinner)}
+            <span class="lc-final-vs">×</span>
+            ${lcFinalSlot(noiteWinner)}
+          </div>
+          ${finalWinner
+            ? `<div class="lc-champion" style="--tc-color:${finalWinner.color}">👑 ${escapeHtml(finalWinner.name)}</div>`
+            : `<div class="lc-champion lc-champion-tbd">a definir</div>`}
+        </div>
+
+        <div class="lc-conf lc-conf-noite">
+          <div class="lc-conf-label">🌙 SEMIFINAL NOITE</div>
+          ${lcSlot(nA, { advancing: noiteWinner === nA, side: "lc-side-right" })}
+          <div class="lc-conf-connector"></div>
+          ${lcSlot(nB, { advancing: noiteWinner === nB, side: "lc-side-right" })}
+        </div>
+      </div>
+
+      <div class="tc-teams tc-teams-4">
+        ${teamCardHtml(tA, tardeWinner === tA)}
+        ${teamCardHtml(tB, tardeWinner === tB)}
+        ${teamCardHtml(nA, noiteWinner === nA)}
+        ${teamCardHtml(nB, noiteWinner === nB)}
       </div>
     </div>
   `;
@@ -10114,6 +10263,18 @@ function _aj(role, day, val){
   const f = _AJ_PCT[role];
   return (f && day && day >= _AJ_DATA) ? Math.round(val * (1 - f)) : val;
 }
+// A partir da data indicada, o cargo é forçado independente do que a
+// planilha trouxer (cabeçalho Separador/Conferente ou coluna FUNÇÃO) —
+// usado quando alguém muda oficialmente de função.
+const ROLE_OVERRIDES = [
+  { name: "JOHN MIKE", from: "2026-09-01", role: "conferente" }, // oficialmente conferente a partir de set/2026
+];
+function roleOverride(name, day, role) {
+  for (const o of ROLE_OVERRIDES) {
+    if (name === o.name && day && day >= o.from) return o.role;
+  }
+  return role;
+}
 function sheetIsHeader(cell,kind){
   const t=(cell||'').trim().toLowerCase();
   return kind==='sep' ? /^separador(es)?$/.test(t) : /^conferente(s)?$/.test(t);
@@ -10136,12 +10297,13 @@ function sheetIngest(rows){
     const ped=sheetNum(r[COL_PED]), it=sheetNum(r[COL_IT]); const name=canonName(a);
     if(name==='PETERSON SANTOS') continue;
     if(ped===0&&it===0) continue;
+    const effRole=roleOverride(name, date, mode);
     const shift=sm[name]; let rec;
     if(shift==='tarde'||shift==='suporte') rec=shift;
     else if(!shift){ rec='tarde'; out.warnings.push(`${name}: sem turno no mapa → assumido TARDE`); }
     else { out.warnings.push(`${name}: turno '${shift}' (não Tarde/Suporte) → ignorado`); continue; }
-    const e={name, role:mode, record_shift:rec, pedidos:ped, itens:it, score:_aj(mode, date, ped+it)};
-    if(rec==='suporte') out.suporte.push(e); else if(mode==='separador') out.sep.push(e); else out.conf.push(e);
+    const e={name, role:effRole, record_shift:rec, pedidos:ped, itens:it, score:_aj(effRole, date, ped+it)};
+    if(rec==='suporte') out.suporte.push(e); else if(effRole==='separador') out.sep.push(e); else out.conf.push(e);
   }
   return out;
 }
@@ -10194,6 +10356,7 @@ function sheetIngestGeral(rows){
     if(!turno){ turno=(D.shift_map[name]||'tarde'); if(cTurno>=0) warnings.push(`${name} (${date}): turno vazio/inválido → assumido ${turno.toUpperCase()}`); }
     let role=cFunc>=0?sheetNormFuncao(r[cFunc]):null;
     if(!role){ role='conferente'; warnings.push(`${name} (${date}): função vazia/inválida → assumido CONFERENTE`); }
+    role=roleOverride(name, date, role);
     (byDate[date]=byDate[date]||[]).push({date,name,role,record_shift:turno,pedidos:ped,itens:it,score:_aj(role, date, ped+it)});
     count++;
   }
