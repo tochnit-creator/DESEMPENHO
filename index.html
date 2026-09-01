@@ -4431,7 +4431,7 @@
     <button class="shift-tab" data-shift="suporte">Suporte<span class="count" id="count-suporte"></span></button>
     <button class="shift-tab" data-shift="campeonato" id="tab-campeonato">🏆 Campeonato</button>
     <button class="shift-tab" data-shift="tardechamps" id="tab-tardechamps">🥊 Tarde Champions</button>
-    <button class="shift-tab shift-tab-locked" data-shift="horas" id="tab-horas">🔒 Horas</button>
+    <button class="shift-tab shift-tab-locked" data-shift="mensal" id="tab-mensal">🔒 Fechamento</button>
     <button class="shift-tab shift-tab-locked" data-shift="administrador" id="tab-administrador">🔒 Administrador</button>
   </div>
 
@@ -6481,7 +6481,8 @@ function renderHoras() {
   // Botão de sair
   document.getElementById("horas-logout-btn").onclick = () => {
     sessionStorage.removeItem("horas-auth");
-    document.getElementById("tab-horas").classList.remove("unlocked");
+    const tabH = document.getElementById("tab-horas");
+    if (tabH) tabH.classList.remove("unlocked");
     STATE.shift = "tarde";
     ensureValidDay();
     render();
@@ -9967,7 +9968,8 @@ function tryPwd() {
   } else {
     if (v === PWD_CORRETA) {
       sessionStorage.setItem("horas-auth", "ok");
-      document.getElementById("tab-horas").classList.add("unlocked");
+      const tabH2 = document.getElementById("tab-horas");
+      if (tabH2) tabH2.classList.add("unlocked");
       closePwdModal();
       STATE.shift = "horas";
       render();
@@ -9992,7 +9994,8 @@ document.getElementById("pwd-modal").addEventListener("click", (e) => {
 });
 // Se já autenticou nesta sessão, marca as abas como destravadas
 if (sessionStorage.getItem("horas-auth") === "ok") {
-  document.getElementById("tab-horas").classList.add("unlocked");
+  const tabHorasStartup = document.getElementById("tab-horas");
+  if (tabHorasStartup) tabHorasStartup.classList.add("unlocked");
 }
 if (sessionStorage.getItem("champ-auth") === "ok") {
   document.getElementById("tab-campeonato").classList.add("unlocked");
