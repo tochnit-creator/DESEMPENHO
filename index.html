@@ -3149,6 +3149,16 @@
   .tc-member-bar { height: 100%; border-radius: 3px; }
   .tc-member-score { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text); width: 44px; text-align: right; }
   .tc-empty { font-size: 12px; color: var(--text-faint); padding: 10px 0; text-align: center; }
+  .tc-meta-row { margin: 2px 0 14px; }
+  .tc-meta-bar-wrap {
+    height: 6px; background: var(--bg-3); border-radius: 4px; overflow: hidden;
+    border: 1px dashed var(--line-2);
+  }
+  .tc-meta-bar { height: 100%; border-radius: 4px; transition: width .5s ease; }
+  .tc-meta-bar-hit { box-shadow: 0 0 8px rgba(34,197,94,0.6); }
+  .tc-meta-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); margin-top: 4px; }
+  .lc-slot-meta { font-size: 9px; color: var(--text-faint); }
+  .lc-slot-meta-hit { color: #22c55e; font-weight: 700; }
 
   /* === LIGA CHAMPIONS (bracket: Tarde x Noite → Final) === */
   .lc-bracket {
@@ -5101,6 +5111,11 @@ const NOITE_CHAMPS = {
     },
   ],
 };
+
+// Meta mensal da Liga Champions: cada time precisa bater esses pontos no mês.
+// Vale a partir de setembro/2026 (meses antes disso não mostram a meta).
+const LC_META_MENSAL = 40300;
+const LC_META_START_MONTH = "2026-09";
 
 // ============================================================
 // SISTEMA ANTI-BUG: captura erros globais e protege funções
@@ -8357,6 +8372,15 @@ function renderTardeChamps() {
 
   const maxTotalAll = Math.max(tA.total, tB.total, nA.total, nB.total, 1);
 
+  // Meta mensal: só faz sentido comparar num mês inteiro, e só a partir do
+  // mês configurado em LC_META_START_MONTH.
+  const metaActive = mode === "mensal" && STATE.tc.month && STATE.tc.month >= LC_META_START_MONTH;
+  const metaInfo = (t) => {
+    const pct = Math.min(100, Math.round((t.total / LC_META_MENSAL) * 100));
+    const hit = t.total >= LC_META_MENSAL;
+    return { pct, hit };
+  };
+
   const periodLabel = mode === "diario"
     ? (STATE.tc.day ? fmtDate(STATE.tc.day) : "—")
     : (STATE.tc.month ? tcMonthLabel(STATE.tc.month) : "—");
@@ -8373,7 +8397,7 @@ function renderTardeChamps() {
     <div class="lc-slot ${advancing ? "lc-advancing" : ""} ${side}" style="--tc-color:${t.color};--tc-color-soft:${t.colorSoft}">
       <span class="lc-slot-icon">${t.icon}</span>
       <span class="lc-slot-name">${escapeHtml(t.name)}</span>
-      <span class="lc-slot-total">${t.total.toLocaleString("pt-BR")}</span>
+      <span class="lc-slot-total">${t.total.toLocaleString("pt-BR")}${metaActive ? ` <span class="lc-slot-meta ${metaInfo(t).hit ? "lc-slot-meta-hit" : ""}">(${metaInfo(t).pct}% da meta${metaInfo(t).hit ? " ✅" : ""})</span>` : ""}</span>
       ${advancing ? '<span class="lc-slot-crown">👑</span>' : ""}
     </div>`;
   const lcFinalSlot = (t) => t
@@ -8384,6 +8408,12 @@ function renderTardeChamps() {
   const teamCardHtml = (t, isLeaderOfPair) => {
     const barPct = Math.round((t.total / maxTotalAll) * 100);
     const topScore = t.members.length ? t.members[0].score : 1;
+    const meta = metaActive ? metaInfo(t) : null;
+    const metaHtml = meta ? `
+      <div class="tc-meta-row">
+        <div class="tc-meta-bar-wrap"><div class="tc-meta-bar ${meta.hit ? "tc-meta-bar-hit" : ""}" style="width:${meta.pct}%;background:${meta.hit ? "#22c55e" : t.color}"></div></div>
+        <div class="tc-meta-label">${t.total.toLocaleString("pt-BR")} / ${LC_META_MENSAL.toLocaleString("pt-BR")} pts (meta)${meta.hit ? " ✅" : ""}</div>
+      </div>` : "";
     const membersHtml = t.members.length
       ? t.members.map((m, idx) => {
           const pct = Math.max(6, Math.round((m.score / (topScore || 1)) * 100));
@@ -8411,6 +8441,7 @@ function renderTardeChamps() {
         </div>
         <div class="tc-team-total">${t.total.toLocaleString("pt-BR")}<span class="tc-team-total-label">pts</span></div>
         <div class="tc-team-vsbar-wrap"><div class="tc-team-vsbar" style="width:${barPct}%;background:${t.color}"></div></div>
+        ${metaHtml}
         <div class="tc-members">${membersHtml}</div>
       </div>`;
   };
@@ -8420,7 +8451,7 @@ function renderTardeChamps() {
       <div class="tc-headline">
         <div>
           <div class="tc-title">🏆 Liga Champions</div>
-          <div class="tc-subtitle">Tarde x Noite · 2 times de cada · pontuação = pedidos + itens</div>
+          <div class="tc-subtitle">Tarde x Noite · 2 times de cada · pontuação = pedidos + itens${metaActive ? ` · Meta mensal: ${LC_META_MENSAL.toLocaleString("pt-BR")} pts/time` : ""}</div>
         </div>
         <div class="tc-period">${escapeHtml(periodLabel)}</div>
       </div>
